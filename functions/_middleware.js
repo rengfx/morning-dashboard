@@ -9,9 +9,11 @@ async function digest(s) {
   return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, '0')).join('');
 }
 
+const PUBLIC = new Set(['/api/health', '/robots.txt']);
+
 export async function onRequest({ request, env, next }) {
-  if (!env.ACCESS_KEY) return next();
   const url = new URL(request.url);
+  if (!env.ACCESS_KEY || PUBLIC.has(url.pathname)) return next();
   const want = await digest(env.ACCESS_KEY);
   const cookie = (request.headers.get('cookie') || '').split(/;\s*/).find((c) => c.startsWith(COOKIE + '='));
   if (cookie && cookie.slice(COOKIE.length + 1) === want) return next();

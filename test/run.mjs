@@ -152,6 +152,7 @@ check('gate: wrong key → 401', (await gate({ request: new Request('https://d.x
 const g3 = await gate({ request: new Request('https://d.x/?key=k3y'), env: genv, next: nxt });
 check('gate: right key → cookie + redirect', g3.status === 302 && /HttpOnly/.test(g3.headers.get('set-cookie')));
 check('gate: cookie → page', (await gate({ request: new Request('https://d.x/api/today', { headers: { cookie: g3.headers.get('set-cookie').split(';')[0] } }), env: genv, next: nxt })).status === 200);
+check('gate: /api/health and /robots.txt stay public', (await gate({ request: new Request('https://d.x/api/health'), env: genv, next: nxt })).status === 200 && (await gate({ request: new Request('https://d.x/robots.txt'), env: genv, next: nxt })).status === 200);
 check('gate: off when ACCESS_KEY unset', (await gate({ request: new Request('https://d.x/'), env: {}, next: nxt })).status === 200);
 
 console.log('\nICS · TIME · ASTRONOMY · FETCH · GATE');
