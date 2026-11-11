@@ -6,7 +6,7 @@
 - [x] GitHub repo `rengfx/morning-dashboard`, code pushed (2026-11-11)
 - [x] Cloudflare Pages project, live at `morning-dashboard-cdr.pages.dev`; `ICS_URL` + `ACCESS_KEY` set; `/api/health` all OK (2026-11-11)
 - [x] Cloudflare side of `dash.darinwilliams.com` (CNAME setup started) (2026-11-11)
-- [ ] IONOS: CNAME `dash` → `morning-dashboard-cdr.pages.dev`; then "Check DNS records" in Cloudflare
+- [x] IONOS: CNAME `dash` → `morning-dashboard-cdr.pages.dev` added; public DNS resolves; Cloudflare check started (2026-11-11). Wait for the "Active" email.
 - [ ] Phone: open the key link once, Add to Home Screen
 
 ## Open questions
