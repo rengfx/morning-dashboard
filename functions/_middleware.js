@@ -14,11 +14,11 @@ const PUBLIC = new Set(['/api/health', '/robots.txt']);
 export async function onRequest({ request, env, next }) {
   const url = new URL(request.url);
   if (!env.ACCESS_KEY || PUBLIC.has(url.pathname)) return next();
-  const want = await digest(env.ACCESS_KEY);
+  const want = await digest(String(env.ACCESS_KEY).trim()); // trim: a pasted key often ends with a newline
   const cookie = (request.headers.get('cookie') || '').split(/;\s*/).find((c) => c.startsWith(COOKIE + '='));
   if (cookie && cookie.slice(COOKIE.length + 1) === want) return next();
   const key = url.searchParams.get('key');
-  if (key && (await digest(key)) === want) {
+  if (key && (await digest(key.trim())) === want) {
     url.searchParams.delete('key');
     return new Response(null, {
       status: 302,
