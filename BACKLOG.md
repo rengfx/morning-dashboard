@@ -2,11 +2,12 @@
 
 ## You (to go live) — see DEPLOY.md
 
-- [ ] Publish Routine calendar → `ICS_URL`
-- [ ] Create an empty private GitHub repo `morning-dashboard` (Claude pushes the code)
-- [ ] Cloudflare Pages project + secret
-- [ ] Custom domain `dash.darinwilliams.com`: CNAME at IONOS + `ACCESS_KEY` secret
-- [ ] Add to Home Screen
+- [x] Publish Routine calendar → `ICS_URL` (2026-11-11)
+- [x] GitHub repo `rengfx/morning-dashboard`, code pushed (2026-11-11)
+- [x] Cloudflare Pages project, live at `morning-dashboard-cdr.pages.dev`; `ICS_URL` + `ACCESS_KEY` set; `/api/health` all OK (2026-11-11)
+- [x] Cloudflare side of `dash.darinwilliams.com` (CNAME setup started) (2026-11-11)
+- [ ] IONOS: CNAME `dash` → `morning-dashboard-cdr.pages.dev`; then "Check DNS records" in Cloudflare
+- [ ] Phone: open the key link once, Add to Home Screen
 
 ## Open questions
 

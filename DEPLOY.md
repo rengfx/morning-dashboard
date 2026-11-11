@@ -34,7 +34,7 @@ Calendar off and on to get a new link.
 1. Make a free account at dash.cloudflare.com.
 2. **Workers & Pages → Create → Pages → Connect to Git** → pick `morning-dashboard`.
 3. Build settings: **Framework preset: None**. **Build command: (empty)**. **Build output directory: `public`**.
-4. **Save and Deploy.** You get `https://morning-dashboard.pages.dev` (or a similar name).
+4. **Save and Deploy.** You get `https://morning-dashboard-cdr.pages.dev` (the name `morning-dashboard` was taken) (or a similar name).
    Every later push to `main` deploys again by itself.
 
 ## 4. Secret (1 min)

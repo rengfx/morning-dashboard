@@ -21,3 +21,4 @@
 | D17 | 2026-10-31 | Rules R9–R17 added from real weekends (Oct 25, Oct 31, Nov 1): no-window surf order, dark tolerance, Lakers overlap, NOW / PASSED, near miss, rain advisory, DST banner, rain later. |
 | D18 | 2026-10-31 | Login: Cloudflare Access if DNS moves to Cloudflare; else the built-in key gate (`ACCESS_KEY`). |
 | D19 | 2026-11-11 | Dashboard first, website later. Domain DNS stays at IONOS for now: CNAME `dash` → Cloudflare Pages, login by key gate (`ACCESS_KEY`). The full DNS move to Cloudflare waits for the website launch and must copy MX/SPF. |
+| D20 | 2026-11-11 | Public `/api/health` shows only source status, counts, and whether secrets are set (no content). Everything else stays behind the key gate. Used to verify deploys. |
