@@ -44,7 +44,7 @@ function stripChart(d) {
 
 function humeChart(d, s) {
   const am = s.type === 'humeAM';
-  const h0 = am ? Math.min(5, Math.floor(hm(s.start) / 60) - 1) : Math.min(16, Math.floor(hm(s.start) / 60) - 1);
+  const h0 = Math.min(am ? 5 : 16, Math.floor(hm(s.start) / 60) - 1, s.suggest ? Math.floor(hm(s.suggest[0]) / 60) : 99);
   const h1 = am ? Math.max(11, Math.ceil(hm(s.end) / 60) + 1) : 22;
   const sc = scale(h0, h1), H = 72;
   const temp = pts(d.hourly.tempF, d.hourly.time).filter(([t]) => t >= sc.t0 && t <= sc.t1);
@@ -63,7 +63,7 @@ function humeChart(d, s) {
     b += rect(x0, 0, x1 - x0, H, 'none', `stroke="${COL.coral}" stroke-width="1.5" stroke-dasharray="3 2"`);
     const s0 = sc.x(hm(s.suggest[0])), s1 = sc.x(hm(s.suggest[1]));
     b += rect(s0, 0, s1 - s0, H, COL.green, `fill-opacity="0.14" stroke="${COL.green}" stroke-width="1.5"`);
-    b += text(s0 + 4, 13, `${s.suggest[0]}–${s.suggest[1]}`, COL.green, { bold: true });
+    b += text(s0 + 4, 66, `GO ${s.suggest[0]}–${s.suggest[1]}`, COL.green, { bold: true });
   } else {
     b += rect(x0, 0, x1 - x0, H, COL.green, `fill-opacity="0.14" stroke="${COL.green}" stroke-width="1.5"`);
     const tag = s.status === 'GO AFTER' ? `GO AFTER ${s.goAfter}` : s.status === 'GO BY' ? `BY ${s.goBy}` : s.status;
@@ -211,7 +211,7 @@ function render(d) {
   let n = 0;
   const body = d.sections.map((s) => { n++; return s.type === 'surf' ? surfSec(d, s, n) : s.type === 'sun' ? sunSec(d, s, n) : s.type === 'lakers' ? lakersSec(d, s, n) : humeSec(d, s, n); }).join('\n');
   $('main').innerHTML = `
-<header class="head"><h1>${d.weekday} ${dd} ${MON[m - 1]}</h1><span class="meta">VENICE · ${esc(nowShown)} · <a href="sky.html">MOON ${il}% ${ph < 180 ? '↑' : '↓'} →</a></span></header>
+<header class="head"><h1>${d.weekday} ${dd} ${MON[m - 1]}</h1><span class="meta">${esc(nowShown)} · <a href="sky.html">MOON ${il}% ${ph < 180 ? '↑' : '↓'}</a></span></header>
 <div style="display:flex;flex-direction:column;gap:6px">
 <div class="row"><span>TODAY · IN ORDER</span><span>${weekend ? 'WEEKEND' : 'WEEKDAY'} · ${d.sections.length} ITEMS</span></div>
 ${d.banners.map((b) => `<div class="banner">${esc(b.text)}</div>`).join('')}${late}
