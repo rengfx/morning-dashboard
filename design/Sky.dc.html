@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sky page</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@500;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 1250px; box-sizing: border-box; padding: 24px 16px; background: #0A0B0D; color: #ECEAE4; font-family: 'IBM Plex Mono', ui-monospace, monospace; display: flex; flex-direction: column; gap: 20px">
+
+<div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #2B2D31; padding-bottom: 12px">
+<span style="font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700">SKY</span>
+<a href="TidesV2.dc.html" style="font-size: 13px; color: #F2B35E; text-decoration: none">← TODAY</a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; font-size: 12px; color: #A3A29C"><span>1 · EARTH + MOON · 00:00 → 24:00</span><span>LOOP · {{secText}} s</span></div>
+
+<svg viewBox="0 0 358 300" width="358" height="300" role="img" aria-label="Animated tilted 3D view of the Earth and Moon over one day, midnight to midnight. In fixed mode the camera stays still and Earth turns with Venice marked. In Venice mode the camera turns with Earth so Venice always faces you and the Sun and Moon go around. A line joins Venice to the Moon when the Moon is above the horizon at Venice.">
+<defs>
+<radialGradient id="mo-sun" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FFD08F" stop-opacity="0.9"></stop><stop offset="0.35" stop-color="#F2B35E" stop-opacity="0.35"></stop><stop offset="1" stop-color="#F2B35E" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="mo-moon" cx="{{moonHX}}" cy="0.42" r="0.8"><stop offset="0" stop-color="#FAF8F2"></stop><stop offset="0.4" stop-color="#B9B6AD"></stop><stop offset="0.75" stop-color="#3A3B3F"></stop><stop offset="1" stop-color="#111214"></stop></radialGradient>
+<linearGradient id="mo-night" x1="{{nX1}}" y1="0" x2="{{nX2}}" y2="0"><stop offset="0" stop-color="#03050A" stop-opacity="0.92"></stop><stop offset="{{nS1}}" stop-color="#03050A" stop-opacity="0.72"></stop><stop offset="{{nS2}}" stop-color="#03050A" stop-opacity="0.04"></stop><stop offset="1" stop-color="#03050A" stop-opacity="0"></stop></linearGradient>
+<radialGradient id="mo-shine" cx="{{shineX}}" cy="0.34" r="0.55"><stop offset="0" stop-color="#FFFFFF" stop-opacity="{{shineOp}}"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="mo-limb" cx="0.5" cy="0.5" r="0.5"><stop offset="0.75" stop-color="#000000" stop-opacity="0"></stop><stop offset="1" stop-color="#000000" stop-opacity="0.55"></stop></radialGradient>
+<clipPath id="mo-clip"><circle cx="179" cy="170" r="32"></circle></clipPath>
+</defs>
+<circle cx="30" cy="58" r="0.8" fill="#5B5D62"></circle><circle cx="96" cy="72" r="0.6" fill="#5B5D62"></circle><circle cx="250" cy="60" r="0.8" fill="#5B5D62"></circle><circle cx="300" cy="96" r="0.6" fill="#5B5D62"></circle><circle cx="60" cy="262" r="0.7" fill="#5B5D62"></circle><circle cx="270" cy="270" r="0.7" fill="#5B5D62"></circle><circle cx="140" cy="84" r="0.5" fill="#5B5D62"></circle>
+<circle cx="{{sunX}}" cy="{{sunY}}" r="110" fill="url(#mo-sun)"></circle>
+<text x="{{sunLX}}" y="{{sunLY}}" fill="#F2B35E" font-size="10" font-family="IBM Plex Mono" text-anchor="middle">SUN</text>
+<polygon points="{{shadow}}" fill="#000000" fill-opacity="0.32"></polygon>
+<path d="M39 170 A140 48 0 0 1 319 170" fill="none" stroke="#3A3D43" stroke-width="1.5" stroke-dasharray="3 4"></path>
+<polyline points="{{proj}}" fill="none" stroke="#F2B35E" stroke-opacity="0.45" stroke-width="2" stroke-dasharray="2 5" stroke-linecap="round"></polyline>
+<polyline points="{{trail}}" fill="none" stroke="#F2B35E" stroke-width="2" stroke-linecap="round"></polyline>
+<circle cx="{{mx}}" cy="{{my}}" r="{{mr}}" fill="url(#mo-moon)" opacity="{{backOp}}"></circle>
+<line x1="161" y1="128" x2="197" y2="212" stroke="#5B5D62" stroke-width="1"></line>
+<circle cx="179" cy="170" r="32" fill="#173E73"></circle>
+<g clip-path="url(#mo-clip)">
+<path d="{{land}}" fill="#5F8F5B" stroke="#7FAE74" stroke-width="0.4" stroke-linejoin="round"></path>
+<ellipse cx="179" cy="140" rx="17" ry="5" fill="#DCE6EE" fill-opacity="0.85"></ellipse>
+<ellipse cx="179" cy="174" rx="32" ry="5" fill="none" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="0.6"></ellipse>
+<ellipse cx="179" cy="158" rx="27" ry="4" fill="none" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="0.6"></ellipse>
+<ellipse cx="179" cy="190" rx="27" ry="4" fill="none" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="0.6"></ellipse>
+<path d="{{clouds}}" fill="#FFFFFF" fill-opacity="0.18"></path>
+<circle cx="179" cy="170" r="32" fill="url(#mo-limb)"></circle>
+<rect x="147" y="138" width="64" height="64" fill="url(#mo-night)"></rect>
+<circle cx="179" cy="170" r="32" fill="url(#mo-shine)"></circle>
+</g>
+<circle cx="179" cy="170" r="33.5" fill="none" stroke="#9DB4FF" stroke-opacity="0.3" stroke-width="2"></circle>
+<path d="M319 170 A140 48 0 0 1 39 170" fill="none" stroke="#5B5D62" stroke-width="1.5"></path>
+<circle cx="{{q0x}}" cy="{{q0y}}" r="2.5" fill="#5B5D62"></circle>
+<circle cx="{{q1x}}" cy="{{q1y}}" r="2.5" fill="#5B5D62"></circle>
+<circle cx="{{q2x}}" cy="{{q2y}}" r="2.5" fill="#5B5D62"></circle>
+<circle cx="{{q3x}}" cy="{{q3y}}" r="2.5" fill="#5B5D62"></circle>
+<text x="{{l0x}}" y="{{l0y}}" fill="#A3A29C" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">NEW</text>
+<text x="{{l1x}}" y="{{l1y}}" fill="#A3A29C" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">1ST QTR</text>
+<text x="{{l2x}}" y="{{l2y}}" fill="#A3A29C" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">FULL</text>
+<text x="{{l3x}}" y="{{l3y}}" fill="#A3A29C" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">LAST QTR</text>
+<line x1="{{vx}}" y1="{{vy}}" x2="{{mx}}" y2="{{my}}" stroke="#F2B35E" stroke-width="1" stroke-dasharray="2 2" opacity="{{lineOp}}"></line>
+<circle cx="{{vx}}" cy="{{vy}}" r="3" fill="{{vFill}}" stroke="#0A0B0D" stroke-width="1" opacity="{{vOp}}"></circle>
+<text x="{{vlx}}" y="{{vly}}" fill="{{vFill}}" font-size="9" font-family="IBM Plex Mono" opacity="{{vOp}}">VENICE</text>
+<circle cx="{{mx}}" cy="{{my}}" r="{{mr}}" fill="url(#mo-moon)" opacity="{{frontOp}}"></circle>
+<text x="16" y="24" fill="#ECEAE4" font-size="11" font-family="IBM Plex Mono">{{clock}}</text>
+<text x="16" y="38" fill="{{vFill}}" font-size="10" font-family="IBM Plex Mono">MOON {{upText}} OVER VENICE · {{phaseText}}</text>
+<text x="16" y="290" fill="#5B5D62" font-size="9" font-family="IBM Plex Mono">amber dashes = path for the day · not to scale</text>
+</svg>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; font-size: 11px; color: #A3A29C"><span>MOON HEIGHT OVER VENICE</span><span><span style="color: #F2B35E">▮</span> dark sky  <span style="color: #6B6E75">▮</span> daylight</span></div>
+<svg viewBox="0 0 358 60" width="358" height="60" role="img" aria-label="Timeline histogram for the day: each bar is how high the Moon is over Venice at that time; amber bars are when the sky is dark, grey bars are daylight. A line marks the current animation time.">
+<rect x="0" y="0" width="358" height="52" fill="#15171A"></rect>
+<path d="{{nightBands}}" fill="#07080A"></path>
+<path d="{{barsDay}}" fill="#6B6E75"></path>
+<path d="{{barsNight}}" fill="#F2B35E"></path>
+<line x1="0" y1="52" x2="358" y2="52" stroke="#2B2D31" stroke-width="1"></line>
+<line x1="{{headX}}" y1="0" x2="{{headX}}" y2="60" stroke="#ECEAE4" stroke-width="1.5"></line>
+<circle cx="{{headX}}" cy="56" r="3" fill="#ECEAE4"></circle>
+</svg>
+<label for="sky-scrub" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%)">Time of day in the animation</label>
+<input id="sky-scrub" type="range" min="0" max="1000" step="1" value="{{pVal}}" onChange="{{scrub}}" style="width: 358px; height: 44px; margin: 0; accent-color: #F2B35E">
+<div style="display: flex; width: 358px">
+<sc-for list="{{ticks}}" as="t" hint-placeholder-count="6">
+<span style="flex: 1 1 0; font-size: 10px; color: #A3A29C">{{t.label}}</span>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<span style="font-size: 12px; color: #A3A29C">Drag to scrub. It loops at midnight.</span>
+<button onClick="{{toggle}}" style="min-width: 88px; height: 44px; border: 1px solid #2B2D31; background: transparent; color: #ECEAE4; font: inherit; font-size: 12px">{{playLabel}}</button>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #2B2D31; padding-top: 14px">
+<div style="display: flex; justify-content: space-between; font-size: 12px; color: #A3A29C"><span>2 · EARTH IN THE SOLAR SYSTEM</span><span>MOVES WITH THE 24 H CLOCK</span></div>
+<svg viewBox="0 0 358 250" width="358" height="250" role="img" aria-label="Tilted view of the inner solar system with most of Earth's orbit in view. The planets move on the same 24 hour clock as the Moon chart. Earth moves about 1 degree, 2.6 million kilometers, in a day; Mercury moves about 4 degrees. Venus is close to Earth, almost between Earth and the Sun.">
+<defs>
+<radialGradient id="ss-sun" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FFE2A8"></stop><stop offset="0.3" stop-color="#F2B35E" stop-opacity="0.55"></stop><stop offset="1" stop-color="#F2B35E" stop-opacity="0"></stop></radialGradient>
+<radialGradient id="ss-earth" cx="{{earGX}}" cy="{{earGY}}" r="0.8"><stop offset="0" stop-color="#A9C8F5"></stop><stop offset="0.45" stop-color="#3F72C2"></stop><stop offset="0.8" stop-color="#16294A"></stop><stop offset="1" stop-color="#070B14"></stop></radialGradient>
+</defs>
+<ellipse cx="168" cy="118" rx="230" ry="74" fill="none" stroke="#2B2D31" stroke-width="1"></ellipse>
+<ellipse cx="168" cy="118" rx="190" ry="61" fill="none" stroke="#5E8BD6" stroke-opacity="0.5" stroke-width="1.5"></ellipse>
+<ellipse cx="168" cy="118" rx="138" ry="44" fill="none" stroke="#2B2D31" stroke-width="1"></ellipse>
+<ellipse cx="168" cy="118" rx="71" ry="23" fill="none" stroke="#2B2D31" stroke-width="1"></ellipse>
+<path d="{{ssTicks}}" fill="none" stroke="#5E8BD6" stroke-opacity="0.6" stroke-width="1"></path>
+<text x="{{mJx}}" y="{{mJy}}" fill="#5B5D62" font-size="8" font-family="IBM Plex Mono" text-anchor="middle">JAN</text>
+<text x="{{mAx}}" y="{{mAy}}" fill="#5B5D62" font-size="8" font-family="IBM Plex Mono" text-anchor="middle">APR</text>
+<text x="{{mLx}}" y="{{mLy}}" fill="#5B5D62" font-size="8" font-family="IBM Plex Mono" text-anchor="middle">JUL</text>
+<text x="{{mOx}}" y="{{mOy}}" fill="#5B5D62" font-size="8" font-family="IBM Plex Mono" text-anchor="middle">OCT</text>
+<circle cx="168" cy="118" r="60" fill="url(#ss-sun)"></circle>
+<circle cx="168" cy="118" r="14" fill="#FFD08F"></circle>
+<text x="168" y="98" fill="#F2B35E" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">SUN</text>
+<circle cx="{{marX}}" cy="{{marY}}" r="3.5" fill="#D9785B"></circle>
+<text x="{{marLX}}" y="{{marLY}}" fill="#D9785B" font-size="8" font-family="IBM Plex Mono" text-anchor="end">MARS</text>
+<circle cx="{{merX}}" cy="{{merY}}" r="2.5" fill="#B9B6AD"></circle>
+<text x="{{merX}}" y="{{merLY}}" fill="#A3A29C" font-size="8" font-family="IBM Plex Mono" text-anchor="middle">MERCURY</text>
+<line x1="{{venX}}" y1="{{venY}}" x2="{{earX}}" y2="{{earY}}" stroke="#5B5D62" stroke-width="1" stroke-dasharray="2 2"></line>
+<text x="{{vdLX}}" y="{{vdLY}}" fill="#A3A29C" font-size="8" font-family="IBM Plex Mono" text-anchor="middle">{{vdText}}</text>
+<circle cx="{{venX}}" cy="{{venY}}" r="4.5" fill="#E8D9B5"></circle>
+<text x="{{venX}}" y="{{venLY}}" fill="#E8D9B5" font-size="8" font-family="IBM Plex Mono" text-anchor="middle">VENUS</text>
+<polyline points="{{ssProj}}" fill="none" stroke="#F2B35E" stroke-opacity="0.45" stroke-width="3" stroke-linecap="round"></polyline>
+<polyline points="{{ssTrail}}" fill="none" stroke="#F2B35E" stroke-width="3" stroke-linecap="round"></polyline>
+<circle cx="{{mooX}}" cy="{{mooY}}" r="2.5" fill="#ECEAE4"></circle>
+<circle cx="{{earX}}" cy="{{earY}}" r="9" fill="url(#ss-earth)"></circle>
+<circle cx="{{earX}}" cy="{{earY}}" r="10.5" fill="none" stroke="#9DB4FF" stroke-opacity="0.4" stroke-width="1.2"></circle>
+<text x="{{earLX}}" y="{{earLY}}" fill="#9DB4FF" font-size="10" font-family="IBM Plex Mono" font-weight="600" text-anchor="end">EARTH · YOU</text>
+<text x="354" y="226" fill="#D8C79A" font-size="8" font-family="IBM Plex Mono" text-anchor="end">SATURN 8.5 AU ↘</text>
+<text x="8" y="244" fill="#F2B35E" font-size="9" font-family="IBM Plex Mono">EARTH MOVED {{ssMoved}}M KM OF 2.6M TODAY</text>
+<text x="354" y="244" fill="#5B5D62" font-size="8" font-family="IBM Plex Mono" text-anchor="end">not to scale</text>
+</svg>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: #2B2D31; border: 1px solid #2B2D31">
+<div style="background: #0A0B0D; padding: 10px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; color: #A3A29C">FULL</span><span style="font-size: 16px">OCT 28</span></div>
+<div style="background: #0A0B0D; padding: 10px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; color: #A3A29C">NEW</span><span style="font-size: 16px">NOV 12</span></div>
+<div style="background: #0A0B0D; padding: 10px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; color: #A3A29C">DARK SKY</span><span style="font-size: 16px">NOV 8–15</span></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"camera":{"editor":"enum","options":["venice","fixed"],"default":"venice"},"seconds":{"editor":"int","min":6,"max":60,"default":12},"$preview":{"width":390,"height":1250}}'>
+class Component extends DCLogic {
+componentDidMount() { this.play(0); }
+componentWillUnmount() { this.stop(); }
+stop() { if (this.raf) cancelAnimationFrame(this.raf); this.raf = null; }
+curP() { return (this.state && typeof this.state.p === 'number') ? this.state.p : 0; }
+play(from) {
+this.stop();
+const dur = (this.props.seconds ?? 12) * 1000;
+const t0 = performance.now() - (from || 0) * dur;
+const step = (now) => {
+const p = ((now - t0) / dur) % 1;
+this.setState({ p: p, playing: true });
+this.raf = requestAnimationFrame(step);
+};
+this.setState({ playing: true });
+this.raf = requestAnimationFrame(step);
+}
+renderVals() {
+const D = Math.PI / 180;
+const span = 24;
+const p = this.curP();
+const playing = !!(this.state && this.state.playing);
+const cam = (this.state && this.state.cam) || (this.props.camera === 'fixed' ? 'fixed' : 'venice');
+const locked = cam === 'venice';
+const h = p * span;
+const f = (n) => n.toFixed(1);
+const f3 = (n) => Math.max(0, Math.min(1, n)).toFixed(3);
+const wrap = (a) => ((a + 180) % 360 + 360) % 360 - 180;
+// Sample model (the build uses an astronomy library): Sat 24 Oct, 00:00 to 24:00, Sun-fixed frame.
+// Moon +12.19 deg/day; Venice +15 deg/h; 0 deg = facing the Sun; -90 deg = facing the viewer.
+const moonDeg = (hh) => 112.5 + 0.5079 * hh;
+const venDeg = (hh) => -191.5 + 15 * hh;
+// Camera: fixed = no turn. Locked = the scene turns so Venice stays at -90 deg (facing you).
+const camRot = (hh) => locked ? -(venDeg(hh) + 90) : 0;
+const P = (deg, R) => [179 + R * Math.cos(deg * D), 170 - R * 0.343 * Math.sin(deg * D)];
+const sig = camRot(h);
+const mDeg = moonDeg(h) + sig;
+const pathPts = (toH) => { const out = []; for (let k = 0; k <= 120; k++) { const hh = toH * k / 120; const q = P(moonDeg(hh) + camRot(hh), 140); out.push(f(q[0]) + ',' + f(q[1])); } return out.join(' '); };
+const m = P(mDeg, 140);
+const sm = Math.sin(mDeg * D);
+const sunP = P(sig, 215);
+const sunL = P(sig, 165);
+const anti = (sig + 180) * D;
+const ux = Math.cos(anti), uy = -0.343 * Math.sin(anti);
+const ul = Math.hypot(ux, uy) || 1;
+const nx = -uy / ul, ny = ux / ul;
+const shadow = [[179 + nx * 30, 170 + ny * 30], [179 + ux * 165 + nx * 16, 170 + uy * 165 + ny * 16], [179 + ux * 165 - nx * 16, 170 + uy * 165 - ny * 16], [179 - nx * 30, 170 - ny * 30]].map((q) => f(q[0]) + ',' + f(q[1])).join(' ');
+const lit = (1 - Math.sin(sig * D)) / 2;
+const dark = 1 - lit;
+const sunRight = Math.cos(sig * D) >= 0;
+const quarter = (k) => { const q = P(sig + 90 * k, 140); const l = P(sig + 90 * k, 160); return { x: f(q[0]), y: f(q[1]), lx: f(Math.max(24, Math.min(334, l[0]))), ly: f(l[1] + 4) }; };
+const q0 = quarter(0), q1 = quarter(1), q2 = quarter(2), q3 = quarter(3);
+// Earth surface: longitude strip that slides west to east (fixed) or stays with Venice centred (locked).
+const K = 32 * D;
+const PER = 360 * K;
+const lonV = -118.5;
+const dV = locked ? 0 : wrap(venDeg(h) + 90);
+const lonC = wrap(lonV - dV);
+const LX = (lo) => 179 + (lo - lonC) * K;
+const LY = (la) => 174 - la * 0.47;
+const LAND = [
+[[-165,65],[-140,70],[-95,72],[-75,62],[-60,48],[-80,30],[-82,25],[-97,18],[-105,20],[-118,32],[-125,48],[-140,58],[-160,58]],
+[[-80,10],[-60,8],[-35,-8],[-40,-22],[-58,-38],[-70,-52],[-75,-40],[-72,-18],[-80,-5]],
+[[-55,60],[-40,62],[-20,72],[-30,82],[-60,80]],
+[[-10,36],[-5,44],[-10,52],[5,58],[20,70],[40,68],[40,45],[30,35],[35,30],[50,12],[40,-15],[30,-34],[18,-35],[12,-15],[8,5],[-17,15],[-17,25]],
+[[40,68],[80,75],[140,72],[170,65],[140,50],[122,32],[120,22],[105,10],[100,22],[80,8],[72,22],[55,25],[48,30],[40,45]],
+[[113,-22],[130,-12],[145,-15],[153,-28],[145,-38],[132,-32],[115,-34]]
+];
+const CLOUD = [
+[[-150,40],[-120,44],[-100,38],[-125,34]],
+[[-40,10],[0,14],[30,6],[-10,2]],
+[[60,-30],[110,-26],[140,-34],[90,-38]],
+[[150,20],[190,26],[200,16],[170,12]]
+];
+const shapes = (list, drift) => {
+let d = '';
+for (let c = -1; c <= 1; c++) {
+for (const poly of list) {
+d += 'M' + poly.map((q) => f(LX(q[0] + drift) + c * PER) + ' ' + f(LY(q[1]))).join(' L') + ' Z ';
+}
+}
+return d;
+};
+const thv = venDeg(h) * D;
+const thm = moonDeg(h) * D;
+const vVis = Math.abs(dV) < 58;
+const vx = 179 + dV * K;
+const vy = LY(34);
+const up = Math.cos(thv - thm) > 0;
+const stamp = (hh) => {
+const mins = Math.round(hh * 60);
+const d = Math.floor(mins / 1440);
+const mm = mins % 1440;
+const wd = ['SUN','MON','TUE','WED','THU','FRI','SAT'][(6 + d) % 7];
+return { wd: wd, day: 24 + d, time: String(Math.floor(mm / 60)).padStart(2, '0') + ':' + String(mm % 60).padStart(2, '0') };
+};
+const now = stamp(h);
+const deg = ((thm / D) % 360 + 360) % 360;
+const illum = Math.round((1 - Math.cos(thm)) / 2 * 100);
+const N = 96;
+const bw = 358 / N;
+let barsDay = ''; let barsNight = ''; let nightBands = '';
+for (let i = 0; i < N; i++) {
+const hh = span * (i + 0.5) / N;
+const tv = venDeg(hh) * D;
+const alt = Math.cos(tv - moonDeg(hh) * D);
+const sunUp = Math.cos(tv) > 0;
+const x = f(i * bw);
+const w = f(bw - 0.5);
+if (!sunUp) nightBands += 'M' + x + ' 0 h' + f(bw) + ' v52 h-' + f(bw) + ' Z ';
+if (alt > 0) {
+const seg = 'M' + x + ' 52 h' + w + ' v-' + f(alt * 46) + ' h-' + w + ' Z ';
+if (sunUp) barsDay += seg; else barsNight += seg;
+}
+}
+const ticks = [];
+for (let i = 0; i < 6; i++) ticks.push({ label: stamp(span * i / 6).time });
+const on = '#ECEAE4', off = 'transparent';
+// Solar system: heliocentric longitude (deg) at 00:00 PDT 24 Oct 2026, distance (AU), deg per day.
+const SS = { mer: [344.1, 0.375, 4.0923], ven: [30.5, 0.724, 1.6021], ear: [30.5, 0.995, 0.9856], mar: [96.7, 1.586, 0.524] };
+const SR = { mer: 71, ven: 138, ear: 190, mar: 230 };
+const ROT = -60.5;
+const Q = (lon, R) => [168 + R * Math.cos((lon + ROT) * D), 118 - R * 0.32 * Math.sin((lon + ROT) * D)];
+const lonAt = (k, hh) => SS[k][0] + SS[k][2] * hh / 24;
+const pos = (k, hh) => Q(lonAt(k, hh), SR[k]);
+const ear = pos('ear', h), ven = pos('ven', h), mer = pos('mer', h), mar = pos('mar', h);
+const earPath = (toH) => { const o = []; for (let k = 0; k <= 24; k++) { const q = pos('ear', toH * k / 24); o.push(f(q[0]) + ',' + f(q[1])); } return o.join(' '); };
+const sunGeo = lonAt('ear', h) + 180;
+const mq = [Math.cos((sunGeo + deg + ROT) * D), -0.32 * Math.sin((sunGeo + deg + ROT) * D)];
+const toSun = [168 - ear[0], 118 - ear[1]]; const tl = Math.hypot(toSun[0], toSun[1]) || 1;
+const au = (k, hh) => { const l = lonAt(k, hh) * D; return [SS[k][1] * Math.cos(l), SS[k][1] * Math.sin(l)]; };
+const ae = au('ear', h), av = au('ven', h);
+const vd = Math.hypot(ae[0] - av[0], ae[1] - av[1]);
+let ticks2 = '';
+for (let k = 0; k < 12; k++) { const lon = 38.4 + k * 29.98; const a = Q(lon, 184), b = Q(lon, 196); ticks2 += 'M' + f(a[0]) + ' ' + f(a[1]) + ' L' + f(b[0]) + ' ' + f(b[1]) + ' '; }
+const ml = (lon) => { const q = Q(lon, 208); return [f(Math.max(12, Math.min(346, q[0]))), f(q[1] + 3)]; };
+const mJ = ml(98.5), mA = ml(187.2), mL = ml(276.9), mO = ml(7.6);
+const ss = {
+earX: f(ear[0]), earY: f(ear[1]), earLX: f(ear[0] - 14), earLY: f(ear[1] + 24),
+earGX: (0.5 + 0.3 * toSun[0] / tl).toFixed(2), earGY: (0.5 + 0.3 * toSun[1] / tl).toFixed(2),
+venX: f(ven[0]), venY: f(ven[1]), venLY: f(ven[1] - 9),
+merX: f(mer[0]), merY: f(mer[1]), merLY: f(mer[1] + 14),
+marX: f(mar[0]), marY: f(mar[1]), marLX: f(mar[0] - 8), marLY: f(mar[1] - 6),
+mooX: f(ear[0] + 15 * mq[0]), mooY: f(ear[1] + 15 * mq[1]),
+vdLX: f((ven[0] + ear[0]) / 2), vdLY: f((ven[1] + ear[1]) / 2 + 14), vdText: vd.toFixed(2) + ' AU',
+ssTrail: earPath(h), ssProj: earPath(24), ssTicks: ticks2,
+mJx: mJ[0], mJy: mJ[1], mAx: mA[0], mAy: mA[1], mLx: mL[0], mLy: mL[1], mOx: mO[0], mOy: mO[1],
+ssMoved: (h / 24 * 2.57).toFixed(1)
+};
+return { ...ss,
+secText: this.props.seconds ?? 12,
+proj: pathPts(span), trail: pathPts(h),
+mx: f(m[0]), my: f(m[1]), mr: f(11 - 2 * sm),
+moonHX: f3(0.5 + 0.24 * Math.cos(sig * D)),
+backOp: sm >= 0 ? 1 : 0, frontOp: sm < 0 ? 1 : 0,
+sunX: f(sunP[0]), sunY: f(sunP[1]),
+sunLX: f(Math.max(24, Math.min(334, sunL[0]))), sunLY: f(Math.max(56, Math.min(276, sunL[1]))),
+shadow: shadow,
+nX1: sunRight ? '0' : '1', nX2: sunRight ? '1' : '0',
+nS1: f3(dark - 0.08), nS2: f3(dark + 0.06),
+shineX: f3(0.5 + 0.25 * Math.cos(sig * D)), shineOp: (0.35 * lit).toFixed(2),
+q0x: q0.x, q0y: q0.y, q1x: q1.x, q1y: q1.y, q2x: q2.x, q2y: q2.y, q3x: q3.x, q3y: q3.y,
+l0x: q0.lx, l0y: q0.ly, l1x: q1.lx, l1y: q1.ly, l2x: q2.lx, l2y: q2.ly, l3x: q3.lx, l3y: q3.ly,
+land: shapes(LAND, 0), clouds: shapes(CLOUD, h * 1.5),
+vx: f(vx), vy: f(vy), vlx: f(vx + 6), vly: f(vy - 6),
+vOp: vVis ? 1 : 0, lineOp: up && vVis ? 0.9 : 0,
+vFill: up ? '#F2B35E' : '#A3A29C',
+upText: up ? 'UP' : 'DOWN',
+phaseText: illum + '% ' + (deg < 180 ? 'WAXING' : 'WANING'),
+clock: now.wd + ' ' + now.day + ' OCT · ' + now.time + ' · SUN–MOON ' + (deg <= 180 ? Math.round(deg) : Math.round(360 - deg)) + '°',
+camText: locked ? 'Camera locked on Venice: Venice always faces you. The Sun and Moon go around it, as they do from the beach.' : 'Camera fixed in space: Earth turns once. The dot is Venice. The Sun stays on the right.',
+fBg: locked ? off : on, fFg: locked ? on : '#0A0B0D', vBg: locked ? on : off, vFg: locked ? '#0A0B0D' : on,
+fPressed: locked ? 'false' : 'true', vPressed: locked ? 'true' : 'false',
+camFixed: () => this.setState({ cam: 'fixed' }),
+camVenice: () => this.setState({ cam: 'venice' }),
+barsDay: barsDay, barsNight: barsNight, nightBands: nightBands,
+headX: f(Math.max(1, Math.min(357, p * 358))),
+pVal: Math.round(p * 1000),
+ticks: ticks,
+playLabel: playing ? 'PAUSE' : 'PLAY',
+scrub: (e) => { this.stop(); this.setState({ p: Number(e.target.value) / 1000, playing: false }); },
+toggle: () => { if (playing) { this.stop(); this.setState({ playing: false }); } else { this.play(p); } }
+};
+}
+}
+</script>
+</body>
+</html>

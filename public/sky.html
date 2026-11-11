@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sky · Morning</title>
+<meta name="theme-color" content="#0A0B0D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="/css/app.css">
+<style>svg text { font-family: 'IBM Plex Mono', ui-monospace, monospace; }</style>
+</head>
+<body>
+<main>
+<header class="head"><h1>SKY</h1><a class="meta" href="/" style="color:var(--amber)">← TODAY</a></header>
+
+<section style="display:flex;flex-direction:column;gap:10px">
+<div class="row"><span>1 · EARTH + MOON · 00:00 → 24:00</span><span id="loop">LOOP</span></div>
+<svg id="earthmoon" viewBox="0 0 358 300" role="img" aria-label="Animated tilted view of the Earth and Moon over today, midnight to midnight. The camera is locked on Venice, so Venice always faces you and the Sun and Moon go around. A dashed line joins Venice to the Moon when the Moon is above the horizon at Venice."></svg>
+<div style="display:flex;flex-direction:column;gap:6px">
+<div class="row" style="font-size:11px"><span>MOON HEIGHT OVER VENICE</span><span><span style="color:var(--amber)">▮</span> dark sky  <span style="color:#6B6E75">▮</span> daylight</span></div>
+<svg viewBox="0 0 358 60" role="img" aria-label="Histogram for today: each bar is how high the Moon is over Venice at that time. Amber bars are when the sky is dark, grey bars are daylight. A line marks the animation time.">
+<rect x="0" y="0" width="358" height="52" fill="#15171A"></rect>
+<path id="hist-bands" fill="#07080A"></path><path id="hist-day" fill="#6B6E75"></path><path id="hist-night" fill="#F2B35E"></path>
+<line x1="0" y1="52" x2="358" y2="52" stroke="#2B2D31"></line>
+<line id="playhead" x1="0" y1="0" x2="0" y2="60" stroke="#ECEAE4" stroke-width="1.5"></line><circle id="playdot" cx="0" cy="56" r="3" fill="#ECEAE4"></circle>
+</svg>
+<label for="scrub" class="sr">Time of day in the animation</label>
+<input id="scrub" type="range" min="0" max="1000" step="1" value="0">
+<div class="ticks" id="ticks"></div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><span class="note">Drag to scrub. It loops at midnight.</span><button id="play" type="button">PAUSE</button></div>
+</section>
+
+<section class="sec">
+<div class="row"><span>2 · EARTH IN THE SOLAR SYSTEM</span><span>SAME 24 H CLOCK</span></div>
+<svg id="solar" viewBox="0 0 358 250" role="img" aria-label="Tilted view of the inner solar system with most of Earth's orbit. Mercury, Venus, Earth, and Mars are at their real positions for the animation time; the Moon is next to Earth. Earth's path for today is amber."></svg>
+</section>
+
+<div class="cells" style="--n:3">
+<div class="cell"><span class="l">FULL</span><span class="v" id="c-full">—</span></div>
+<div class="cell"><span class="l">NEW</span><span class="v" id="c-new">—</span></div>
+<div class="cell"><span class="l">DARK SKY</span><span class="v" id="c-dark">—</span></div>
+</div>
+</main>
+<script type="module" src="/js/sky.js"></script>
+</body>
+</html>

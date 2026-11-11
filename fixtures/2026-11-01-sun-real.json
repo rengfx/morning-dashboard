@@ -1,0 +1,338 @@
+{
+ "_note": "Built from real forecasts for this date (NOAA tides, surf-forecast.com swell/wind, AccuWeather / The Weather Network hourly, currentuvindex.com UV). 3-hour slots interpolated to hours. 'expected' lists the fields that must match; other output fields are free.",
+ "input": {
+  "date": "2026-11-01",
+  "weekday": "SUN",
+  "now": null,
+  "sun": {
+   "rise": "06:13",
+   "set": "17:00"
+  },
+  "calendar": [
+   {
+    "title": "Hume",
+    "start": "07:00",
+    "end": "10:00"
+   },
+   {
+    "title": "Hume",
+    "start": "16:00",
+    "end": "19:00"
+   }
+  ],
+  "hourly": {
+   "tempF": [
+    62.6,
+    62.6,
+    63.2,
+    63.8,
+    64.4,
+    64.4,
+    64.4,
+    64.4,
+    65.0,
+    65.6,
+    66.2,
+    66.8,
+    67.4,
+    68.0,
+    67.4,
+    66.8,
+    66.2,
+    66.2,
+    66.2,
+    66.2,
+    66.2,
+    66.2,
+    66.2,
+    66.2
+   ],
+   "precipPct": [
+    80,
+    80,
+    80,
+    90,
+    90,
+    60,
+    20,
+    20,
+    20,
+    0,
+    40,
+    40,
+    40,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "uv": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0.4,
+    1.3,
+    2.6,
+    3.7,
+    4.1,
+    3.7,
+    2.6,
+    1.4,
+    0.4,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "windMph": [
+    6,
+    6,
+    6.0,
+    6.0,
+    6.0,
+    6.0,
+    6.0,
+    6.0,
+    8.13,
+    10.27,
+    12.4,
+    15.5,
+    18.6,
+    21.7,
+    19.63,
+    17.57,
+    15.5,
+    13.43,
+    11.37,
+    9.3,
+    7.23,
+    5.17,
+    3.1,
+    3.1
+   ],
+   "windDir": [
+    225,
+    225,
+    247.33,
+    269.67,
+    292.0,
+    284.67,
+    277.33,
+    270.0,
+    270.0,
+    270.0,
+    270.0,
+    270.0,
+    270.0,
+    270.0,
+    270.0,
+    270.0,
+    270.0,
+    270.0,
+    270.0,
+    270.0,
+    180.0,
+    90.0,
+    0,
+    0
+   ]
+  },
+  "marine": {
+   "swellFt": [
+    3.3,
+    3.3,
+    3.3,
+    3.3,
+    3.3,
+    3.3,
+    3.3,
+    3.3,
+    3.2,
+    3.1,
+    3.0,
+    3.0,
+    3.0,
+    3.0,
+    2.87,
+    2.73,
+    2.6,
+    2.6,
+    2.6,
+    2.6,
+    2.73,
+    2.87,
+    3.0,
+    3.0
+   ],
+   "swellPeriodS": [
+    16,
+    16,
+    16.0,
+    16.0,
+    16.0,
+    16.0,
+    16.0,
+    16.0,
+    15.67,
+    15.33,
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15.0,
+    15,
+    15
+   ],
+   "swellDirDeg": [
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202,
+    202
+   ]
+  },
+  "tide": {
+   "station": "9410840",
+   "hilo": [
+    {
+     "t": "20:31",
+     "ft": -0.113,
+     "type": "L",
+     "dayOffset": -1
+    },
+    {
+     "t": "04:03",
+     "ft": 3.813,
+     "type": "H"
+    },
+    {
+     "t": "08:00",
+     "ft": 3.245,
+     "type": "L"
+    },
+    {
+     "t": "13:57",
+     "ft": 5.037,
+     "type": "H"
+    },
+    {
+     "t": "21:43",
+     "ft": 0.007,
+     "type": "L"
+    }
+   ]
+  },
+  "lakers": {
+   "tipoff": "18:00",
+   "opponentName": "Raptors",
+   "opponentFull": "Toronto Raptors",
+   "home": true,
+   "arena": "Crypto.com Arena",
+   "tv": null
+  },
+  "rain72hMm": 5.1,
+  "dst": {
+   "when": "today",
+   "direction": "back"
+  }
+ },
+ "expected": {
+  "order": [
+   "humeAM",
+   "surf",
+   "sun",
+   "humePM",
+   "lakers"
+  ],
+  "sections": [
+   {
+    "type": "humeAM",
+    "start": "07:00",
+    "end": "10:00",
+    "source": "calendar",
+    "status": "GO",
+    "advice": "Low rain chance. Rain after 10:00."
+   },
+   {
+    "type": "surf",
+    "window": false,
+    "nearMiss": {
+     "start": "06:30",
+     "end": "07:30",
+     "score": 8,
+     "of": 10
+    },
+    "advisory": true
+   },
+   {
+    "type": "sun",
+    "start": "11:00",
+    "end": "13:00",
+    "uvPeak": 4.1
+   },
+   {
+    "type": "humePM",
+    "start": "16:00",
+    "end": "19:00",
+    "status": "CONFLICT",
+    "suggest": [
+     "16:00",
+     "17:45"
+    ]
+   },
+   {
+    "type": "lakers",
+    "start": "18:00",
+    "end": "20:30",
+    "home": true
+   }
+  ],
+  "banners": [
+   {
+    "kind": "dst",
+    "text": "STANDARD TIME NOW"
+   }
+  ]
+ }
+}

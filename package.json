@@ -1,0 +1,9 @@
+{
+  "name": "morning-dashboard",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test/run.mjs",
+    "dev": "node dev/server.mjs"
+  }
+}

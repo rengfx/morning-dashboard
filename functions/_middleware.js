@@ -1,0 +1,27 @@
+// Optional key gate (fallback when Cloudflare Access is not used).
+// Off unless the ACCESS_KEY secret is set. Open once with https://<site>/?key=<ACCESS_KEY>;
+// a cookie then keeps you in for 1 year on that device (and the Home Screen app).
+
+const COOKIE = 'md_key';
+
+async function digest(s) {
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, '0')).join('');
+}
+
+export async function onRequest({ request, env, next }) {
+  if (!env.ACCESS_KEY) return next();
+  const url = new URL(request.url);
+  const want = await digest(env.ACCESS_KEY);
+  const cookie = (request.headers.get('cookie') || '').split(/;\s*/).find((c) => c.startsWith(COOKIE + '='));
+  if (cookie && cookie.slice(COOKIE.length + 1) === want) return next();
+  const key = url.searchParams.get('key');
+  if (key && (await digest(key)) === want) {
+    url.searchParams.delete('key');
+    return new Response(null, {
+      status: 302,
+      headers: { location: url.pathname + url.search, 'set-cookie': `${COOKIE}=${want}; Max-Age=31536000; Path=/; Secure; HttpOnly; SameSite=Lax` },
+    });
+  }
+  return new Response('Private page.', { status: 401, headers: { 'content-type': 'text/plain' } });
+}
