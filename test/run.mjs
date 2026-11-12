@@ -180,6 +180,12 @@ check('where: Saturn at best time = planet position (S, 57° up, 6 fists)', Math
 check('where: SVG names the object and its direction', w3.svg.includes('SATURN') && /S 18[01]°/.test(w3.svg));
 check('where: below the horizon → says so, no sight line', /below the horizon/.test(P3.lookText('venus', { alt: -5, az: 100 })) && !P3.pier3dSvg({ body: 'venus', ms: Date.parse('2026-11-13T04:00Z'), obs: ven }).svg.includes('fists'));
 
+const ssN = P3.lastSunset(satMs, ven);
+check('R26 last sunset before Saturn 21:02 = Nov 12 ~16:51, WSW', ssN && Math.abs(ssN.ms - Date.parse('2026-11-13T00:51Z')) < 4 * 60e3 && astro.compass(ssN.az) === 'WSW', ssN && new Date(ssN.ms).toISOString() + ' ' + ssN.az.toFixed(0));
+const ssM = P3.lastSunset(Date.parse('2026-11-15T13:46Z'), ven);
+check('R26 morning event (Sun 05:46) → previous evening sunset (Sat)', ssM && new Date(ssM.ms).toISOString().startsWith('2026-11-15T00:'), ssM && new Date(ssM.ms).toISOString());
+check('R26 sunset drawn in the 3D scene', w3.svg.includes('SUNSET') && w3.sunset);
+
 // ---- 3. fetchers with a fake network (no real API calls) ----
 const { buildDay } = await import('../lib/fetch.js');
 const SECRET = 'https://p01-caldav.icloud.com/published/2/SECRET-TOKEN-123';

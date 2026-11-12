@@ -148,6 +148,7 @@ Added 2026-10-31 from two weekends of real data:
 - **R23 Charts.** Faint grid (hour lines, quarter lines) on every chart; every peak gets a dot with a drop line to the time axis.
 - **R24 Pier view.** Sky page: the sky from the end of Venice Pier with real Moon (phase) and planet positions; turn 360° (drag, ◀ ▶, arrow keys); time = tonight (sunset + 1 h), any sky event (turns to face it and rings the objects), or the slider (sunset − 30 min → sunrise + 30 min).
 - **R25 Where to look.** Tap a planet or the Moon in the pier view (at that time), or a row in Planets tonight (at its best time): a zoomed-out 3D scene opens with Venice Pier (pointing WSW), you at the end, the sky dome, a ground arrow to face, the height arc, and the sight line. Text: "Face S (181°) and look 57° up, about 6 fists above the horizon at arm's length." Drag to orbit. Not to scale.
+- **R26 Sunset reference.** The where-to-look scene marks where the sun last went down (most recent sunset at or before the shown time; a morning view uses the evening before): a half sun on the horizon with time and direction. The text adds "Sunset was at 16:52 in the WSW (249°). Face that point: Saturn is 68° to your left."
 
 ## 4. Data sources
 

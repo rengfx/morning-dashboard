@@ -31,3 +31,4 @@
 | D27 | 2026-11-12 | Sky notes: only notable events, 4-day look-ahead, on Today and Sky pages; cloudy → grey with label (not hidden). Planets tonight list. Moon–planet limit 7° (published Nov 20 Moon–Saturn gap 5.7°). |
 | D28 | 2026-11-12 | Pier view on the Sky page: 360° turn, tonight + event times + slider. Horizon skyline is approximate. |
 | D29 | 2026-11-12 | Where to look: tap a planet → 3D pier scene (SVG, orthographic, camera behind-left, drag to orbit) + direction in words with fists (1 fist ≈ 10°). |
+| D30 | 2026-11-12 | Where-to-look scene shows the last sunset point (not the current sun) as an orientation mark, with left/right offset in words. |

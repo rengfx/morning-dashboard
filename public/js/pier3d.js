@@ -1,6 +1,7 @@
 // R25 Where to look: a zoomed-out 3D scene of Venice Pier with a sky dome and a sight line to one object.
 // Orthographic camera above and behind you; drag to orbit. Pure SVG string.
 import * as A from './astro.js';
+import { partsIn, TZ } from './time.js';
 
 const W = 358, H = 250, CX = 179, CY = 168, S = 78; // screen centre (observer) and scale
 const D = Math.PI / 180;
@@ -30,6 +31,18 @@ export function bodyPosition(body, ms, obs) {
 }
 
 /** Words for the person: direction, height, fists. */
+/** R26 most recent sunset at or before `ms` (the sun's last crossing of −0.833°): {ms, az}. */
+export function lastSunset(ms, obs) {
+  const alt = (t) => A.sunAltAz(new Date(t), obs).alt + 0.833;
+  let t = ms, prev = alt(t);
+  for (let k = 0; k < 36 * 30; k++) { // 2-min steps back, up to 36 h
+    const t2 = t - 120000, v = alt(t2);
+    if (v >= 0 && prev < 0) { const at = t2 + 120000 * v / (v - prev); return { ms: at, az: A.sunAltAz(new Date(at), obs).az }; }
+    t = t2; prev = v;
+  }
+  return null;
+}
+
 export function lookText(body, pos) {
   if (pos.alt < 0) return `${NAME[body]} is below the horizon at this time.`;
   const az = Math.round(((pos.az % 360) + 360) % 360), alt = Math.round(pos.alt);
@@ -67,6 +80,16 @@ export function pier3dSvg({ body, ms, obs, camBearing = null, elev = 28 }) {
   for (const l of domeLines) b += `<path d="${seg(l, false)}" fill="none" stroke="#ECEAE4" stroke-opacity="0.08" stroke-dasharray="2 3"/>`;
   // compass letters on the horizon ring
   for (const [az, t] of [[0, 'N'], [90, 'E'], [180, 'S'], [270, 'W']]) { const [x, y] = P(dirVec(az, 0, R * 1.2)); b += `<text x="${f(x)}" y="${f(y + 3)}" fill="#A3A29C" font-size="10" text-anchor="middle">${t}</text>`; }
+  // R26 sunset reference: where the sun last went down (half sun on the horizon ring)
+  const ss = lastSunset(ms, obs);
+  if (ss) {
+    const [sx, sy, sz] = P(dirVec(ss.az, 0, R)), front = sz < 0.02;
+    const [rx, ry] = P(dirVec(ss.az, 0, R * 1.08));
+    b += path([[0, 0, 0.01], dirVec(ss.az, 0, R)], `fill="none" stroke="#FF8A65" stroke-opacity="0.35" stroke-width="1" stroke-dasharray="1 3"`);
+    b += `<circle cx="${f(sx)}" cy="${f(sy)}" r="16" fill="#FF8A65" fill-opacity="0.12"/><path d="M${f(sx - 8)} ${f(sy)} A8 8 0 0 1 ${f(sx + 8)} ${f(sy)} Z" fill="#FFB36B" fill-opacity="${front ? 1 : 0.75}"/><line x1="${f(sx - 13)}" y1="${f(sy)}" x2="${f(sx + 13)}" y2="${f(sy)}" stroke="#FFB36B" stroke-width="1.2"/>`;
+    const day = partsIn(new Date(ss.ms), TZ), here = partsIn(new Date(ms), TZ);
+    const rt = sx >= CX; b += `<text x="${f(sx + (rt ? 14 : -14))}" y="${f(sy + 12)}" fill="#FF8A65" font-size="9" text-anchor="${rt ? 'start' : 'end'}">SUNSET ${day.date !== here.date ? day.weekday + ' ' : ''}${day.time}</text><text x="${f(sx + (rt ? 14 : -14))}" y="${f(sy + 23)}" fill="#FF8A65" font-size="9" text-anchor="${rt ? 'start' : 'end'}">${A.compass(ss.az)} ${Math.round(ss.az)}°</text>`;
+  }
   // observer
   const [ox, oy] = P([0, 0, 0]), [hx, hy] = P([0, 0, 0.12]);
   b += `<line x1="${f(ox)}" y1="${f(oy)}" x2="${f(hx)}" y2="${f(hy)}" stroke="#F2B35E" stroke-width="2.5" stroke-linecap="round"/><circle cx="${f(hx)}" cy="${f(hy - 3)}" r="3" fill="#F2B35E"/>`;
@@ -87,5 +110,5 @@ export function pier3dSvg({ body, ms, obs, camBearing = null, elev = 28 }) {
   }
   for (const l of domeLines) b += `<path d="${seg(l, true)}" fill="none" stroke="#ECEAE4" stroke-opacity="0.16"/>`;
   b += `<text x="6" y="${H - 6}" fill="#5B5D62" font-size="8">not to scale · drag to turn the camera</text>`;
-  return { svg: b, pos };
+  return { svg: b, pos, sunset: ss };
 }

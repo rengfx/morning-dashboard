@@ -91,12 +91,19 @@ window.__pier = { set: (o) => { if (o.ms != null) ms = o.ms; if (o.heading != nu
 let where = null;
 function drawWhere() {
   if (!where) return;
-  const { svg: body, pos } = pier3dSvg({ body: where.body, ms: where.ms, obs: OBS, camBearing: where.cam });
+  const r3 = pier3dSvg({ body: where.body, ms: where.ms, obs: OBS, camBearing: where.cam }), { svg: body, pos } = r3;
   if (where.cam == null) where.cam = pos.az;
   $('#where3d').innerHTML = body;
   const t = partsIn(new Date(where.ms), TZ);
   $('#where-title').textContent = `WHERE TO LOOK · ${where.body.toUpperCase()} · ${t.weekday} ${t.time}`;
-  $('#where-text').textContent = lookText(where.body, pos);
+  const ss = r3.sunset, st = ss ? partsIn(new Date(ss.ms), TZ) : null;
+  let ref = '';
+  if (ss && pos.alt >= 0) {
+    const d = ((pos.az - ss.az + 540) % 360) - 180; // + = clockwise = to your right when you face the sunset
+    const wt = partsIn(new Date(where.ms), TZ);
+    ref = ` Sunset was at ${st.date !== wt.date ? st.weekday.charAt(0) + st.weekday.slice(1).toLowerCase() + ' ' : ''}${st.time} in the ${A.compass(ss.az)} (${Math.round(ss.az)}°). Face that point: ${where.body === 'moon' ? 'the Moon' : where.body[0].toUpperCase() + where.body.slice(1)} is ${Math.abs(d) < 10 ? 'in about the same direction' : Math.abs(d) > 170 ? 'behind you' : `${Math.round(Math.abs(d))}° to your ${d > 0 ? 'right' : 'left'}`}.`;
+  }
+  $('#where-text').textContent = lookText(where.body, pos) + ref;
 }
 function openWhere(body, atMs) {
   where = { body, ms: atMs, cam: null };
