@@ -24,3 +24,4 @@
 | D20 | 2026-11-11 | Public `/api/health` shows only source status, counts, and whether secrets are set (no content). Everything else stays behind the key gate. Used to verify deploys. |
 | D21 | 2026-11-11 | Day navigation: swipe left/right (and ‹ › buttons, arrow keys) moves one day; range yesterday to +6 days (forecast limit). Only today shows NOW / PASSED. Tap the date to return to today. Neighbour days preload. |
 | D22 | 2026-11-11 | HUME classes (Door 2): all public classes that start inside each Hume window, with open spots, from the public Arketa schedule feed (no login). Not an official API: on failure the list hides and DATA LATE shows. No calendar (ICS) feed for now. |
+| D23 | 2026-11-11 | HUME classes show only if they fit the window (start ≥ window start, end ≤ window end). On iPhone/iPad the link opens the HUME app's App Store page (Open button); the app has no direct link (no universal links; URL scheme unknown). |

@@ -93,7 +93,9 @@ check('hume: unix time → local 06:30 first, sorted', hl[0].start === '06:30' &
 const ref = hl.find((c) => c.start === '08:00' && c.name === 'Reformer Pilates');
 check('hume: 08:00 Reformer full, waitlist 3 (matches public page "Waitlist")', ref && ref.state === 'FULL' && ref.waitlist === 3 && ref.left === 0);
 check('hume: "HUME" as host is hidden; end = start + duration', hl.find((c) => c.start === '16:00' && /Sculpt/.test(c.name)).host === null && hl[0].end === '07:30');
-check('hume: window 06:30–08:30 → 6 classes (start inside, end ignored)', classesIn(hl, '06:30', '08:30').length === 6);
+const in630 = classesIn(hl, '06:30', '08:30');
+check('hume: window 06:30–08:30 → 3 classes that end by 08:30 (07:45 ends 08:35, 08:00 ends 08:50: hidden)', in630.length === 3 && in630.every((c) => c.end <= '08:30'), in630.map((c) => c.start + '-' + c.end).join(','));
+check('hume: class ending exactly at window end is kept', classesIn(hl, '06:30', '07:50').map((c) => c.start).join(',') === '06:30,07:00,07:00');
 check('hume: window 17:30–19:30 → 0 classes (17:00 starts before)', classesIn(hl, '17:30', '19:30').length === 0);
 let bad = null; try { parseClasses({ data: {} }, '2026-11-13', 'America/Los_Angeles'); } catch (e) { bad = e.message; }
 check('hume: changed feed shape → clear error', /unexpected feed shape/.test(bad || ''), bad);
@@ -103,7 +105,7 @@ const su2 = new URL(scheduleUrl(cfg.hume.classes, '2026-11-01', 'America/Los_Ang
 check('hume: feed URL on DST day (PDT start, PST end)', su2.searchParams.get('startDateTime') === '2026-11-01T07:00:00.000Z' && su2.searchParams.get('endDateTime') === '2026-11-02T07:59:59.000Z');
 const fri = JSON.parse(readFileSync(join(root, 'fixtures/2026-11-13-fri-real.json'), 'utf8')).input;
 const sF = scoreDay({ ...fri, now: '07:10' }, cfg), amF = sF.sections.find((x) => x.type === 'humeAM');
-check('hume scored: AM shows 6; 06:30 + 07:00 started at 07:10; 07:45 not', amF.classes.length === 6 && amF.classes.filter((c) => c.started).length === 3 && !amF.classes.find((c) => c.start === '07:45').started);
+check('hume scored: AM shows 3; all started at 07:10, none at 06:00', amF.classes.length === 3 && amF.classes.every((c) => c.started) && scoreDay({ ...fri, now: '06:00' }, cfg).sections[0].classes.every((c) => !c.started));
 check('hume scored: no feed → classes null (section still renders)', scoreDay({ ...fri, humeClasses: null }, cfg).sections[0].classes === null);
 
 // Astronomy: reference values (Venus inferior conjunction 2026-10-24; full Moon 2026-10-26).

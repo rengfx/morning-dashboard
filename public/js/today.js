@@ -162,12 +162,13 @@ ${humeChart(d, s)}${classList(d, s)}</section>`;
 
 function classList(d, s) {
   if (!s.classes) return '';
-  const url = d.config && d.config.humeBookUrl;
+  const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const url = d.config && ((ios && d.config.humeAppUrl) || d.config.humeBookUrl);
   const rows = s.classes.map((c) => {
     const st = c.started ? ['STARTED', 'faint'] : c.state === 'CLOSED' ? ['CLOSED', 'faint'] : c.state === 'FULL' ? [c.waitlist ? `FULL · WL ${c.waitlist}` : 'FULL', 'bad'] : [`${c.left} OPEN`, c.left <= 2 ? 'ok' : 'good'];
     return `<li class="${c.started ? 'gone' : ''}"><span class="t">${esc(c.start)}</span><span class="n">${esc(c.name)}<small>${esc([c.host, `${c.min} min`].filter(Boolean).join(' · '))}</small></span><span class="s ${st[1]}">${esc(st[0])}</span></li>`;
   }).join('');
-  return `<div class="classes"><div class="row"><span>CLASSES IN WINDOW · ${s.classes.length}</span>${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">BOOK ↗</a>` : ''}</div>${rows ? `<ul>${rows}</ul>` : '<div class="note">No classes start in this window.</div>'}</div>`;
+  return `<div class="classes"><div class="row"><span>CLASSES IN WINDOW · ${s.classes.length}</span>${url ? `<a href="${esc(url)}"${url.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${ios ? 'HUME APP ↗' : 'BOOK ↗'}</a>` : ''}</div>${rows ? `<ul>${rows}</ul>` : '<div class="note">No class fits in this window.</div>'}</div>`;
 }
 
 function surfSec(d, s, n) {

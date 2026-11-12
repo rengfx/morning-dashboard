@@ -27,6 +27,7 @@
 ## Later
 
 - HUME classes Door 3 (not chosen 2026-11-11): `/hume.ics` as a separate iPhone calendar. Needs the key in the link and a filter (~100 classes a week).
+- HUME app direct open: the app publishes no universal link; a custom URL scheme is unknown. If found (test on the phone), replace `appUrl`.
 - HUME classes: watch the first week for feed changes (DATA LATE · hume classes).
 
 - 12-hour time option (offered 2026-11-11, not asked for yet).

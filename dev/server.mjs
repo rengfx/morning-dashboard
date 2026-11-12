@@ -36,7 +36,7 @@ createServer(async (req, res) => {
         if (u.searchParams.get('now')) day = { ...day, now: u.searchParams.get('now') };
       } else ({ day, errors } = await buildDay(process.env, cfg, new Date(), u.searchParams.get('d') || 0));
       const out = { ...scoreDay(day, cfg), offset: day.offset || 0, range: DAY_RANGE, hourly: day.hourly, marine: day.marine, tide: day.tide, rain72hMm: day.rain72hMm,
-        config: { humeBookUrl: cfg.hume.classes && cfg.hume.classes.bookUrl, tideOkMaxFt: cfg.surf.tideFtMLLW.ok[1], sunscreenUv: cfg.sun.sunscreenUv, location: cfg.location },
+        config: { humeBookUrl: cfg.hume.classes && cfg.hume.classes.bookUrl, humeAppUrl: cfg.hume.classes && cfg.hume.classes.appUrl, tideOkMaxFt: cfg.surf.tideFtMLLW.ok[1], sunscreenUv: cfg.sun.sunscreenUv, location: cfg.location },
         errors, generatedAt: new Date().toISOString(), buildMs: Date.now() - t, source: fx ? `fixture:${fx}` : 'live' };
       res.writeHead(200, { 'content-type': 'application/json' }); res.end(JSON.stringify(out)); return;
     }

@@ -140,7 +140,7 @@ Added 2026-10-31 from two weekends of real data:
 - **R15 Rain advisory.** Rain in the last 72 h ≥ `surf.rainAdvisoryMm` (2.5 mm ≈ 0.1 in) → advisory banner on the surf section (LA County advises no ocean contact for 72 h after rain).
 - **R16 DST.** The day before a change: `CLOCKS GO BACK|FORWARD 1 H AT 02:00 TONIGHT`. The day of the change: `STANDARD TIME NOW` / `DAYLIGHT TIME NOW`.
 - **R17 Rain later.** Hume advice names the first hour ≥ `rainNo` within 3 h after the window ends ("Rain after 22:00").
-- **R18 HUME classes.** Each Hume section lists every public HUME class that *starts* inside its window: time, name, instructor, length, and OPEN n / FULL · WL n / CLOSED. On today, classes that have started are dimmed. Source: the public Arketa schedule feed (`hume.classes` in config), one request per day shown, cached 60 min. If the feed fails, the list is hidden and `DATA LATE · hume classes` shows; the rest of the page is unchanged. "BOOK ↗" opens the public schedule.
+- **R18 HUME classes.** Each Hume section lists every public HUME class that fits inside its window (starts at or after the window start and ends at or before the window end): time, name, instructor, length, and OPEN n / FULL · WL n / CLOSED. On today, classes that have started are dimmed. Source: the public Arketa schedule feed (`hume.classes` in config), one request per day shown, cached 60 min. If the feed fails, the list is hidden and `DATA LATE · hume classes` shows; the rest of the page is unchanged. "BOOK ↗" opens the HUME app on iPhone/iPad (through its App Store page, which has an Open button); on other devices it opens the public schedule.
 
 ## 4. Data sources
 
