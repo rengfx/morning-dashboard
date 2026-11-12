@@ -249,17 +249,16 @@
  },
  "expected": {
   "order": [
-   "humeAM",
+   "humeDay",
    "surf",
-   "sun",
-   "humePM"
+   "sun"
   ],
   "sections": [
    {
-    "type": "humeAM",
-    "start": "06:30",
-    "end": "08:30",
-    "source": "default",
+    "type": "humeDay",
+    "start": "07:00",
+    "end": "19:00",
+    "source": "hours",
     "status": "GO",
     "goBy": null
    },
@@ -279,18 +278,8 @@
    },
    {
     "type": "sun",
-    "start": "12:00",
-    "end": "14:00",
-    "uvPeak": 5,
-    "uvPeakAt": "13:00"
-   },
-   {
-    "type": "humePM",
-    "start": "17:30",
-    "end": "19:30",
-    "source": "default",
-    "status": "GO",
-    "goBy": null
+    "start": "12:15",
+    "end": "13:45"
    }
   ]
  }

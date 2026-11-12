@@ -16,9 +16,13 @@ export default {
       ],
       "pm": [
         "17:30",
-        "19:30"
+        "21:00"
       ]
     },
+    "weekend": [
+      "07:00",
+      "19:00"
+    ],
     "rainOkPct": 20,
     "rainNoPct": 40,
     "windNoMph": 15,
@@ -91,9 +95,15 @@ export default {
     "rainAdvisoryMm": 2.5
   },
   "sun": {
-    "windowHours": 2,
+    "windowHours": 1.5,
     "hideIfMaxUvBelow": 1,
     "sunscreenUv": 3
+  },
+  "basketball": {
+    "match": "basketball",
+    "place": "Live Oak Park",
+    "lat": 33.8895,
+    "lon": -118.4065
   },
   "lakers": {
     "team": "Los Angeles Lakers",

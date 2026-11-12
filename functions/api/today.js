@@ -12,7 +12,7 @@ export async function onRequestGet({ env, request }) {
     const { day, errors } = await buildDay(env, cfg, new Date(), d);
     const out = {
       ...scoreDay(day, cfg), offset: day.offset, range: DAY_RANGE,
-      hourly: day.hourly, marine: day.marine, tide: day.tide, rain72hMm: day.rain72hMm,
+      hourly: day.hourly, park: day.park || null, clouds: day.clouds || null, marine: day.marine, tide: day.tide, rain72hMm: day.rain72hMm,
       config: { humeBookUrl: cfg.hume.classes && cfg.hume.classes.bookUrl, humeAppUrl: cfg.hume.classes && cfg.hume.classes.appUrl, tideOkMaxFt: cfg.surf.tideFtMLLW.ok[1], sunscreenUv: cfg.sun.sunscreenUv, location: cfg.location },
       errors, generatedAt: new Date().toISOString(), buildMs: Date.now() - started,
     };

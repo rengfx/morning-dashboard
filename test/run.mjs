@@ -29,7 +29,7 @@ function subset(exp, act, path = '') {
 
 // ---- 1. scorer fixtures ----
 const files = readdirSync(join(root, 'fixtures')).filter((f) => f.endsWith('.json')).sort();
-const types = ['humeAM', 'surf', 'sun', 'lakers', 'humePM'];
+const types = ['humeAM', 'humeDay', 'surf', 'sun', 'lakers', 'humePM', 'basketball'];
 const table = [];
 for (const f of files) {
   const fx = JSON.parse(readFileSync(join(root, 'fixtures', f), 'utf8'));
@@ -107,6 +107,27 @@ const fri = JSON.parse(readFileSync(join(root, 'fixtures/2026-11-13-fri-real.jso
 const sF = scoreDay({ ...fri, now: '07:10' }, cfg), amF = sF.sections.find((x) => x.type === 'humeAM');
 check('hume scored: AM shows 3; all started at 07:10, none at 06:00', amF.classes.length === 3 && amF.classes.every((c) => c.started) && scoreDay({ ...fri, now: '06:00' }, cfg).sections[0].classes.every((c) => !c.started));
 check('hume scored: no feed → classes null (section still renders)', scoreDay({ ...fri, humeClasses: null }, cfg).sections[0].classes === null);
+
+// R19 / R20 windows
+const tue = JSON.parse(readFileSync(join(root, 'fixtures/2026-10-27-tue.json'), 'utf8')).input;
+const noGame = scoreDay({ ...tue, lakers: null }, cfg);
+check('R19 weekday default PM 17:30–21:00', noGame.sections.find((x) => x.type === 'humePM').end === '21:00');
+const goAfter = scoreDay({ ...tue, lakers: { ...tue.lakers, tipoff: '16:00' } }, cfg).sections.find((x) => x.type === 'humePM');
+check('R11 game 16:00–18:30 → Hume PM GO AFTER 18:30', goAfter.status === 'GO AFTER' && goAfter.goAfter === '18:30', goAfter.status);
+const sat = JSON.parse(readFileSync(join(root, 'fixtures/2026-10-31-sat-real.json'), 'utf8')).input;
+const satLate = scoreDay({ ...sat, now: '19:05' }, cfg).sections.find((x) => x.type === 'humeDay');
+check('R19 weekend: one block 07:00–19:00, passed at 19:05', satLate.start === '07:00' && satLate.end === '19:00' && satLate.passed === true);
+const satCal = scoreDay({ ...sat, calendar: [{ title: 'Hume', start: '07:00', end: '10:00' }] }, cfg);
+check('R19 weekend ignores Hume event times (open hours rule)', satCal.order.filter((t) => t.startsWith('hume')).join() === 'humeDay');
+const thu = JSON.parse(readFileSync(join(root, 'fixtures/2026-11-12-thu-hoops.json'), 'utf8')).input;
+const bk = scoreDay(thu, cfg).sections.find((x) => x.type === 'basketball');
+check('R20 Basketball uses court weather (2 °F cooler than Venice)', bk.cells.temp.f === Math.round(scoreDay({ ...thu, park: null }, cfg).sections.find((x) => x.type === 'basketball').cells.temp.f - 2), JSON.stringify(bk.cells.temp));
+check('R20 Basketball: no class list; place name set', bk.classes === undefined && bk.place === 'Live Oak Park');
+const bkWet = scoreDay({ ...thu, park: { hourly: { ...thu.park.hourly, precipPct: thu.park.hourly.precipPct.map((v, i) => (i >= 19 ? 60 : v)) } } }, cfg).sections.find((x) => x.type === 'basketball');
+check('R20 rain at the court → RAIN', bkWet.status === 'RAIN', bkWet.status);
+const satHoops = scoreDay({ ...sat, calendar: [{ title: 'Basketball', start: '10:00', end: '12:00' }] }, cfg);
+check('R20 weekend Basketball adds a section, keeps the Hume day', satHoops.order.includes('basketball') && satHoops.order.includes('humeDay'), satHoops.order.join());
+check('R21 sun window 90 min centred on UV peak', (() => { const s = scoreDay(sat, cfg).sections.find((x) => x.type === 'sun'); return s.start === '11:15' && s.end === '12:45' && s.uvPeakAt === '12:00'; })());
 
 // Astronomy: reference values (Venus inferior conjunction 2026-10-24; full Moon 2026-10-26).
 const jd = (iso) => astro.julian(new Date(iso));

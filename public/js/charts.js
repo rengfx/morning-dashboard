@@ -65,5 +65,15 @@ export const nowLine = (sc, now, H, label = false) => {
   const x = sc.x(t);
   return vline(x, 0, H, COL.text, 'stroke-width="1.5"') + (label ? text(x + 4, 12, 'NOW', COL.text) : '');
 };
+/** Faint guide grid: a vertical line every hour, `rows` horizontal lines. */
+export function grid(sc, H, rows = 4) {
+  let s = '';
+  const st = 'stroke="#ECEAE4" stroke-opacity="0.11" stroke-width="0.6" stroke-dasharray="1 2"';
+  for (let h = Math.ceil(sc.h0); h <= sc.h1; h++) { const x = sc.x(h * 60); if (x > 0 && x < W) s += `<line x1="${f(x)}" y1="0" x2="${f(x)}" y2="${H}" ${st}></line>`; }
+  for (let i = 1; i < rows; i++) { const y = H * i / rows; s += `<line x1="0" y1="${f(y)}" x2="${W}" y2="${f(y)}" ${st}></line>`; }
+  return s;
+}
+/** Peak marker: a dot with a dark ring and a faint drop line to the time axis. */
+export const peakDot = (x, y, col, H) => `<line x1="${f(x)}" y1="${f(y)}" x2="${f(x)}" y2="${H}" stroke="${col}" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="2 2"></line><circle cx="${f(x)}" cy="${f(y)}" r="4" fill="${col}" stroke="#0A0B0D" stroke-width="1.5"></circle>`;
 export const svg = (h, label, body) => `<svg viewBox="0 0 ${W} ${h}" role="img" aria-label="${esc(label)}">${body}</svg>`;
 export { fm, hm, esc, W };

@@ -442,14 +442,16 @@
     "start": "06:30",
     "end": "08:30",
     "source": "calendar",
-    "status": "GO"
+    "status": "GO",
+    "goBy": null
    },
    {
     "type": "humePM",
     "start": "17:30",
-    "end": "19:30",
+    "end": "21:00",
     "source": "default",
-    "status": "GO"
+    "status": "GO",
+    "goBy": null
    }
   ]
  }

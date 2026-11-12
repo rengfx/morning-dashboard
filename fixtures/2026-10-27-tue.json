@@ -283,10 +283,14 @@
    {
     "type": "humePM",
     "start": "17:30",
-    "end": "19:30",
+    "end": "21:00",
     "source": "default",
-    "status": "GO",
-    "goBy": null
+    "status": "CONFLICT",
+    "goBy": null,
+    "suggest": [
+     "17:30",
+     "19:45"
+    ]
    },
    {
     "type": "lakers",

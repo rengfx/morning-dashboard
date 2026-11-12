@@ -1,5 +1,5 @@
 // Today page: fetch /api/today and render the B2 instrument panel.
-import { COL, scale, pts, valAt, tideFn, text, rect, vline, poly, lx, darkBands, ticks, rainBars, nowLine, svg, hm, fm, esc, W } from './charts.js';
+import { COL, scale, pts, valAt, tideFn, text, rect, vline, poly, lx, darkBands, ticks, rainBars, nowLine, svg, grid, peakDot, hm, fm, esc, W } from './charts.js';
 import { moonPhase, illumination } from './astro.js';
 
 const $ = (s) => document.querySelector(s);
@@ -7,8 +7,8 @@ const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT
 const COMPASS = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
 const dir = (d) => COMPASS[Math.round(((d % 360) + 360) % 360 / 22.5) % 16];
 const MARK = { GOOD: ['✓', 'good'], OK: ['~ OK', 'ok'], BAD: ['✗', 'bad'], COOL: ['~ COOL', 'ok'], COLD: ['~ COLD', 'ok'] };
-const NAMES = { humeAM: 'HUME MORNING', humePM: 'HUME EVENING', surf: 'SURF', sun: 'SUN', lakers: 'LAKERS' };
-const STRIP = { humeAM: COL.green, humePM: COL.green, surf: COL.sky, sun: COL.coral, lakers: COL.gold };
+const NAMES = { humeAM: 'HUME MORNING', humePM: 'HUME EVENING', humeDay: 'HUME DAY', basketball: 'BASKETBALL', surf: 'SURF', sun: 'SUN', lakers: 'LAKERS' };
+const STRIP = { humeAM: COL.green, humePM: COL.green, humeDay: COL.green, basketball: COL.violet, surf: COL.sky, sun: COL.coral, lakers: COL.gold };
 const STATUS_COL = { GO: COL.green, 'GO AFTER': COL.green, 'GO BY': COL.amber, WINDY: COL.amber, RAIN: COL.coral, CONFLICT: COL.coral };
 
 const cell = (l, v, m) => `<div class="cell"><span class="l">${esc(l)}</span><span class="v">${esc(v)}</span>${m ? `<span class="m ${m[1]}">${esc(m[0])}</span>` : ''}</div>`;
@@ -21,9 +21,15 @@ const lvl = (l, word) => (l === 'GOOD' ? ['✓' + (word ? ' ' + word : ''), 'goo
 
 function stripChart(d) {
   const sc = scale(5, 22), H = 34;
-  let b = rect(0, 0, W, H, COL.panel) + darkBands(sc, d.sun.rise, d.sun.set, H);
+  let b = rect(0, 0, W, H, COL.panel) + darkBands(sc, d.sun.rise, d.sun.set, H) + grid(sc, H, 1);
   b += rainBars(sc, pts(d.hourly.precipPct, d.hourly.time), H, 8, 40);
+  const dayBlock = d.sections.some((s) => s.type === 'humeDay');
   d.sections.forEach((s, i) => {
+    if (s.type === 'humeDay') { // all-day block: a low band under the other windows
+      const x0 = sc.x(hm(s.start)), x1 = sc.x(hm(s.end));
+      b += rect(x0, 23, x1 - x0, 9, STRIP[s.type], `rx="2" fill-opacity="${s.passed ? 0.3 : 0.75}"`) + text(x0 + 3, 31, `${i + 1}`, COL.night, { bold: true, size: 9 });
+      return;
+    }
     let a = s.start, e = s.end;
     if (s.type === 'surf' && !s.window) {
       if (s.nearMiss) b += rect(sc.x(hm(s.nearMiss.start)), 20, sc.x(hm(s.nearMiss.end)) - sc.x(hm(s.nearMiss.start)), 11, 'none', `rx="2" stroke="${COL.sky}" stroke-opacity="0.6" stroke-dasharray="2 2"`);
@@ -31,7 +37,7 @@ function stripChart(d) {
     }
     if (!a || !e) return;
     const half = s.type === 'lakers' && d.sections.some((o) => o !== s && o.start && hm(o.start) < hm(e) && hm(o.end) > hm(a));
-    const x0 = sc.x(hm(a)), x1 = sc.x(hm(e)), y = 3, h = half ? 14 : 28;
+    const x0 = sc.x(hm(a)), x1 = sc.x(hm(e)), y = 3, h = dayBlock ? (half ? 9 : 18) : half ? 14 : 28;
     b += rect(x0, y, x1 - x0, h, STRIP[s.type], `rx="3" fill-opacity="${s.passed ? 0.35 : 1}"`);
     if (s.status === 'CONFLICT') b += rect(x0, 2, x1 - x0, 30, 'none', `rx="3" stroke="${COL.coral}" stroke-width="1.5" stroke-dasharray="3 2"`);
     b += text((x0 + x1) / 2, y + h - (half ? 4 : 10), `${i + 1}${s.type === 'lakers' ? ' LAL' : ''}`, COL.night, { anchor: 'middle', bold: true });
@@ -43,32 +49,33 @@ function stripChart(d) {
 }
 
 function humeChart(d, s) {
-  const am = s.type === 'humeAM';
-  const h0 = Math.min(am ? 5 : 16, Math.floor(hm(s.start) / 60) - 1, s.suggest ? Math.floor(hm(s.suggest[0]) / 60) : 99);
-  const h1 = am ? Math.max(11, Math.ceil(hm(s.end) / 60) + 1) : 22;
+  const am = s.type === 'humeAM', allDay = s.type === 'humeDay';
+  const hr = s.type === 'basketball' && d.park && d.park.tempF ? d.park : d.hourly;
+  const h0 = allDay ? 6 : Math.min(am ? 5 : 16, Math.floor(hm(s.start) / 60) - 1, s.suggest ? Math.floor(hm(s.suggest[0]) / 60) : 99);
+  const h1 = allDay ? 20 : am ? Math.max(11, Math.ceil(hm(s.end) / 60) + 1) : Math.min(24, Math.max(22, Math.ceil(hm(s.end) / 60) + 1));
   const sc = scale(h0, h1), H = 72;
-  const temp = pts(d.hourly.tempF, d.hourly.time).filter(([t]) => t >= sc.t0 && t <= sc.t1);
+  const temp = pts(hr.tempF, hr.time).filter(([t]) => t >= sc.t0 && t <= sc.t1);
   const lo = Math.min(...temp.map((p) => p[1])), hi = Math.max(...temp.map((p) => p[1]));
   const ty = (v) => 60 - (v - lo) / Math.max(4, hi - lo) * 44;
-  const pop = pts(d.hourly.precipPct, d.hourly.time);
-  let b = rect(0, 0, W, H, COL.panel) + darkBands(sc, d.sun.rise, d.sun.set, H) + rainBars(sc, pop, H, 60);
+  const pop = pts(hr.precipPct, hr.time);
+  let b = rect(0, 0, W, H, COL.panel) + darkBands(sc, d.sun.rise, d.sun.set, H) + grid(sc, H) + rainBars(sc, pop, H, 60);
   const game = d.sections.find((x) => x.type === 'lakers');
   if (game && hm(game.start) < sc.t1 && hm(game.end) > sc.t0) {
     const g0 = sc.x(hm(game.start)), g1 = sc.x(hm(game.end));
     b += rect(g0, 0, g1 - g0, H, COL.gold, 'fill-opacity="0.18"') + vline(g0, 0, H, COL.gold, 'stroke-width="1.5"');
     b += text(g0 + 4, 66, `LAL ${game.start}`, COL.gold, { bold: true });
   }
-  const x0 = sc.x(hm(s.start)), x1 = sc.x(hm(s.end));
+  const x0 = sc.x(hm(s.start)), x1 = sc.x(hm(s.end)), wc = STRIP[s.type] || COL.green;
   if (s.status === 'CONFLICT') {
     b += rect(x0, 0, x1 - x0, H, 'none', `stroke="${COL.coral}" stroke-width="1.5" stroke-dasharray="3 2"`);
     const s0 = sc.x(hm(s.suggest[0])), s1 = sc.x(hm(s.suggest[1]));
     b += rect(s0, 0, s1 - s0, H, COL.green, `fill-opacity="0.14" stroke="${COL.green}" stroke-width="1.5"`);
     b += text(s0 + 4, 66, `GO ${s.suggest[0]}–${s.suggest[1]}`, COL.green, { bold: true });
   } else {
-    b += rect(x0, 0, x1 - x0, H, COL.green, `fill-opacity="0.14" stroke="${COL.green}" stroke-width="1.5"`);
+    b += rect(x0, 0, x1 - x0, H, wc, `fill-opacity="0.14" stroke="${wc}" stroke-width="1.5"`);
     const tag = s.status === 'GO AFTER' ? `GO AFTER ${s.goAfter}` : s.status === 'GO BY' ? `BY ${s.goBy}` : s.status;
     const tx = s.status === 'GO AFTER' ? sc.x(hm(s.goAfter)) + 5 : s.status === 'GO BY' ? sc.x(hm(s.goBy)) - 4 : x0 + 6;
-    b += text(tx, 13, tag, STATUS_COL[s.status] || COL.green, { bold: true, anchor: s.status === 'GO BY' ? 'end' : 'start' });
+    b += text(tx, 13, tag, s.status === 'GO' ? wc : STATUS_COL[s.status] || COL.green, { bold: true, anchor: s.status === 'GO BY' ? 'end' : 'start' });
     if (s.status === 'GO BY') b += vline(sc.x(hm(s.goBy)), 0, H, COL.amber, 'stroke-width="1.5" stroke-dasharray="3 2"');
     if (s.status === 'GO AFTER') b += vline(sc.x(hm(s.goAfter)), 0, H, COL.green, 'stroke-width="1.5" stroke-dasharray="3 2"');
   }
@@ -77,11 +84,14 @@ function humeChart(d, s) {
     const [ta, va] = temp[0], [tb, vb] = temp[temp.length - 1];
     b += text(4, ty(va) - 6, `${Math.round(va)}°@${fm(ta)}`, COL.coral) + text(W - 4, ty(vb) - 6, `${Math.round(vb)}°@${fm(tb)}`, COL.coral, { anchor: 'end' });
   }
-  const sunT = am ? hm(d.sun.rise) : hm(d.sun.set);
-  if (sunT > sc.t0 && sunT < sc.t1) b += text(sc.x(sunT) + 3, 40, `${am ? '↑' : '↓'}${am ? d.sun.rise : d.sun.set}`, COL.muted);
+  if (temp.length > 2) { // R23 peak dot when the warmest point is inside the chart
+    const pk = temp.reduce((m, p) => (p[1] > m[1] ? p : m));
+    if (pk !== temp[0] && pk !== temp[temp.length - 1]) { const x = sc.x(pk[0]), [tx, an] = lx(x); b += peakDot(x, ty(pk[1]), COL.coral, H) + text(tx, ty(pk[1]) - 8, `${Math.round(pk[1])}°@${fm(pk[0])}`, COL.coral, { anchor: an }); }
+  }
+  for (const [sunT, lab] of [[hm(d.sun.rise), `↑${d.sun.rise}`], [hm(d.sun.set), `↓${d.sun.set}`]]) if ((allDay || (am ? lab[0] === '↑' : lab[0] === '↓')) && sunT > sc.t0 && sunT < sc.t1) b += text(sc.x(sunT) + 3, 40, lab, COL.muted);
   const maxPop = Math.max(0, ...pop.filter(([t]) => t >= sc.t0 && t < sc.t1).map((p) => p[1]));
   if (maxPop >= 40) { const pk = pop.find(([t, v]) => v === maxPop && t >= sc.t0); b += text(...(([x, a]) => [x, 28, `${maxPop}%@${fm(pk[0])}`, COL.sky, { anchor: a }])(lx(sc.x(pk[0] + 30)))); }
-  else if (maxPop === 0) b += text(W - 4, 66, '0% rain', COL.faint, { anchor: 'end' });
+  else if (maxPop === 0) b += text(W - 4, 12, '0% rain', COL.faint, { anchor: 'end' });
   b += rect(0, H, W, 1, COL.rule) + nowLine(sc, d.now, H) + ticks(sc, 88, sc.h1 - sc.h0 > 8 ? 2 : 1);
   return svg(92, `${NAMES[s.type]} chart, ${fm(sc.t0)} to ${fm(sc.t1)}: window ${s.start} to ${s.end}, status ${s.status}${s.suggest ? `, suggested ${s.suggest[0]} to ${s.suggest[1]}` : ''}. Peak rain chance ${maxPop} percent.`, b)
     + `<div class="legend"><span style="color:${COL.coral}">— temp °F</span>  <span style="color:${COL.sky}">▮ rain %</span>  ▮ dark${game ? `  <span style="color:${COL.gold}">▮ game</span>` : ''}</div>`;
@@ -97,7 +107,7 @@ function surfChart(d, s) {
   const wmax = Math.max(15, ...wind.map((p) => p[1]));
   const wy = (v) => 120 - v / wmax * 100;
   const okY = ty(d.config.tideOkMaxFt);
-  let b = rect(0, 0, W, H, COL.panel) + darkBands(sc, d.sun.rise, d.sun.set, H);
+  let b = rect(0, 0, W, H, COL.panel) + darkBands(sc, d.sun.rise, d.sun.set, H) + grid(sc, H);
   b += vline(0, 0, 0, 'none') + `<line x1="0" y1="${okY.toFixed(1)}" x2="${W}" y2="${okY.toFixed(1)}" stroke="${COL.green}" stroke-opacity="0.45" stroke-dasharray="1 3"></line>`;
   b += text(W - 4, okY + 12, `tide OK below ${d.config.tideOkMaxFt} ft`, COL.green, { anchor: 'end', size: 9 });
   if (s.window) {
@@ -115,7 +125,7 @@ function surfChart(d, s) {
     const x = sc.x(t), y = ty(p.ft), [tx, an] = lx(x);
     b += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="${COL.text}"></circle>` + text(tx, p.type === 'H' ? y + 16 : y - 8, `${p.type} ${p.ft.toFixed(1)}@${p.t}`, COL.muted, { anchor: an });
   }
-  if (wind.length && Math.max(...wind.map((p) => p[1])) >= 10) { const pk = wind.reduce((m, p) => (p[1] > m[1] ? p : m)); const [tx, an] = lx(sc.x(pk[0])); b += text(tx, wy(pk[1]) - 6, `${Math.round(pk[1])}mph@${fm(pk[0])}`, COL.sky, { anchor: an }); }
+  if (wind.length && Math.max(...wind.map((p) => p[1])) >= 10) { const pk = wind.reduce((m, p) => (p[1] > m[1] ? p : m)); const [tx, an] = lx(sc.x(pk[0])); b += peakDot(sc.x(pk[0]), wy(pk[1]), COL.sky, H) + text(tx, wy(pk[1]) - 8, `${Math.round(pk[1])}mph@${fm(pk[0])}`, COL.sky, { anchor: an }); }
   b += rect(0, H, W, 1, COL.rule) + nowLine(sc, d.now, H, true) + ticks(sc, 140, 3);
   return svg(144, `Surf chart, 6 AM to 10 PM: tide curve with highs and lows, wind line, ${s.window ? `first window ${s.start} to ${s.end}` : s.nearMiss ? `no window, best try ${s.nearMiss.start} to ${s.nearMiss.end}` : 'no window'}.`, b)
     + `<div class="legend">— tide ft  <span style="color:${COL.sky}">╌ wind mph</span>  <span style="color:${COL.green}">┄ tide OK</span>${s.window ? `  <span style="color:${COL.amber}">▮ window</span>` : s.nearMiss ? `  <span style="color:${COL.sky}">┆ best try</span>` : ''}</div>`;
@@ -129,15 +139,15 @@ function sunChart(d, s) {
   const ty = (v) => 118 - (v - lo) / Math.max(6, hi - lo) * 90;
   const umax = Math.max(5, ...uv.map((p) => p[1]));
   const uy = (v) => 130 - v / umax * 110;
-  let b = rect(0, 0, W, H, COL.panel) + darkBands(sc, d.sun.rise, d.sun.set, H) + rainBars(sc, pts(d.hourly.precipPct, d.hourly.time), H, 40, 20);
+  let b = rect(0, 0, W, H, COL.panel) + darkBands(sc, d.sun.rise, d.sun.set, H) + grid(sc, H) + rainBars(sc, pts(d.hourly.precipPct, d.hourly.time), H, 40, 20);
   const a = sc.x(hm(s.start)), e = sc.x(hm(s.end));
   b += rect(a, 0, e - a, H, COL.amber, `fill-opacity="0.18" stroke="${COL.amber}" stroke-width="1.5"`) + text((a + e) / 2, 12, 'SUN', COL.amber, { anchor: 'middle', bold: true, size: 11 });
   const y3 = uy(d.config.sunscreenUv);
   b += `<line x1="0" y1="${y3.toFixed(1)}" x2="${W}" y2="${y3.toFixed(1)}" stroke="${COL.violet}" stroke-opacity="0.4" stroke-dasharray="1 3"></line>` + text(W - 4, y3 - 4, `UV ${d.config.sunscreenUv} · sunscreen`, COL.violet, { anchor: 'end', size: 9 });
   b += poly(temp.map(([t, v]) => [sc.x(t), ty(v)]), COL.coral, 'stroke-width="2"');
   b += poly(uv.map(([t, v]) => [sc.x(t), uy(v)]), COL.violet, 'stroke-width="2" stroke-dasharray="4 3"');
-  if (s.tempPeakAt) { const x = sc.x(hm(s.tempPeakAt)), [tx, an] = lx(x + 30); b += `<circle cx="${x.toFixed(1)}" cy="${ty(s.tempPeak).toFixed(1)}" r="3" fill="${COL.coral}"></circle>` + text(tx, Math.min(ty(s.tempPeak), uy(s.uvPeak)) - 9, `${s.tempPeak}°@${s.tempPeakAt}`, COL.coral, { anchor: an, size: 11 }); }
-  { const x = sc.x(hm(s.uvPeakAt)), [tx, an] = lx(x); b += `<circle cx="${x.toFixed(1)}" cy="${uy(s.uvPeak).toFixed(1)}" r="3" fill="${COL.violet}"></circle>` + text(tx, Math.max(ty(s.tempPeak ?? 0), uy(s.uvPeak)) + 18, `${Math.round(s.uvPeak)}@${s.uvPeakAt}`, COL.violet, { anchor: an, size: 11 }); }
+  if (s.tempPeakAt) { const x = sc.x(hm(s.tempPeakAt)), [tx, an] = lx(x + 30); b += peakDot(x, ty(s.tempPeak), COL.coral, H) + text(tx, Math.min(ty(s.tempPeak), uy(s.uvPeak)) - 9, `${s.tempPeak}°@${s.tempPeakAt}`, COL.coral, { anchor: an, size: 11 }); }
+  { const x = sc.x(hm(s.uvPeakAt)), [tx, an] = lx(x); b += peakDot(x, uy(s.uvPeak), COL.violet, H) + text(tx, Math.max(ty(s.tempPeak ?? 0), uy(s.uvPeak)) + 18, `${Math.round(s.uvPeak)}@${s.uvPeakAt}`, COL.violet, { anchor: an, size: 11 }); }
   const game = d.sections.find((x) => x.type === 'lakers');
   if (game && hm(game.start) > sc.t0 && hm(game.start) < sc.t1) { const x = sc.x(hm(game.start)); b += vline(x, 0, H, COL.gold, 'stroke-width="1.5"') + text(x + 4, 24, 'LAL', COL.gold, { bold: true }); }
   b += rect(0, H, W, 1, COL.rule) + nowLine(sc, d.now, H) + ticks(sc, 146, 2);
@@ -148,15 +158,16 @@ function sunChart(d, s) {
 // ---------- sections ----------
 
 function humeSec(d, s, n) {
-  const right = `${s.start}–${s.end}${s.source === 'default' ? ' (usual)' : ''}`;
-  if (s.passed) return `<section class="sec passed${n === 1 ? ' first' : ''}">${head(n, NAMES[s.type], right)}<span style="font-size:15px">PASSED · ${esc(s.advice)}</span></section>`;
+  const right = `${s.start}–${s.end}${s.source === 'default' ? ' (usual)' : s.source === 'hours' ? ' (open)' : ''}`;
+  const name = s.type === 'basketball' && s.place ? `BASKETBALL · ${s.place.toUpperCase()}` : NAMES[s.type];
+  if (s.passed) return `<section class="sec passed${n === 1 ? ' first' : ''}">${head(n, name, right)}<span style="font-size:15px">PASSED · ${esc(s.advice)}</span></section>`;
   const c = s.cells;
   const big = s.status === 'GO BY' ? `GO BY ${s.goBy}` : s.status === 'GO AFTER' ? `GO AFTER ${s.goAfter}` : s.status;
   const rainM = c.rain.level === 'GOOD' ? ['✓', 'good'] : c.rain.level === 'OK' ? ['~ LOW', 'ok'] : ['✗', 'bad'];
   const tempM = c.temp.level === 'GOOD' ? ['✓', 'good'] : MARK[c.temp.level] || ['~', 'ok'];
-  return `<section class="sec${n === 1 ? ' first' : ''}">${head(n, NAMES[s.type], right)}
+  return `<section class="sec${n === 1 ? ' first' : ''}">${head(n, name, right)}
 ${status(big + (s.now ? ' · NOW' : ''), STATUS_COL[s.status] || COL.green, s.advice)}
-${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.at ? [`${rainM[0]} @${c.rain.at}`, rainM[1]] : rainM), cell('WIND', `${c.wind.mph} ${dir(c.wind.dirDeg)}`, c.wind.level === 'GOOD' ? ['✓', 'good'] : ['✗ WINDY', 'bad']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, tempM), cell('LIGHT', s.type === 'humeAM' ? `↑${c.light.rise}` : `↓${c.light.set}`, c.light.dark ? ['~ DARK', 'ok'] : ['✓', 'good']))}
+${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.at ? [`${rainM[0]} @${c.rain.at}`, rainM[1]] : rainM), cell('WIND', `${c.wind.mph} ${dir(c.wind.dirDeg)}`, c.wind.level === 'GOOD' ? ['✓', 'good'] : ['✗ WINDY', 'bad']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, tempM), cell('LIGHT', s.type === 'humeAM' ? `↑${c.light.rise}` : `↓${c.light.set}`, s.type === 'humeDay' ? [`↑${c.light.rise}`, 'faint'] : c.light.dark ? ['~ DARK', 'ok'] : ['✓', 'good']))}
 ${humeChart(d, s)}${classList(d, s)}</section>`;
 }
 
@@ -171,11 +182,20 @@ function classList(d, s) {
   return `<div class="classes"><div class="row"><span>CLASSES IN WINDOW · ${s.classes.length}</span>${url ? `<a href="${esc(url)}"${url.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${ios ? 'HUME APP ↗' : 'BOOK ↗'}</a>` : ''}</div>${rows ? `<ul>${rows}</ul>` : '<div class="note">No class fits in this window.</div>'}</div>`;
 }
 
+/** R21 sea surface temperature (°F) at the window start, or 08:00. */
+function water(d, s) {
+  const m = d.marine || {};
+  if (!m.seaTempF) return null;
+  const v = valAt(pts(m.seaTempF, m.time), hm(s.window ? s.start : '08:00'));
+  return v == null ? null : Math.round(v);
+}
+
 function surfSec(d, s, n) {
   const c = s.cells;
   const right = c ? `${c.swell.ft} ft · ${c.period.s}s ${dir(c.period.dirDeg)}` : '';
   const big = s.window ? `${s.start}–${s.end}` : 'NO GOOD WINDOW';
-  const small = s.window ? 'first good window' : s.nearMiss ? `Best try ${s.nearMiss.start}–${s.nearMiss.end} · ${s.nearMiss.score}/${s.nearMiss.of}` : '';
+  const wt = water(d, s);
+  const small = (s.window ? 'first good window' : s.nearMiss ? `Best try ${s.nearMiss.start}–${s.nearMiss.end} · ${s.nearMiss.score}/${s.nearMiss.of}` : '') + (wt != null ? ` · water ${wt}°F` : '');
   const cs = c ? cells(
     cell('SWELL', `${c.swell.ft} ft`, lvl(c.swell.level, c.swell.level === 'GOOD' ? 'GOOD' : c.swell.level === 'OK' ? 'OK' : 'SMALL')),
     cell('PERIOD', `${c.period.s}s ${dir(c.period.dirDeg)}`, lvl(c.period.level, c.period.level === 'GOOD' ? 'GOOD' : c.period.level === 'OK' ? 'DIR OK' : 'BAD')),
@@ -187,7 +207,7 @@ ${status(big + (s.now ? ' · NOW' : ''), s.window ? COL.amber : COL.muted, small
 }
 
 function sunSec(d, s, n) {
-  return `<section class="sec">${head(n, 'SUN', `2 H AROUND UV PEAK${s.endsAtTipoff ? ' · ENDS AT TIP-OFF' : ''}`)}
+  return `<section class="sec">${head(n, 'SUN', `${hm(s.end) - hm(s.start)} MIN AROUND UV PEAK${s.endsAtTipoff ? ' · ENDS AT TIP-OFF' : ''}`)}
 ${status(`${s.start}–${s.end}${s.now ? ' · NOW' : ''}`, s.passed ? COL.muted : COL.amber, `UV ${Math.round(s.uvPeak)}@${s.uvPeakAt}${s.tempPeak != null ? ` · ${s.tempPeak}°@${s.tempPeakAt}` : ''}`)}
 ${sunChart(d, s)}${cells(cell('SUNSCREEN', s.sunscreen ? `${s.sunscreen[0]}–${s.sunscreen[1]}` : 'not needed'), cell('SUNRISE', d.sun.rise), cell('SUNSET', d.sun.set))}</section>`;
 }

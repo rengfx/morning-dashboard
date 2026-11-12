@@ -276,19 +276,19 @@
  },
  "expected": {
   "order": [
-   "humeAM",
+   "humeDay",
    "surf",
    "sun",
-   "lakers",
-   "humePM"
+   "lakers"
   ],
   "sections": [
    {
-    "type": "humeAM",
+    "type": "humeDay",
     "start": "07:00",
-    "end": "10:00",
-    "source": "calendar",
+    "end": "19:00",
+    "source": "hours",
     "status": "GO",
+    "goBy": null,
     "now": true,
     "passed": false
    },
@@ -299,11 +299,10 @@
    },
    {
     "type": "sun",
-    "start": "12:00",
-    "end": "14:00",
-    "uvPeak": 4.1,
-    "uvPeakAt": "13:00",
-    "endsAtTipoff": true
+    "start": "12:15",
+    "end": "13:45",
+    "now": false,
+    "passed": false
    },
    {
     "type": "lakers",
@@ -311,13 +310,6 @@
     "end": "16:30",
     "home": false,
     "arena": "Delta Center"
-   },
-   {
-    "type": "humePM",
-    "start": "16:00",
-    "end": "19:00",
-    "status": "GO AFTER",
-    "goAfter": "16:30"
    }
   ],
   "banners": []
