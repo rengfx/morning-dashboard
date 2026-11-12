@@ -25,3 +25,8 @@
 | D21 | 2026-11-11 | Day navigation: swipe left/right (and ‹ › buttons, arrow keys) moves one day; range yesterday to +6 days (forecast limit). Only today shows NOW / PASSED. Tap the date to return to today. Neighbour days preload. |
 | D22 | 2026-11-11 | HUME classes (Door 2): all public classes that start inside each Hume window, with open spots, from the public Arketa schedule feed (no login). Not an official API: on failure the list hides and DATA LATE shows. No calendar (ICS) feed for now. |
 | D23 | 2026-11-11 | HUME classes show only if they fit the window (start ≥ window start, end ≤ window end). On iPhone/iPad the link opens the HUME app's App Store page (Open button); the app has no direct link (no universal links; URL scheme unknown). |
+| D24 | 2026-11-12 | Hume windows: weekday PM default 17:30–21:00; weekends one all-day block 07:00–19:00 (open hours), Hume event times ignored on weekends. |
+| D25 | 2026-11-12 | Basketball (Routine event) replaces Hume PM; court weather from Live Oak Park. A cancelled game = delete that week's event (WhatsApp cannot be read). |
+| D26 | 2026-11-12 | Sun window 90 min. Surf shows water temperature. All charts get a faint grid and peak dots. |
+| D27 | 2026-11-12 | Sky notes: only notable events, 4-day look-ahead, on Today and Sky pages; cloudy → grey with label (not hidden). Planets tonight list. Moon–planet limit 7° (published Nov 20 Moon–Saturn gap 5.7°). |
+| D28 | 2026-11-12 | Pier view on the Sky page: 360° turn, tonight + event times + slider. Horizon skyline is approximate. |

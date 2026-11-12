@@ -11,13 +11,14 @@ const COLS = { mercury: '#B9B6AD', venus: '#E8D9B5', mars: '#E07B5B', jupiter: '
 const NAME = { mercury: 'MERCURY', venus: 'VENUS', mars: 'MARS', jupiter: 'JUPITER', saturn: 'SATURN' };
 
 // Rough skyline from the pier end (azimuth ranges, degrees): land runs north → east → south; ocean to the west.
-const LAND = [[340, 360, 3], [0, 150, 3]]; // [from, to, height deg]
+const city = (az) => 1.2 + 0.9 * Math.abs(Math.sin(az * 0.21)) + 0.6 * Math.abs(Math.sin(az * 0.83)); // low skyline, varies with azimuth
+const LAND = [[340, 360, city], [0, 150, city]]; // [from, to, height deg]
 const HILLS = [[290, 335, [0, 2.5, 4, 3, 5, 3.5, 2, 0]], [155, 200, [0, 1.5, 2.5, 2, 1, 0]]]; // Santa Monica Mtns (NW), Palos Verdes (S)
 
 const wrap = (a) => ((a % 360) + 540) % 360 - 180;
 /** x for an azimuth, or null when outside the view. */
 const xOf = (az, h) => { const dx = wrap(az - h); return Math.abs(dx) > FOV / 2 + 6 ? null : W / 2 + dx / FOV * W; };
-const yOf = (alt) => HOR - alt * K;
+const yOf = (alt) => HOR - (HOR - 24) * Math.sin(Math.max(-5, Math.min(90, alt)) * D) * (alt < 0 ? 1 : 1); // sine scale keeps high objects in view
 
 function skyColor(sunAlt) {
   if (sunAlt > 0) return ['#24476F', '#6E95BD'];
@@ -43,7 +44,7 @@ export function pierSvg({ ms, heading, obs, tz = TZ, mark = null }) {
 <linearGradient id="pv-sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E1B2C"/><stop offset="1" stop-color="#05080E"/></linearGradient></defs>
 <rect x="0" y="0" width="${W}" height="${HOR}" fill="url(#pv-sky)"/>`;
   // altitude guides (faint) every 15°
-  for (let a = 15; a <= 75; a += 15) b += `<line x1="0" y1="${f(yOf(a))}" x2="${W}" y2="${f(yOf(a))}" stroke="#ECEAE4" stroke-opacity="0.08" stroke-dasharray="1 3"/><text x="3" y="${f(yOf(a) - 2)}" fill="#ECEAE4" fill-opacity="0.35" font-size="8">${a}°</text>`;
+  for (let a = 15; a <= 60; a += 15) b += `<line x1="0" y1="${f(yOf(a))}" x2="${W}" y2="${f(yOf(a))}" stroke="#ECEAE4" stroke-opacity="0.08" stroke-dasharray="1 3"/><text x="3" y="${f(yOf(a) - 2)}" fill="#ECEAE4" fill-opacity="0.35" font-size="8">${a}°</text>`;
   // azimuth guides every 15°, labels every 45°
   for (let az = 0; az < 360; az += 15) {
     const x = xOf(az, heading); if (x == null || x < 0 || x > W) continue;
@@ -73,20 +74,22 @@ export function pierSvg({ ms, heading, obs, tz = TZ, mark = null }) {
     const x = xOf(q.az, heading); if (x == null) continue;
     const y = yOf(q.alt), hi = mark && mark.includes(p);
     b += `<circle cx="${f(x)}" cy="${f(y)}" r="${p === 'venus' || p === 'jupiter' ? 3.2 : 2.4}" fill="${COLS[p]}"/>${hi ? `<circle cx="${f(x)}" cy="${f(y)}" r="9" fill="none" stroke="#B59CFF" stroke-width="1.2"/>` : ''}`;
-    labels.push([x, y, NAME[p], COLS[p]]);
+    if (x >= 0 && x <= W) labels.push([x, y, NAME[p], COLS[p]]);
   }
   // moon
-  { const x = xOf(moon.az, heading); if (x != null && moon.alt > -1) { const y = yOf(moon.alt); b += moonDisc(x, y, 7, phase, wrap(sun.az - moon.az)); if (mark && mark.includes('moon')) b += `<circle cx="${f(x)}" cy="${f(y)}" r="13" fill="none" stroke="#B59CFF" stroke-width="1.2"/>`; labels.push([x, y, `MOON ${Math.round(A.illumination(phase) * 100)}%`, '#F4F1E8']); } }
+  { const x = xOf(moon.az, heading); if (x != null && moon.alt > -1) { const y = yOf(moon.alt); b += moonDisc(x, y, 7, phase, wrap(sun.az - moon.az)); if (mark && mark.includes('moon')) b += `<circle cx="${f(x)}" cy="${f(y)}" r="13" fill="none" stroke="#B59CFF" stroke-width="1.2"/>`; if (x >= 0 && x <= W) labels.push([x, y, `MOON ${Math.round(A.illumination(phase) * 100)}%`, '#F4F1E8']); } }
   // labels: stagger when two sit close
   labels.sort((a, c) => a[0] - c[0]);
   let lastX = -99, row = 0;
   for (const [x, y, t, c] of labels) {
-    row = Math.abs(x - lastX) < 46 ? row + 1 : 0; lastX = x;
-    const ly = Math.max(12, y - 12 - row * 11), an = x < 30 ? 'start' : x > W - 30 ? 'end' : 'middle';
-    b += `<text x="${f(x)}" y="${f(ly)}" fill="${c}" font-size="9" text-anchor="${an}">${t}</text>`;
+    row = Math.abs(x - lastX) < 50 ? row + 1 : 0; lastX = x;
+    // row 0 above the object, row 1 below it, row 2 further above
+    const ly = row === 1 ? y + 20 : Math.max(10, y - 12 - (row ? 11 : 0)), an = x < 40 ? 'start' : x > W - 40 ? 'end' : 'middle';
+    const lxp = an === 'start' ? Math.max(3, x - 4) : an === 'end' ? Math.min(W - 3, x + 4) : x;
+    b += `<text x="${f(lxp)}" y="${f(Math.min(HOR - 3, ly))}" fill="${c}" font-size="9" text-anchor="${an}">${t}</text>`;
   }
   const c = partsIn(date, tz);
-  b += `<text x="${W - 4}" y="12" fill="#ECEAE4" font-size="10" text-anchor="end">${c.time} · FACING ${A.compass(heading)} ${Math.round(((heading % 360) + 360) % 360)}°</text>`;
+  b += `<text x="${W - 4}" y="${H - 20}" fill="#ECEAE4" font-size="10" text-anchor="end">${c.time} · FACING ${A.compass(heading)} ${Math.round(((heading % 360) + 360) % 360)}°</text>`;
   b += `<text x="4" y="${H - 6}" fill="#5B5D62" font-size="8">from the end of Venice Pier · drag to turn</text>`;
   return b;
 }

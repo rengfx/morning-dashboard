@@ -141,6 +141,12 @@ Added 2026-10-31 from two weekends of real data:
 - **R16 DST.** The day before a change: `CLOCKS GO BACK|FORWARD 1 H AT 02:00 TONIGHT`. The day of the change: `STANDARD TIME NOW` / `DAYLIGHT TIME NOW`.
 - **R17 Rain later.** Hume advice names the first hour ≥ `rainNo` within 3 h after the window ends ("Rain after 22:00").
 - **R18 HUME classes.** Each Hume section lists every public HUME class that fits inside its window (starts at or after the window start and ends at or before the window end): time, name, instructor, length, and OPEN n / FULL · WL n / CLOSED. On today, classes that have started are dimmed. Source: the public Arketa schedule feed (`hume.classes` in config), one request per day shown, cached 60 min. If the feed fails, the list is hidden and `DATA LATE · hume classes` shows; the rest of the page is unchanged. "BOOK ↗" opens the HUME app on iPhone/iPad (through its App Store page, which has an Open button); on other devices it opens the public schedule.
+- **R19 Hume windows.** Weekdays: AM from the Routine calendar or 06:30–08:30; PM from the calendar or 17:30–21:00 (close). Weekends: one HUME DAY block 07:00–19:00 (open hours); Hume event times are not used on weekends. Surf, Sun, and Lakers still show as their own windows.
+- **R20 Basketball.** A Routine event with "basketball" in the title replaces Hume PM on that day (an afternoon/evening event). The section uses the court's own weather (Live Oak Park, Manhattan Beach). No class list. To show Hume PM again when a game is cancelled, delete that week's Basketball event.
+- **R21 Sun window = 90 min** centred on the UV peak. Surf shows sea surface temperature (°F) at the window start (or 08:00).
+- **R22 Sky notes.** For the shown day and the next 3: thin crescent after sunset / before sunrise (1.5–15 % lit, ≥ 4° up), full Moon rising within 75 min of sunset, Moon within 7° of a planet, two planets within 2.5° (both ≥ 8° up, Sun ≤ −8°). Repeating events show on their best day only. Cloud ≥ 60 % at that hour → grey "CLOUDY · MAY NOT BE VISIBLE"; 30–59 % → "PARTLY CLOUDY". Nothing qualifies → no section. Today page and Sky page. Sky page also lists planets ≥ 10° in a dark sky tonight.
+- **R23 Charts.** Faint grid (hour lines, quarter lines) on every chart; every peak gets a dot with a drop line to the time axis.
+- **R24 Pier view.** Sky page: the sky from the end of Venice Pier with real Moon (phase) and planet positions; turn 360° (drag, ◀ ▶, arrow keys); time = tonight (sunset + 1 h), any sky event (turns to face it and rings the objects), or the slider (sunset − 30 min → sunrise + 30 min).
 
 ## 4. Data sources
 
@@ -194,6 +200,8 @@ Lakers     ─┘      holds ICS_URL
 | `config/dashboard.config.js` | All thresholds. Edit and push to tune. |
 | `lib/score.js` | Rules R1–R18 (pure function). |
 | `lib/hume.js` | HUME class feed: URL for one local day, parse, filter to a window. |
+| `public/js/skyevents.js` | R22 sky events and planets tonight (pure). |
+| `public/js/pier.js` | R24 pier view SVG. |
 | `lib/ics.js` | ICS reader: folding, time zones, weekly repeats, EXDATE, moved events. |
 | `lib/fetch.js` | Fetches all sources, builds the scorer input, 72 h rain, DST. |
 | `functions/api/today.js` | Cloudflare Pages Function → `/api/today`. |

@@ -26,6 +26,10 @@
 
 ## Later
 
+- Pier view: bright stars and constellations (only Moon and planets now).
+- Sky notes: meteor showers and eclipses (not computed now).
+- Basketball: the court has lights? LIGHT shows "~ DARK" after sunset; remove the mark if the court is lit.
+
 - HUME classes Door 3 (not chosen 2026-11-11): `/hume.ics` as a separate iPhone calendar. Needs the key in the link and a filter (~100 classes a week).
 - HUME app direct open: the app publishes no universal link; a custom URL scheme is unknown. If found (test on the phone), replace `appUrl`.
 - HUME classes: watch the first week for feed changes (DATA LATE · hume classes).
@@ -35,6 +39,10 @@
 - Second "later" surf windows: confirm the dashed-outline display with real data.
 - Moon-height histogram: mark moonrise / moonset times.
 - Lakers TV: the feed only names national TV; local games show `LOCAL`.
+
+## Done (2026-11-12 session)
+
+- Hume windows (R19), Basketball (R20), 90-min sun + water temp (R21), sky notes + planets tonight (R22), chart grid + peak dots (R23), pier view (R24).
 
 ## Done (2026-11-11 session)
 

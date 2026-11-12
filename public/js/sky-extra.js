@@ -52,7 +52,7 @@ function chips() {
   $('#pier-times').innerHTML = list.map((c) => `<button type="button" class="chip${c.id === active ? ' on' : ''}${c.e && c.e.sky === 'cloudy' ? ' cloudy' : ''}" data-id="${c.id}">${esc(c.label)}</button>`).join('');
   for (const btn of $('#pier-times').querySelectorAll('button')) btn.addEventListener('click', () => {
     const c = list.find((x) => x.id === btn.dataset.id); active = c.id;
-    if (!c.e) { N = night(dateStr); ms = N.set + 60 * MIN; mark = null; }
+    if (!c.e) { N = night(dateStr); ms = N.set + 60 * MIN; mark = null; const m = A.moonAltAz(new Date(ms), OBS); heading = m.alt > 0 ? m.az : 245; }
     else {
       ms = c.e.at; mark = c.e.bodies;
       const evDate = partsIn(new Date(ms), TZ);
