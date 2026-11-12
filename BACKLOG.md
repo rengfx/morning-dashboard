@@ -42,7 +42,7 @@
 
 ## Done (2026-11-12 session)
 
-- Hume windows (R19), Basketball (R20), 90-min sun + water temp (R21), sky notes + planets tonight (R22), chart grid + peak dots (R23), pier view (R24).
+- Hume windows (R19), Basketball (R20), 90-min sun + water temp (R21), sky notes + planets tonight (R22), chart grid + peak dots (R23), pier view (R24). Tests: 8 fixtures + 74 checks, all pass.
 
 ## Done (2026-11-11 session)
 
