@@ -32,7 +32,8 @@ Static copies are in `design/` (see section 9). The copies hold **sample data on
 
 Layout, top to bottom:
 
-1. **Header** — `SUN 25 OCT` · `VENICE · HH:MM` · link `SKY →`.
+1. **Header** — `‹ SUN 25 OCT ›` · `HH:MM` (or `TOMORROW` / `YESTERDAY` / `IN N DAYS`) · `MOON n%` link to Sky. Dots under it show the day in the range.
+   **Day navigation (D21):** swipe left = next day, swipe right = previous day (horizontal move > 60 px and > 1.5 × vertical). Same with ‹ › and the arrow keys. Range −1 … +6 days. `/api/today?d=<offset>`. Tap the date to go back to today. A failed day keeps the current page and shows a short note.
 2. **"Today in order" strip** — 05:00–22:00 time line. One colored, numbered block per
    section that shows today. Dark hours are shaded. Legend under it.
 3. **Sections**, sorted by start time (rule R1). Each section has the same shape:

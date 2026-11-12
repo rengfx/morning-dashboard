@@ -26,6 +26,8 @@
 
 ## Later
 
+- 12-hour time option (offered 2026-11-11, not asked for yet).
+
 - Second "later" surf windows: confirm the dashed-outline display with real data.
 - Moon-height histogram: mark moonrise / moonset times.
 - Lakers TV: the feed only names national TV; local games show `LOCAL`.

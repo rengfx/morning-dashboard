@@ -202,42 +202,109 @@ ${rel ? `<span class="note">${esc(rel)}</span>` : ''}</section>`;
 
 function render(d) {
   const [y, m, dd] = d.date.split('-').map(Number);
+  const off = d.offset || 0;
+  const [lo, hi] = d.range || [-1, 6];
   const nowShown = d.now || new Date(d.generatedAt).toLocaleTimeString('en-GB', { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit' });
-  const shown = d.source && d.source.startsWith('fixture') ? new Date(`${d.date}T12:00:00-08:00`) : new Date();
+  const fixture = d.source && d.source.startsWith('fixture');
+  const shown = fixture || off ? new Date(`${d.date}T12:00:00-08:00`) : new Date();
   const ph = moonPhase(shown), il = Math.round(illumination(ph) * 100);
   const weekend = d.weekday === 'SAT' || d.weekday === 'SUN';
+  const rel = off === 0 ? esc(nowShown) : off === 1 ? 'TOMORROW' : off === -1 ? 'YESTERDAY' : `IN ${off} DAYS`;
   const lateBy = (src) => (d.errors || []).filter((e) => e.source === src);
   const late = (d.errors || []).map((e) => `<div class="late">DATA LATE · ${esc(e.source)} · ${esc(e.message.replace(/^\w+:\s*/, ''))}</div>`).join('');
   let n = 0;
   const body = d.sections.map((s) => { n++; return s.type === 'surf' ? surfSec(d, s, n) : s.type === 'sun' ? sunSec(d, s, n) : s.type === 'lakers' ? lakersSec(d, s, n) : humeSec(d, s, n); }).join('\n');
+  const dots = Array.from({ length: hi - lo + 1 }, (_, i) => `<i class="${i + lo === off ? 'on' : ''}${i + lo === 0 ? ' today' : ''}"></i>`).join('');
   $('main').innerHTML = `
-<header class="head"><h1>${d.weekday} ${dd} ${MON[m - 1]}</h1><span class="meta">${esc(nowShown)} · <a href="sky.html">MOON ${il}% ${ph < 180 ? '↑' : '↓'}</a></span></header>
+<header class="head">
+<div class="daynav">
+<button class="nav" type="button" data-step="-1" aria-label="Previous day" ${off <= lo ? 'disabled' : ''}>‹</button>
+<h1>${off ? `<button class="date" type="button" data-today aria-label="Back to today">${d.weekday} ${dd} ${MON[m - 1]}</button>` : `${d.weekday} ${dd} ${MON[m - 1]}`}</h1>
+<button class="nav" type="button" data-step="1" aria-label="Next day" ${off >= hi ? 'disabled' : ''}>›</button>
+</div>
+<span class="meta">${off ? `<b class="when">${rel}</b>` : rel} · <a href="sky.html${off ? `?date=${d.date}` : ''}">MOON ${il}% ${ph < 180 ? '↑' : '↓'}</a></span>
+</header>
+<div class="dots" aria-hidden="true">${dots}</div>
 <div style="display:flex;flex-direction:column;gap:6px">
-<div class="row"><span>TODAY · IN ORDER</span><span>${weekend ? 'WEEKEND' : 'WEEKDAY'} · ${d.sections.length} ITEMS</span></div>
+<div class="row"><span>${off ? 'DAY' : 'TODAY'} · IN ORDER</span><span>${weekend ? 'WEEKEND' : 'WEEKDAY'} · ${d.sections.length} ITEMS</span></div>
 ${d.banners.map((b) => `<div class="banner">${esc(b.text)}</div>`).join('')}${late}
 ${stripChart(d)}
-<div class="legend">${d.sections.map((s, i) => `<span style="color:${s.passed ? COL.faint : STRIP[s.type]}">${i + 1} ${NAMES[s.type].replace('HUME MORNING', 'Hume AM').replace('HUME EVENING', 'Hume PM').toLowerCase().replace(/^\w/, (c) => c.toUpperCase())}${s.passed ? ' (passed)' : s.type === 'surf' && !s.window ? ' (none)' : ''}</span>`).join(' · ')} · ┃ now</div>
+<div class="legend">${d.sections.map((s, i) => `<span style="color:${s.passed ? COL.faint : STRIP[s.type]}">${i + 1} ${NAMES[s.type].replace('HUME MORNING', 'Hume AM').replace('HUME EVENING', 'Hume PM').toLowerCase().replace(/^\w/, (c) => c.toUpperCase())}${s.passed ? ' (passed)' : s.type === 'surf' && !s.window ? ' (none)' : ''}</span>`).join(' · ')}${off ? '' : ' · ┃ now'}</div>
 </div>
 ${body}
-<footer class="foot"><span>Updated ${esc(new Date(d.generatedAt).toLocaleTimeString('en-GB', { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit' }))}${lateBy('weather').length ? ' · weather late' : ''}</span><button id="refresh" type="button">REFRESH</button></footer>`;
-  $('#refresh').addEventListener('click', load);
+<footer class="foot"><span>Updated ${esc(new Date(d.generatedAt).toLocaleTimeString('en-GB', { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit' }))}${lateBy('weather').length ? ' · weather late' : ''} · swipe for other days</span><button id="refresh" type="button">REFRESH</button></footer>`;
+  $('#refresh').addEventListener('click', () => { cache.delete(off); load(off, 0); });
+  for (const b of document.querySelectorAll('[data-step]')) b.addEventListener('click', () => go(+b.dataset.step));
+  const t = document.querySelector('[data-today]'); if (t) t.addEventListener('click', () => go(-off));
   document.title = `${d.weekday} ${dd} ${MON[m - 1]} · Morning`;
 }
 
-async function load() {
+// ---------- days: swipe, buttons, keys ----------
+
+const cache = new Map();            // offset → { data, at }
+const FRESH = 5 * 60 * 1000;
+let offset = (() => { const v = +(new URLSearchParams(location.hash.slice(1)).get('d') || 0); return Number.isFinite(v) ? v : 0; })();
+let range = [-1, 6];
+
+function apiUrl(off) {
+  const q = new URLSearchParams(location.search);
+  if (off) q.set('d', off); else q.delete('d');
+  const s = q.toString();
+  return '/api/today' + (s ? '?' + s : '');
+}
+
+async function fetchDay(off) {
+  const hit = cache.get(off);
+  if (hit && Date.now() - hit.at < FRESH) return hit.data;
+  const r = await fetch(apiUrl(off), { cache: 'no-store' });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const data = await r.json();
+  if (data.range) range = data.range;
+  cache.set(off, { data, at: Date.now() });
+  return data;
+}
+
+async function load(off = offset, dir = 0) {
   const t0 = performance.now();
+  const main = $('main');
   try {
-    const r = await fetch('/api/today' + location.search, { cache: 'no-store' });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const d = await r.json();
-    render(d);
+    const d = await fetchDay(off);
+    offset = off;
+    history.replaceState(null, '', off ? `#d=${off}` : location.pathname + location.search);
+    if (dir && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      main.style.transition = 'none'; main.style.transform = `translateX(${dir * 28}px)`; main.style.opacity = '0.3';
+      render(d);
+      requestAnimationFrame(() => { main.style.transition = 'transform .18s ease-out, opacity .18s ease-out'; main.style.transform = ''; main.style.opacity = ''; });
+    } else render(d);
     window.__renderMs = Math.round(performance.now() - t0);
+    for (const n of [off - 1, off + 1]) if (n >= range[0] && n <= range[1] && !cache.has(n)) fetchDay(n).catch(() => {}); // preload neighbours
   } catch (e) {
-    $('main').innerHTML = `<p class="skeleton">Could not load today’s data (${esc(e.message)}).<br><button type="button" onclick="location.reload()">TRY AGAIN</button></p>`;
+    if (dir && main.querySelector('.head')) {          // keep the day on screen; show a short note
+      const n = document.createElement('div'); n.className = 'late'; n.textContent = `Could not load that day (${e.message}).`;
+      main.querySelector('.head').after(n); setTimeout(() => n.remove(), 4000);
+    } else main.innerHTML = `<p class="skeleton">Could not load this day (${esc(e.message)}).<br><button type="button" onclick="location.reload()">TRY AGAIN</button></p>`;
   }
 }
 
+function go(step) {
+  const next = Math.max(range[0], Math.min(range[1], offset + step));
+  if (next !== offset) load(next, step > 0 ? 1 : -1);
+}
+
+let sx = null, sy = null;
+document.addEventListener('touchstart', (e) => { if (e.touches.length === 1) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; } }, { passive: true });
+document.addEventListener('touchend', (e) => {
+  if (sx == null) return;
+  const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+  sx = sy = null;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > 1.5 * Math.abs(dy)) go(dx < 0 ? 1 : -1); // swipe left = next day
+}, { passive: true });
+document.addEventListener('keydown', (e) => {
+  if (e.target.closest && e.target.closest('input, textarea')) return;
+  if (e.key === 'ArrowRight') go(1); else if (e.key === 'ArrowLeft') go(-1);
+});
+
 load();
-setInterval(load, 30 * 60 * 1000);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') load(); });
+setInterval(() => { cache.delete(offset); load(offset); }, 30 * 60 * 1000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') load(offset); });
 if ('serviceWorker' in navigator && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') navigator.serviceWorker.register('/sw.js');

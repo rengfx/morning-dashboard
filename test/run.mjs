@@ -132,6 +132,9 @@ globalThis.fetch = async (url) => {
   return new Response('nope', { status: 404 });
 };
 const { day, errors } = await buildDay({ ICS_URL: SECRET.replace('https:', 'webcal:') }, cfg, new Date('2026-10-31T16:55:00Z'));
+const { day: dNext } = await buildDay({ ICS_URL: SECRET }, cfg, new Date('2026-10-31T16:55:00Z'), 1);
+const { day: dPrev } = await buildDay({ ICS_URL: SECRET }, cfg, new Date('2026-10-31T16:55:00Z'), '-1');
+const { day: dFar } = await buildDay({ ICS_URL: SECRET }, cfg, new Date('2026-10-31T16:55:00Z'), 99);
 globalThis.fetch = realFetch;
 check('fetch: local date + now from UTC', day.date === '2026-10-31' && day.now === '09:55' && day.weekday === 'SAT', `${day.date} ${day.now}`);
 check('fetch: 24 hourly rows for today', day.hourly.time.length === 24 && day.hourly.tempF[12] === fxR.hourly.tempF[12]);
@@ -142,6 +145,13 @@ check('fetch: webcal ICS read, no Hume on Saturday', Array.isArray(day.calendar)
 check('fetch: cut-off Lakers feed → error, no game', day.lakers === null && errors.some((e) => e.source === 'lakers' && /cut off/.test(e.message)), JSON.stringify(errors));
 check('fetch: DST banner input', JSON.stringify(day.dst) === '{"when":"tonight","direction":"back"}');
 const blob = JSON.stringify({ day, errors, scored: scoreDay(day, cfg) });
+check('day +1: Nov 1, no "now", Sunday', dNext.date === '2026-11-01' && dNext.now === null && dNext.weekday === 'SUN' && dNext.offset === 1);
+check('day +1: weekly Hume events from the calendar', dNext.calendar.map((e) => e.start).join(',') === '07:00,16:00', JSON.stringify(dNext.calendar));
+check('day +1: 24 hourly rows of that day; DST banner "today"', dNext.hourly.time.length === 24 && JSON.stringify(dNext.dst) === '{"when":"today","direction":"back"}');
+check('day −1: Oct 30, tides shifted to that day', dPrev.date === '2026-10-30' && dPrev.tide.hilo.some((x) => x.dayOffset === 0 && x.t === '20:12'));
+check('day offset is clamped to +6', dFar.offset === 6 && dFar.date === '2026-11-06');
+const sNext = scoreDay(dNext, cfg);
+check('day +1 scored: no NOW / PASSED flags', sNext.sections.every((x) => !x.now && !x.passed));
 check('secret ICS_URL never in output', !blob.includes('SECRET-TOKEN') && !blob.includes('icloud'));
 
 // ---- 4. key gate ----
