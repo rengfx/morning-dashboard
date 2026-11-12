@@ -23,3 +23,4 @@
 | D19 | 2026-11-11 | Dashboard first, website later. Domain DNS stays at IONOS for now: CNAME `dash` → Cloudflare Pages, login by key gate (`ACCESS_KEY`). The full DNS move to Cloudflare waits for the website launch and must copy MX/SPF. |
 | D20 | 2026-11-11 | Public `/api/health` shows only source status, counts, and whether secrets are set (no content). Everything else stays behind the key gate. Used to verify deploys. |
 | D21 | 2026-11-11 | Day navigation: swipe left/right (and ‹ › buttons, arrow keys) moves one day; range yesterday to +6 days (forecast limit). Only today shows NOW / PASSED. Tap the date to return to today. Neighbour days preload. |
+| D22 | 2026-11-11 | HUME classes (Door 2): all public classes that start inside each Hume window, with open spots, from the public Arketa schedule feed (no login). Not an official API: on failure the list hides and DATA LATE shows. No calendar (ICS) feed for now. |

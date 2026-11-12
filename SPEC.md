@@ -140,6 +140,7 @@ Added 2026-10-31 from two weekends of real data:
 - **R15 Rain advisory.** Rain in the last 72 h ≥ `surf.rainAdvisoryMm` (2.5 mm ≈ 0.1 in) → advisory banner on the surf section (LA County advises no ocean contact for 72 h after rain).
 - **R16 DST.** The day before a change: `CLOCKS GO BACK|FORWARD 1 H AT 02:00 TONIGHT`. The day of the change: `STANDARD TIME NOW` / `DAYLIGHT TIME NOW`.
 - **R17 Rain later.** Hume advice names the first hour ≥ `rainNo` within 3 h after the window ends ("Rain after 22:00").
+- **R18 HUME classes.** Each Hume section lists every public HUME class that *starts* inside its window: time, name, instructor, length, and OPEN n / FULL · WL n / CLOSED. On today, classes that have started are dimmed. Source: the public Arketa schedule feed (`hume.classes` in config), one request per day shown, cached 60 min. If the feed fails, the list is hidden and `DATA LATE · hume classes` shows; the rest of the page is unchanged. "BOOK ↗" opens the public schedule.
 
 ## 4. Data sources
 
@@ -191,7 +192,8 @@ Lakers     ─┘      holds ICS_URL
 | Path | What |
 |---|---|
 | `config/dashboard.config.js` | All thresholds. Edit and push to tune. |
-| `lib/score.js` | Rules R1–R17 (pure function). |
+| `lib/score.js` | Rules R1–R18 (pure function). |
+| `lib/hume.js` | HUME class feed: URL for one local day, parse, filter to a window. |
 | `lib/ics.js` | ICS reader: folding, time zones, weekly repeats, EXDATE, moved events. |
 | `lib/fetch.js` | Fetches all sources, builds the scorer input, 72 h rain, DST. |
 | `functions/api/today.js` | Cloudflare Pages Function → `/api/today`. |

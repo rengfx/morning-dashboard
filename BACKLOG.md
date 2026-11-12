@@ -26,11 +26,19 @@
 
 ## Later
 
+- HUME classes Door 3 (not chosen 2026-11-11): `/hume.ics` as a separate iPhone calendar. Needs the key in the link and a filter (~100 classes a week).
+- HUME classes: watch the first week for feed changes (DATA LATE · hume classes).
+
 - 12-hour time option (offered 2026-11-11, not asked for yet).
 
 - Second "later" surf windows: confirm the dashed-outline display with real data.
 - Moon-height histogram: mark moonrise / moonset times.
 - Lakers TV: the feed only names national TV; local games show `LOCAL`.
+
+## Done (2026-11-11 session)
+
+- Day navigation (D21).
+- HUME classes in the Hume windows (R18, D22). Tests: 7 fixtures + 49 checks, all pass.
 
 ## Done (2026-10-31 session)
 

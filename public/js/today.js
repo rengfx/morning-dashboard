@@ -157,7 +157,17 @@ function humeSec(d, s, n) {
   return `<section class="sec${n === 1 ? ' first' : ''}">${head(n, NAMES[s.type], right)}
 ${status(big + (s.now ? ' · NOW' : ''), STATUS_COL[s.status] || COL.green, s.advice)}
 ${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.at ? [`${rainM[0]} @${c.rain.at}`, rainM[1]] : rainM), cell('WIND', `${c.wind.mph} ${dir(c.wind.dirDeg)}`, c.wind.level === 'GOOD' ? ['✓', 'good'] : ['✗ WINDY', 'bad']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, tempM), cell('LIGHT', s.type === 'humeAM' ? `↑${c.light.rise}` : `↓${c.light.set}`, c.light.dark ? ['~ DARK', 'ok'] : ['✓', 'good']))}
-${humeChart(d, s)}</section>`;
+${humeChart(d, s)}${classList(d, s)}</section>`;
+}
+
+function classList(d, s) {
+  if (!s.classes) return '';
+  const url = d.config && d.config.humeBookUrl;
+  const rows = s.classes.map((c) => {
+    const st = c.started ? ['STARTED', 'faint'] : c.state === 'CLOSED' ? ['CLOSED', 'faint'] : c.state === 'FULL' ? [c.waitlist ? `FULL · WL ${c.waitlist}` : 'FULL', 'bad'] : [`${c.left} OPEN`, c.left <= 2 ? 'ok' : 'good'];
+    return `<li class="${c.started ? 'gone' : ''}"><span class="t">${esc(c.start)}</span><span class="n">${esc(c.name)}<small>${esc([c.host, `${c.min} min`].filter(Boolean).join(' · '))}</small></span><span class="s ${st[1]}">${esc(st[0])}</span></li>`;
+  }).join('');
+  return `<div class="classes"><div class="row"><span>CLASSES IN WINDOW · ${s.classes.length}</span>${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">BOOK ↗</a>` : ''}</div>${rows ? `<ul>${rows}</ul>` : '<div class="note">No classes start in this window.</div>'}</div>`;
 }
 
 function surfSec(d, s, n) {

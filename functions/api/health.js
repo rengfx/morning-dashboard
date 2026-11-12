@@ -9,7 +9,7 @@ export async function onRequestGet({ env }) {
   try {
     const { day, errors: e } = await buildDay(env, cfg);
     errors = e.map((x) => ({ source: x.source, message: x.message }));
-    counts = { hourly: (day.hourly.time || []).length, swell: (day.marine.time || []).length, tides: day.tide.hilo.length, calendarEvents: day.calendar.length, lakersGameToday: !!day.lakers };
+    counts = { hourly: (day.hourly.time || []).length, swell: (day.marine.time || []).length, tides: day.tide.hilo.length, calendarEvents: day.calendar.length, lakersGameToday: !!day.lakers, humeClassesToday: day.humeClasses ? day.humeClasses.length : null };
   } catch (e) { errors = [{ source: 'build', message: 'failed' }]; }
   return new Response(JSON.stringify({
     ok: errors.length === 0, errors, counts,

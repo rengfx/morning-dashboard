@@ -9,6 +9,7 @@ import { parseICS, eventsOn, parseGame } from '../lib/ics.js';
 import { dstInfo } from '../public/js/time.js';
 import * as astro from '../public/js/astro.js';
 import cfgMod from '../config/dashboard.config.js';
+import { parseClasses, classesIn, scheduleUrl } from '../lib/hume.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const cfg = cfgMod;
@@ -32,6 +33,7 @@ const types = ['humeAM', 'surf', 'sun', 'lakers', 'humePM'];
 const table = [];
 for (const f of files) {
   const fx = JSON.parse(readFileSync(join(root, 'fixtures', f), 'utf8'));
+  if (!fx.input) continue; // raw source samples (e.g. hume-sample.json)
   const out = scoreDay(fx.input, cfg);
   const row = { fixture: f.replace('.json', ''), order: eq(out.order, fx.expected.order) ? 'pass' : 'FAIL' };
   const notes = [];
@@ -83,6 +85,27 @@ check('DST: Oct 31 → back tonight', eq(dstInfo('2026-10-31'), { when: 'tonight
 check('DST: Nov 1 → today', eq(dstInfo('2026-11-01'), { when: 'today', direction: 'back' }));
 check('DST: Oct 30 → none', dstInfo('2026-10-30') === null);
 
+// HUME classes (R18): recorded feed for Fri Nov 13
+const hs = JSON.parse(readFileSync(join(root, 'fixtures/hume-sample.json'), 'utf8'));
+const hl = parseClasses(hs, '2026-11-13', 'America/Los_Angeles');
+check('hume: 16 classes; cancelled, private, next-day dropped', hl.length === 16 && !hl.some((c) => /Cancelled|Private|Next Day/.test(c.name)), String(hl.length));
+check('hume: unix time → local 06:30 first, sorted', hl[0].start === '06:30' && hl.every((c, i) => !i || hl[i - 1].start <= c.start));
+const ref = hl.find((c) => c.start === '08:00' && c.name === 'Reformer Pilates');
+check('hume: 08:00 Reformer full, waitlist 3 (matches public page "Waitlist")', ref && ref.state === 'FULL' && ref.waitlist === 3 && ref.left === 0);
+check('hume: "HUME" as host is hidden; end = start + duration', hl.find((c) => c.start === '16:00' && /Sculpt/.test(c.name)).host === null && hl[0].end === '07:30');
+check('hume: window 06:30–08:30 → 6 classes (start inside, end ignored)', classesIn(hl, '06:30', '08:30').length === 6);
+check('hume: window 17:30–19:30 → 0 classes (17:00 starts before)', classesIn(hl, '17:30', '19:30').length === 0);
+let bad = null; try { parseClasses({ data: {} }, '2026-11-13', 'America/Los_Angeles'); } catch (e) { bad = e.message; }
+check('hume: changed feed shape → clear error', /unexpected feed shape/.test(bad || ''), bad);
+const su = new URL(scheduleUrl(cfg.hume.classes, '2026-11-13', 'America/Los_Angeles'));
+check('hume: feed URL = local day in UTC (PST)', su.searchParams.get('startDateTime') === '2026-11-13T08:00:00.000Z' && su.searchParams.get('endDateTime') === '2026-11-14T07:59:59.000Z');
+const su2 = new URL(scheduleUrl(cfg.hume.classes, '2026-11-01', 'America/Los_Angeles'));
+check('hume: feed URL on DST day (PDT start, PST end)', su2.searchParams.get('startDateTime') === '2026-11-01T07:00:00.000Z' && su2.searchParams.get('endDateTime') === '2026-11-02T07:59:59.000Z');
+const fri = JSON.parse(readFileSync(join(root, 'fixtures/2026-11-13-fri-real.json'), 'utf8')).input;
+const sF = scoreDay({ ...fri, now: '07:10' }, cfg), amF = sF.sections.find((x) => x.type === 'humeAM');
+check('hume scored: AM shows 6; 06:30 + 07:00 started at 07:10; 07:45 not', amF.classes.length === 6 && amF.classes.filter((c) => c.started).length === 3 && !amF.classes.find((c) => c.start === '07:45').started);
+check('hume scored: no feed → classes null (section still renders)', scoreDay({ ...fri, humeClasses: null }, cfg).sections[0].classes === null);
+
 // Astronomy: reference values (Venus inferior conjunction 2026-10-24; full Moon 2026-10-26).
 const jd = (iso) => astro.julian(new Date(iso));
 const he = astro.helio('earth', jd('2026-10-24T07:00:00Z')), hv = astro.helio('venus', jd('2026-10-24T07:00:00Z'));
@@ -124,10 +147,12 @@ const fake = {
   'api.tidesandcurrents.noaa.gov': { predictions: [{ t: '2026-10-30 20:12', v: '-0.323', type: 'L' }, { t: '2026-10-31 06:51', v: '3.168', type: 'L' }, { t: '2026-10-31 13:26', v: '5.492', type: 'H' }, { t: '2026-11-01 04:03', v: '3.813', type: 'H' }] },
 };
 const realFetch = globalThis.fetch;
+const humeHits = [];
 globalThis.fetch = async (url) => {
   const u = new URL(url);
   if (url === SECRET) return new Response(readFileSync(join(root, 'fixtures/routine-sample.ics'), 'utf8'));
   if (u.hostname === 'nbaschedules.com') return new Response('BEGIN:VCALENDAR\nBEGIN:VEVENT\nSUMMARY:x'); // cut off on purpose
+  if (u.hostname === 'widget-api-tkaeguucxq-uc.a.run.app') { humeHits.push(url); return new Response(readFileSync(join(root, 'fixtures/hume-sample.json'), 'utf8')); }
   if (fake[u.hostname]) return new Response(JSON.stringify(fake[u.hostname]));
   return new Response('nope', { status: 404 });
 };
@@ -144,6 +169,7 @@ check('fetch: 72 h rain sum', Math.abs(day.rain72hMm - 4.8) < 0.01, String(day.r
 check('fetch: webcal ICS read, no Hume on Saturday', Array.isArray(day.calendar) && day.calendar.length === 0);
 check('fetch: cut-off Lakers feed → error, no game', day.lakers === null && errors.some((e) => e.source === 'lakers' && /cut off/.test(e.message)), JSON.stringify(errors));
 check('fetch: DST banner input', JSON.stringify(day.dst) === '{"when":"tonight","direction":"back"}');
+check('fetch: HUME feed read for that day only, no error', humeHits.length === 4 && Array.isArray(day.humeClasses) && day.humeClasses.length === 0 && !errors.some((e) => e.source === 'hume classes'), `${humeHits.length} calls`);
 const blob = JSON.stringify({ day, errors, scored: scoreDay(day, cfg) });
 check('day +1: Nov 1, no "now", Sunday', dNext.date === '2026-11-01' && dNext.now === null && dNext.weekday === 'SUN' && dNext.offset === 1);
 check('day +1: weekly Hume events from the calendar', dNext.calendar.map((e) => e.start).join(',') === '07:00,16:00', JSON.stringify(dNext.calendar));

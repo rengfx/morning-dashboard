@@ -24,7 +24,13 @@ export default {
     "windNoMph": 15,
     "coolF": 58,
     "coldF": 55,
-    "darkToleranceMin": 15
+    "darkToleranceMin": 15,
+    "classes": {
+      "apiBase": "https://widget-api-tkaeguucxq-uc.a.run.app",
+      "partnerId": "zuSbilfTYsWoXXM58oHytAaKldC3",
+      "bookUrl": "https://app.arketa.co/iframe/humeprojects/schedule",
+      "note": "Public HUME schedule (Arketa). All classes. Read at most once an hour per day shown."
+    }
   },
   "surf": {
     "spot": "Venice Pier",
@@ -102,7 +108,8 @@ export default {
     "marine": 30,
     "lakers": 720,
     "ics": 30,
-    "tides": 720
+    "tides": 720,
+    "hume": 60
   },
   "weather": {
     "primary": "open-meteo",
