@@ -38,7 +38,7 @@
 ## Done (2026-11-11 session)
 
 - Day navigation (D21).
-- HUME classes in the Hume windows (R18, D22). Tests: 7 fixtures + 49 checks, all pass.
+- HUME classes in the Hume windows (R18, D22). Tests: 7 fixtures + 57 checks, all pass.
 
 ## Done (2026-10-31 session)
 
