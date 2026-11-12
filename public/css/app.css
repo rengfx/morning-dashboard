@@ -70,3 +70,23 @@ main { touch-action: pan-y; }
 .classes li .s { font-size: 11px; white-space: nowrap; text-align: right; }
 .classes li.gone { opacity: .45; }
 .faint { color: var(--faint); }
+
+/* sky notes (R22) */
+.skynotes ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule2); }
+.skynotes li { display: grid; grid-template-columns: 64px minmax(0, 1fr); column-gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--rule2); font-size: 13px; color: var(--violet); }
+.skynotes li .t { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.skynotes li small { display: block; font-size: 11px; color: var(--text); margin-top: 2px; }
+.skynotes li em { display: inline-block; margin-top: 4px; font-style: normal; font-size: 10px; letter-spacing: .02em; color: var(--green); }
+.skynotes li.partly em { color: var(--amber); }
+.skynotes li.cloudy { filter: grayscale(1); opacity: .45; }
+.skynotes li.cloudy em { color: var(--muted); }
+.skynotes .row a { font-size: 12px; }
+
+/* sky page: chips, planets (R22, R24) */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { min-width: 0; min-height: 36px; padding: 0 10px; font-size: 11px; color: var(--muted); border: 1px solid var(--rule); }
+.chip.on { color: var(--violet); border-color: var(--violet); }
+.chip.cloudy { opacity: .5; }
+.planets { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule2); }
+.planets li { display: grid; grid-template-columns: 80px 1fr auto; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--rule2); font-size: 12px; color: var(--muted); }
+.planets li b { color: var(--text); font-weight: 600; }

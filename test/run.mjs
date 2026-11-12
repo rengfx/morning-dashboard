@@ -150,6 +150,28 @@ check('Sun altitude near local noon ≈ 43°', Math.abs(sunNoon - 43) < 2, `${su
 const rs = astro.riseSet(new Date('2026-10-25T07:00:00Z'), VEN);
 check('sunrise ≈ 07:05 PDT Oct 25 (±4 min)', Math.abs(rs.riseMin - (7 * 60 + 5)) <= 4, `${Math.round(rs.riseMin)} min`);
 
+// R22 sky events (references: forecastbar.com Mars–Jupiter 2026-11-16 02:04Z 1.19°; whenthecurveslineup.com Moon–Saturn Nov 20 ≈5.7°)
+const SE = await import('../public/js/skyevents.js');
+const ven = { lat: 33.985, lon: -118.47 };
+let best = { s: 99 };
+for (let t = Date.parse('2026-11-13T00:00Z'); t < Date.parse('2026-11-19T00:00Z'); t += 3600e3) {
+  const m = astro.planetAltAz('mars', new Date(t), ven), j = astro.planetAltAz('jupiter', new Date(t), ven);
+  const s = Math.hypot(((m.lon - j.lon + 540) % 360) - 180, m.lat - j.lat); if (s < best.s) best = { s, t };
+}
+check('Mars–Jupiter closest within 1 day of 2026-11-16 02:04Z, gap within 0.5° of 1.19°', Math.abs(best.t - Date.parse('2026-11-16T02:04Z')) < 864e5 && Math.abs(best.s - 1.19) < 0.5, `${new Date(best.t).toISOString()} ${best.s.toFixed(2)}°`);
+const evA = SE.findSkyEvents({ fromDate: '2026-11-11', days: 4, obs: ven });
+check('sky: thin Moon after sunset on Nov 11 (seen and photographed)', evA.some((e) => e.date === '2026-11-11' && /Thin Moon after sunset/.test(e.title)), evA.map((e) => e.date + ' ' + e.title).join('; '));
+check('sky: Jupiter + Mars listed once (best day only)', evA.filter((e) => /Jupiter and Mars/.test(e.title)).length === 1);
+const evB = SE.findSkyEvents({ fromDate: '2026-11-19', days: 3, obs: ven });
+const sat20 = evB.find((e) => e.title === 'Moon near Saturn');
+check('sky: Moon near Saturn on Nov 20 evening (published 5.7°)', sat20 && sat20.date === '2026-11-20' && parseFloat(sat20.detail) < 7, sat20 && sat20.detail);
+const clouds = { start: '2026-11-11T00:00', pct: Array.from({ length: 168 }, (_, i) => (i === 17 ? 90 : i === 41 ? 45 : 10)) };
+const evC = SE.findSkyEvents({ fromDate: '2026-11-11', days: 2, obs: ven, clouds });
+check('sky: 90% cloud → cloudy (grey), 45% → partly', evC.find((e) => e.date === '2026-11-11' && /Thin/.test(e.title)).sky === 'cloudy' && evC.find((e) => e.date === '2026-11-12' && /Thin/.test(e.title)).sky === 'partly', evC.map((e) => e.sky).join());
+check('sky: no cloud data → "unknown" (no label)', evA.every((e) => e.sky === 'unknown'));
+const plt = SE.planetsTonight({ date: '2026-11-12', obs: ven });
+check('sky: Saturn in the evening, Venus before dawn (Nov 12)', plt[0].body === 'saturn' && plt.some((p) => p.body === 'venus' && p.from >= '04:00'), plt.map((p) => p.body + ' ' + p.from).join(', '));
+
 // ---- 3. fetchers with a fake network (no real API calls) ----
 const { buildDay } = await import('../lib/fetch.js');
 const SECRET = 'https://p01-caldav.icloud.com/published/2/SECRET-TOKEN-123';

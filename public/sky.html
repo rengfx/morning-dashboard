@@ -18,14 +18,27 @@
 <main>
 <header class="head"><h1>SKY</h1><a class="meta" href="/" style="color:var(--amber)">← TODAY</a></header>
 
-<section style="display:flex;flex-direction:column;gap:10px">
+<div id="skynotes"></div>
+
+<section style="display:flex;flex-direction:column;gap:8px">
+<div class="row"><span>PIER VIEW · END OF VENICE PIER</span><span id="pier-when"></span></div>
+<svg id="pier" viewBox="0 0 358 230" tabindex="0" role="img" aria-label="The sky from the end of Venice Pier with the Moon and planets at their real places. Drag or use the arrow keys to turn." style="touch-action:pan-y;cursor:grab;border:1px solid var(--rule);overflow:hidden"></svg>
+<div class="chips" id="pier-times"></div>
+<label for="pier-scrub" class="sr">Time for the pier view</label>
+<input id="pier-scrub" type="range" min="0" max="1000" step="1" value="0">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><button type="button" id="pier-left" aria-label="Turn left 45 degrees">◀ 45°</button><span class="note" id="pier-range"></span><button type="button" id="pier-right" aria-label="Turn right 45 degrees">45° ▶</button></div>
+</section>
+
+<section class="sec" id="planets-wrap"><div class="row"><span>PLANETS TONIGHT</span><span>≥10° · DARK</span></div><ul class="planets" id="planets"></ul></section>
+
+<section class="sec" style="display:flex;flex-direction:column;gap:10px">
 <div class="row"><span>1 · EARTH + MOON · 00:00 → 24:00</span><span id="loop">LOOP</span></div>
 <svg id="earthmoon" viewBox="0 0 358 300" role="img" aria-label="Animated tilted view of the Earth and Moon over today, midnight to midnight. The camera is locked on Venice, so Venice always faces you and the Sun and Moon go around. A dashed line joins Venice to the Moon when the Moon is above the horizon at Venice."></svg>
 <div style="display:flex;flex-direction:column;gap:6px">
 <div class="row" style="font-size:11px"><span>MOON HEIGHT OVER VENICE</span><span><span style="color:var(--amber)">▮</span> dark sky  <span style="color:#6B6E75">▮</span> daylight</span></div>
 <svg viewBox="0 0 358 60" role="img" aria-label="Histogram for today: each bar is how high the Moon is over Venice at that time. Amber bars are when the sky is dark, grey bars are daylight. A line marks the animation time.">
 <rect x="0" y="0" width="358" height="52" fill="#15171A"></rect>
-<path id="hist-bands" fill="#07080A"></path><path id="hist-day" fill="#6B6E75"></path><path id="hist-night" fill="#F2B35E"></path>
+<path id="hist-bands" fill="#07080A"></path><g id="hist-grid"></g><path id="hist-day" fill="#6B6E75"></path><path id="hist-night" fill="#F2B35E"></path>
 <line x1="0" y1="52" x2="358" y2="52" stroke="#2B2D31"></line>
 <line id="playhead" x1="0" y1="0" x2="0" y2="60" stroke="#ECEAE4" stroke-width="1.5"></line><circle id="playdot" cx="0" cy="56" r="3" fill="#ECEAE4"></circle>
 </svg>
@@ -48,5 +61,6 @@
 </div>
 </main>
 <script type="module" src="/js/sky.js"></script>
+<script type="module" src="/js/sky-extra.js"></script>
 </body>
 </html>

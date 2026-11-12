@@ -107,5 +107,27 @@ export function helio(body, jd) {
   const xp = a * (Math.cos(E) - e), yp = a * Math.sqrt(1 - e * e) * Math.sin(E);
   const x = (cos(w) * cos(O) - sin(w) * sin(O) * cos(I)) * xp + (-sin(w) * cos(O) - cos(w) * sin(O) * cos(I)) * yp;
   const y = (cos(w) * sin(O) + sin(w) * cos(O) * cos(I)) * xp + (-sin(w) * sin(O) + cos(w) * cos(O) * cos(I)) * yp;
-  return { lon: norm(Math.atan2(y, x) / D), r: Math.hypot(x, y), x, y };
+  const z = sin(w) * sin(I) * xp + cos(w) * sin(I) * yp;
+  return { lon: norm(Math.atan2(y, x) / D), r: Math.hypot(x, y), x, y, z };
 }
+
+/** Planet seen from Earth: ecliptic lon/lat, distance (AU), then alt/az at an observer. */
+export function planetAltAz(body, date, obs) {
+  const jd = julian(date), p = helio(body, jd), e = helio('earth', jd);
+  const dx = p.x - e.x, dy = p.y - e.y, dz = p.z - e.z;
+  const lon = norm(Math.atan2(dy, dx) / D), lat = Math.atan2(dz, Math.hypot(dx, dy)) / D;
+  const q = eclToEq(lon, lat, sunEcliptic(jd).eps);
+  return { ...altAz(q.ra, q.dec, jd, obs), lon, lat, distAU: Math.hypot(dx, dy, dz) };
+}
+
+/** Moon ecliptic lon/lat (for separation tests). */
+export const moonLonLat = (date) => { const m = moonEcliptic(julian(date)); return { lon: m.lon, lat: m.lat }; };
+
+/** Angle between two sky points given as alt/az (degrees). */
+export function separation(a, b) {
+  const c = sin(a.alt) * sin(b.alt) + cos(a.alt) * cos(b.alt) * cos(a.az - b.az);
+  return Math.acos(Math.max(-1, Math.min(1, c))) / D;
+}
+
+const PT16 = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+export const compass = (az) => PT16[Math.round(norm(az) / 22.5) % 16];

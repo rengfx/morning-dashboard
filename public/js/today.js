@@ -1,6 +1,8 @@
 // Today page: fetch /api/today and render the B2 instrument panel.
 import { COL, scale, pts, valAt, tideFn, text, rect, vline, poly, lx, darkBands, ticks, rainBars, nowLine, svg, grid, peakDot, hm, fm, esc, W } from './charts.js';
 import { moonPhase, illumination } from './astro.js';
+import { findSkyEvents } from './skyevents.js';
+import { skyNotesHtml } from './skynotes.js';
 
 const $ = (s) => document.querySelector(s);
 const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -245,6 +247,11 @@ function render(d) {
   const late = (d.errors || []).map((e) => `<div class="late">DATA LATE · ${esc(e.source)} · ${esc(e.message.replace(/^\w+:\s*/, ''))}</div>`).join('');
   let n = 0;
   const body = d.sections.map((s) => { n++; return s.type === 'surf' ? surfSec(d, s, n) : s.type === 'sun' ? sunSec(d, s, n) : s.type === 'lakers' ? lakersSec(d, s, n) : humeSec(d, s, n); }).join('\n');
+  let sky = '';
+  try { // R22 sky notes for this day and the next 3 (nothing on quiet days)
+    const ev = findSkyEvents({ fromDate: d.date, days: 4, obs: { lat: d.config.location.lat, lon: d.config.location.lon }, tz: d.config.location.tz, clouds: d.clouds });
+    sky = skyNotesHtml(ev, { link: `sky.html${off ? `?date=${d.date}` : ''}` });
+  } catch (e) { sky = ''; }
   const dots = Array.from({ length: hi - lo + 1 }, (_, i) => `<i class="${i + lo === off ? 'on' : ''}${i + lo === 0 ? ' today' : ''}"></i>`).join('');
   $('main').innerHTML = `
 <header class="head">
@@ -263,6 +270,7 @@ ${stripChart(d)}
 <div class="legend">${d.sections.map((s, i) => `<span style="color:${s.passed ? COL.faint : STRIP[s.type]}">${i + 1} ${NAMES[s.type].replace('HUME MORNING', 'Hume AM').replace('HUME EVENING', 'Hume PM').toLowerCase().replace(/^\w/, (c) => c.toUpperCase())}${s.passed ? ' (passed)' : s.type === 'surf' && !s.window ? ' (none)' : ''}</span>`).join(' · ')}${off ? '' : ' · ┃ now'}</div>
 </div>
 ${body}
+${sky}
 <footer class="foot"><span>Updated ${esc(new Date(d.generatedAt).toLocaleTimeString('en-GB', { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit' }))}${lateBy('weather').length ? ' · weather late' : ''} · swipe for other days</span><button id="refresh" type="button">REFRESH</button></footer>`;
   $('#refresh').addEventListener('click', () => { cache.delete(off); load(off, 0); });
   for (const b of document.querySelectorAll('[data-step]')) b.addEventListener('click', () => go(+b.dataset.step));
