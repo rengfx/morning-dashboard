@@ -147,6 +147,7 @@ Added 2026-10-31 from two weekends of real data:
 - **R22 Sky notes.** For the shown day and the next 3: thin crescent after sunset / before sunrise (1.5–15 % lit, ≥ 4° up), full Moon rising within 75 min of sunset, Moon within 7° of a planet, two planets within 2.5° (both ≥ 8° up, Sun ≤ −8°). Repeating events show on their best day only. Cloud ≥ 60 % at that hour → grey "CLOUDY · MAY NOT BE VISIBLE"; 30–59 % → "PARTLY CLOUDY". Nothing qualifies → no section. Today page and Sky page. Sky page also lists planets ≥ 10° in a dark sky tonight.
 - **R23 Charts.** Faint grid (hour lines, quarter lines) on every chart; every peak gets a dot with a drop line to the time axis.
 - **R24 Pier view.** Sky page: the sky from the end of Venice Pier with real Moon (phase) and planet positions; turn 360° (drag, ◀ ▶, arrow keys); time = tonight (sunset + 1 h), any sky event (turns to face it and rings the objects), or the slider (sunset − 30 min → sunrise + 30 min).
+- **R25 Where to look.** Tap a planet or the Moon in the pier view (at that time), or a row in Planets tonight (at its best time): a zoomed-out 3D scene opens with Venice Pier (pointing WSW), you at the end, the sky dome, a ground arrow to face, the height arc, and the sight line. Text: "Face S (181°) and look 57° up, about 6 fists above the horizon at arm's length." Drag to orbit. Not to scale.
 
 ## 4. Data sources
 
@@ -202,6 +203,7 @@ Lakers     ─┘      holds ICS_URL
 | `lib/hume.js` | HUME class feed: URL for one local day, parse, filter to a window. |
 | `public/js/skyevents.js` | R22 sky events and planets tonight (pure). |
 | `public/js/pier.js` | R24 pier view SVG. |
+| `public/js/pier3d.js` | R25 3D where-to-look scene + words. |
 | `lib/ics.js` | ICS reader: folding, time zones, weekly repeats, EXDATE, moved events. |
 | `lib/fetch.js` | Fetches all sources, builds the scorer input, 72 h rain, DST. |
 | `functions/api/today.js` | Cloudflare Pages Function → `/api/today`. |

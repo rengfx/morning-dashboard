@@ -78,6 +78,11 @@ export function pierSvg({ ms, heading, obs, tz = TZ, mark = null }) {
   }
   // moon
   { const x = xOf(moon.az, heading); if (x != null && moon.alt > -1) { const y = yOf(moon.alt); b += moonDisc(x, y, 7, phase, wrap(sun.az - moon.az)); if (mark && mark.includes('moon')) b += `<circle cx="${f(x)}" cy="${f(y)}" r="13" fill="none" stroke="#B59CFF" stroke-width="1.2"/>`; if (x >= 0 && x <= W) labels.push([x, y, `MOON ${Math.round(A.illumination(phase) * 100)}%`, '#F4F1E8']); } }
+  // tap targets (R25): invisible circles over the Moon and planets
+  for (const [bd, q] of [['moon', moon], ...PLANETS.map((p) => [p, A.planetAltAz(p, date, obs)])]) {
+    if (q.alt < -1) continue; const x = xOf(q.az, heading); if (x == null || x < 0 || x > W) continue;
+    b += `<circle cx="${f(x)}" cy="${f(yOf(q.alt))}" r="16" fill="#fff" fill-opacity="0" data-body="${bd}" style="cursor:pointer"/>`;
+  }
   // labels: stagger when two sit close
   labels.sort((a, c) => a[0] - c[0]);
   let lastX = -99, row = 0;
@@ -90,6 +95,6 @@ export function pierSvg({ ms, heading, obs, tz = TZ, mark = null }) {
   }
   const c = partsIn(date, tz);
   b += `<text x="${W - 4}" y="${H - 20}" fill="#ECEAE4" font-size="10" text-anchor="end">${c.time} · FACING ${A.compass(heading)} ${Math.round(((heading % 360) + 360) % 360)}°</text>`;
-  b += `<text x="4" y="${H - 6}" fill="#5B5D62" font-size="8">from the end of Venice Pier · drag to turn</text>`;
+  b += `<text x="4" y="${H - 6}" fill="#5B5D62" font-size="8">from the end of Venice Pier · drag to turn · tap a planet</text>`;
   return b;
 }

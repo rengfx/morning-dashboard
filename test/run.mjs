@@ -172,6 +172,14 @@ check('sky: no cloud data → "unknown" (no label)', evA.every((e) => e.sky === 
 const plt = SE.planetsTonight({ date: '2026-11-12', obs: ven });
 check('sky: Saturn in the evening, Venus before dawn (Nov 12)', plt[0].body === 'saturn' && plt.some((p) => p.body === 'venus' && p.from >= '04:00'), plt.map((p) => p.body + ' ' + p.from).join(', '));
 
+// R25 where to look
+const P3 = await import('../public/js/pier3d.js');
+const satMs = SE.planetsTonight({ date: '2026-11-12', obs: ven }).find((p) => p.body === 'saturn').bestMs;
+const w3 = P3.pier3dSvg({ body: 'saturn', ms: satMs, obs: ven });
+check('where: Saturn at best time = planet position (S, 57° up, 6 fists)', Math.round(w3.pos.alt) === 57 && /Face S \(18[01]°\) and look 57° up, about 6 fists/.test(P3.lookText('saturn', w3.pos)), P3.lookText('saturn', w3.pos));
+check('where: SVG names the object and its direction', w3.svg.includes('SATURN') && /S 18[01]°/.test(w3.svg));
+check('where: below the horizon → says so, no sight line', /below the horizon/.test(P3.lookText('venus', { alt: -5, az: 100 })) && !P3.pier3dSvg({ body: 'venus', ms: Date.parse('2026-11-13T04:00Z'), obs: ven }).svg.includes('fists'));
+
 // ---- 3. fetchers with a fake network (no real API calls) ----
 const { buildDay } = await import('../lib/fetch.js');
 const SECRET = 'https://p01-caldav.icloud.com/published/2/SECRET-TOKEN-123';

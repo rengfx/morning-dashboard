@@ -100,7 +100,7 @@ export function planetsTonight({ date, obs, tz = TZ }) {
       if (first == null) first = t; last = t;
       if (!top || p.alt > top.alt) top = { t, alt: p.alt, az: p.az };
     }
-    if (first != null) res.push({ body: b, name: NAME[b], from: hhmm(first, tz), to: hhmm(last, tz), best: hhmm(top.t, tz), alt: Math.round(top.alt), dir: A.compass(top.az), fromMs: first });
+    if (first != null) res.push({ body: b, name: NAME[b], from: hhmm(first, tz), to: hhmm(last, tz), best: hhmm(top.t, tz), bestMs: top.t, alt: Math.round(top.alt), dir: A.compass(top.az), fromMs: first });
   }
   return res.sort((a, b) => a.fromMs - b.fromMs);
 }

@@ -30,3 +30,4 @@
 | D26 | 2026-11-12 | Sun window 90 min. Surf shows water temperature. All charts get a faint grid and peak dots. |
 | D27 | 2026-11-12 | Sky notes: only notable events, 4-day look-ahead, on Today and Sky pages; cloudy → grey with label (not hidden). Planets tonight list. Moon–planet limit 7° (published Nov 20 Moon–Saturn gap 5.7°). |
 | D28 | 2026-11-12 | Pier view on the Sky page: 360° turn, tonight + event times + slider. Horizon skyline is approximate. |
+| D29 | 2026-11-12 | Where to look: tap a planet → 3D pier scene (SVG, orthographic, camera behind-left, drag to orbit) + direction in words with fists (1 fist ≈ 10°). |

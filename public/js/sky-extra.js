@@ -4,6 +4,7 @@ import * as A from './astro.js';
 import { findSkyEvents, planetsTonight } from './skyevents.js';
 import { skyNotesHtml } from './skynotes.js';
 import { pierSvg } from './pier.js';
+import { pier3dSvg, lookText } from './pier3d.js';
 
 const OBS = { lat: 33.985, lon: -118.47 };
 const $ = (s) => document.querySelector(s);
@@ -25,7 +26,7 @@ fetch('/api/today', { credentials: 'same-origin' }).then((r) => (r.ok ? r.json()
 // ---- planets tonight ----
 const pl = planetsTonight({ date: dateStr, obs: OBS, tz: TZ });
 $('#planets').innerHTML = pl.length
-  ? pl.map((p) => `<li><b>${esc(p.name.toUpperCase())}</b><span>${esc(p.from)}–${esc(p.to)}</span><span>best ${esc(p.best)} · ${p.alt}° ${esc(p.dir)}</span></li>`).join('')
+  ? pl.map((p) => `<li data-body="${p.body}" data-best="${p.bestMs}" style="cursor:pointer"><b>${esc(p.name.toUpperCase())} ↗</b><span>${esc(p.from)}–${esc(p.to)}</span><span>best ${esc(p.best)} · ${p.alt}° ${esc(p.dir)}</span></li>`).join('')
   : '<li class="note">No bright planet above 10° in a dark sky tonight.</li>';
 
 // ---- pier view ----
@@ -70,7 +71,14 @@ svg.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft' || e.key === 
 let drag = null;
 svg.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, h: heading, w: svg.getBoundingClientRect().width }; svg.setPointerCapture(e.pointerId); svg.style.cursor = 'grabbing'; });
 svg.addEventListener('pointermove', (e) => { if (!drag) return; heading = drag.h - (e.clientX - drag.x) / drag.w * 110; draw(); });
-const end = () => { drag = null; svg.style.cursor = 'grab'; };
+const end = (e) => {
+  if (drag && e && e.type === 'pointerup' && Math.abs(e.clientX - drag.x) < 6) { // a tap, not a drag
+    const hit = document.elementFromPoint(e.clientX, e.clientY);
+    const bd = hit && hit.getAttribute && hit.getAttribute('data-body');
+    if (bd) openWhere(bd, ms);
+  }
+  drag = null; svg.style.cursor = 'grab';
+};
 svg.addEventListener('pointerup', end); svg.addEventListener('pointercancel', end);
 chips(); draw();
 
@@ -78,3 +86,27 @@ chips(); draw();
 const g = $('#hist-grid');
 if (g) g.innerHTML = Array.from({ length: 11 }, (_, i) => { const x = ((i + 1) * 2 / 24 * 358).toFixed(1); return `<line x1="${x}" y1="0" x2="${x}" y2="52" stroke="#ECEAE4" stroke-opacity="0.1" stroke-dasharray="1 2"/>`; }).join('') + '<line x1="0" y1="26" x2="358" y2="26" stroke="#ECEAE4" stroke-opacity="0.1" stroke-dasharray="1 2"/>';
 window.__pier = { set: (o) => { if (o.ms != null) ms = o.ms; if (o.heading != null) heading = o.heading; draw(); } };
+
+// ---- R25 where to look: 3D pier scene for one object ----
+let where = null;
+function drawWhere() {
+  if (!where) return;
+  const { svg: body, pos } = pier3dSvg({ body: where.body, ms: where.ms, obs: OBS, camBearing: where.cam });
+  if (where.cam == null) where.cam = pos.az;
+  $('#where3d').innerHTML = body;
+  const t = partsIn(new Date(where.ms), TZ);
+  $('#where-title').textContent = `WHERE TO LOOK · ${where.body.toUpperCase()} · ${t.weekday} ${t.time}`;
+  $('#where-text').textContent = lookText(where.body, pos);
+}
+function openWhere(body, atMs) {
+  where = { body, ms: atMs, cam: null };
+  $('#where').hidden = false; drawWhere();
+  $('#where').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+$('#where-close').addEventListener('click', () => { $('#where').hidden = true; where = null; });
+for (const li of document.querySelectorAll('#planets li[data-body]')) li.addEventListener('click', () => openWhere(li.dataset.body, +li.dataset.best));
+{ const w3 = $('#where3d'); let d3 = null;
+  w3.addEventListener('pointerdown', (e) => { if (!where) return; d3 = { x: e.clientX, c: where.cam, w: w3.getBoundingClientRect().width }; w3.setPointerCapture(e.pointerId); });
+  w3.addEventListener('pointermove', (e) => { if (!d3) return; where.cam = d3.c - (e.clientX - d3.x) / d3.w * 180; drawWhere(); });
+  const stop = () => { d3 = null; }; w3.addEventListener('pointerup', stop); w3.addEventListener('pointercancel', stop); }
+window.__where = { open: openWhere };

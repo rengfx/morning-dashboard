@@ -22,11 +22,17 @@
 
 <section style="display:flex;flex-direction:column;gap:8px">
 <div class="row"><span>PIER VIEW · END OF VENICE PIER</span><span id="pier-when"></span></div>
-<svg id="pier" viewBox="0 0 358 230" tabindex="0" role="img" aria-label="The sky from the end of Venice Pier with the Moon and planets at their real places. Drag or use the arrow keys to turn." style="touch-action:pan-y;cursor:grab;border:1px solid var(--rule);overflow:hidden"></svg>
+<svg id="pier" viewBox="0 0 358 230" tabindex="0" role="img" aria-label="The sky from the end of Venice Pier with the Moon and planets at their real places. Drag or use the arrow keys to turn." style="touch-action:pan-y;cursor:grab;border:1px solid var(--rule);overflow:hidden;user-select:none;-webkit-user-select:none"></svg>
 <div class="chips" id="pier-times"></div>
 <label for="pier-scrub" class="sr">Time for the pier view</label>
 <input id="pier-scrub" type="range" min="0" max="1000" step="1" value="0">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><button type="button" id="pier-left" aria-label="Turn left 45 degrees">◀ 45°</button><span class="note" id="pier-range"></span><button type="button" id="pier-right" aria-label="Turn right 45 degrees">45° ▶</button></div>
+</section>
+
+<section class="sec" id="where" hidden>
+<div class="row"><span id="where-title">WHERE TO LOOK</span><button type="button" id="where-close" class="chip">CLOSE ✕</button></div>
+<svg id="where3d" viewBox="0 0 358 250" role="img" aria-label="Zoomed-out 3D view of Venice Pier with you at the end, the sky dome, and a line to the object." style="touch-action:pan-y;cursor:grab;border:1px solid var(--rule);overflow:hidden;user-select:none;-webkit-user-select:none"></svg>
+<p class="note" id="where-text" style="margin:0;font-size:13px;color:var(--text)"></p>
 </section>
 
 <section class="sec" id="planets-wrap"><div class="row"><span>PLANETS TONIGHT</span><span>≥10° · DARK</span></div><ul class="planets" id="planets"></ul></section>
