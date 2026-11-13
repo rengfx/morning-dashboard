@@ -32,3 +32,4 @@
 | D28 | 2026-11-12 | Pier view on the Sky page: 360° turn, tonight + event times + slider. Horizon skyline is approximate. |
 | D29 | 2026-11-12 | Where to look: tap a planet → 3D pier scene (SVG, orthographic, camera behind-left, drag to orbit) + direction in words with fists (1 fist ≈ 10°). |
 | D30 | 2026-11-12 | Where-to-look scene shows the last sunset point (not the current sun) as an orientation mark, with left/right offset in words. |
+| D31 | 2026-11-13 | Weekday: Hume morning block hides once passed (today only). "I went" marks live in a HUME LOG line (so a hidden morning can still be marked), weekly count Mon–Sun, stored per browser (localStorage). Cross-device sync would need Cloudflare KV. |

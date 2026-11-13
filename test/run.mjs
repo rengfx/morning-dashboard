@@ -186,6 +186,17 @@ const ssM = P3.lastSunset(Date.parse('2026-11-15T13:46Z'), ven);
 check('R26 morning event (Sun 05:46) → previous evening sunset (Sat)', ssM && new Date(ssM.ms).toISOString().startsWith('2026-11-15T00:'), ssM && new Date(ssM.ms).toISOString());
 check('R26 sunset drawn in the 3D scene', w3.svg.includes('SUNSET') && w3.sunset);
 
+// R28 Hume log (localStorage stand-in)
+{ const mem = {}; globalThis.localStorage = { getItem: (k) => (k in mem ? mem[k] : null), setItem: (k, v) => { mem[k] = String(v); } };
+  const HL = await import('../public/js/humelog.js');
+  HL.toggle('2026-11-09', 'am'); HL.toggle('2026-11-12', 'am'); HL.toggle('2026-11-12', 'pm'); HL.toggle('2026-11-15', 'day'); HL.toggle('2026-11-16', 'am');
+  check('humelog: week Mon 9 – Sun 15 counts 4 (Mon 16 is next week)', HL.weekCount('2026-11-12') === 4 && HL.weekCount('2026-11-16') === 1, `${HL.weekCount('2026-11-12')} / ${HL.weekCount('2026-11-16')}`);
+  HL.toggle('2026-11-12', 'pm');
+  check('humelog: second tap removes the mark', !HL.marks('2026-11-12').pm && HL.marks('2026-11-12').am === true && HL.weekCount('2026-11-12') === 3);
+  globalThis.localStorage = { getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); } };
+  check('humelog: blocked storage → no crash, toggle returns false', HL.toggle('2026-11-12', 'am') === false && HL.weekCount('2026-11-12') === 0);
+  delete globalThis.localStorage; }
+
 // ---- 3. fetchers with a fake network (no real API calls) ----
 const { buildDay } = await import('../lib/fetch.js');
 const SECRET = 'https://p01-caldav.icloud.com/published/2/SECRET-TOKEN-123';

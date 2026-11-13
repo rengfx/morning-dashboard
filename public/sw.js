@@ -1,6 +1,6 @@
 // Offline: app shell cache-first; /api/today network-first with the last good copy as fallback.
-const V = 'morning-v4';
-const SHELL = ['/', '/index.html', '/sky.html', '/css/app.css', '/js/today.js', '/js/charts.js', '/js/sky.js', '/js/astro.js', '/js/time.js', '/js/skyevents.js', '/js/skynotes.js', '/js/pier.js', '/js/pier3d.js', '/js/sky-extra.js', '/manifest.webmanifest', '/icons/icon-180.png'];
+const V = 'morning-v5';
+const SHELL = ['/', '/index.html', '/sky.html', '/css/app.css', '/js/today.js', '/js/charts.js', '/js/sky.js', '/js/astro.js', '/js/time.js', '/js/skyevents.js', '/js/skynotes.js', '/js/pier.js', '/js/pier3d.js', '/js/humelog.js', '/js/sky-extra.js', '/manifest.webmanifest', '/icons/icon-180.png'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(V).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== V).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', (e) => {

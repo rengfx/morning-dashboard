@@ -3,6 +3,7 @@ import { COL, scale, pts, valAt, tideFn, text, rect, vline, poly, lx, darkBands,
 import { moonPhase, illumination } from './astro.js';
 import { findSkyEvents } from './skyevents.js';
 import { skyNotesHtml } from './skynotes.js';
+import { marks, toggle, weekCount } from './humelog.js';
 
 const $ = (s) => document.querySelector(s);
 const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -233,7 +234,28 @@ ${rel ? `<span class="note">${esc(rel)}</span>` : ''}</section>`;
 
 // ---------- page ----------
 
-function render(d) {
+const WIN = { humeAM: ['am', 'AM'], humePM: ['pm', 'PM'], humeDay: ['day', 'DAY'] };
+
+/** R27 today on a weekday: the Hume morning block goes away once its time has passed. */
+function hideDone(d) {
+  if ((d.offset || 0) !== 0 || d.weekday === 'SAT' || d.weekday === 'SUN') return d;
+  const sections = d.sections.filter((s) => !(s.type === 'humeAM' && s.passed));
+  return sections.length === d.sections.length ? d : { ...d, sections, hiddenAM: true };
+}
+
+/** R28 Hume log line: one toggle per Hume window of the day + this week's count. Today and earlier only. */
+function humeLog(d, all) {
+  if ((d.offset || 0) > 0) return '';
+  const wins = all.filter((s) => WIN[s.type]);
+  if (!wins.length) return '';
+  const m = marks(d.date);
+  const btns = wins.map((s) => { const [k, lab] = WIN[s.type], on = !!m[k]; return `<button type="button" class="went${on ? ' on' : ''}" data-went="${k}" aria-pressed="${on}">${lab} ${on ? '✓ WENT' : 'WENT?'}</button>`; }).join('');
+  const n = weekCount(d.date);
+  return `<section class="sec humelog"><div class="row"><span>HUME LOG</span><span>${n} THIS WEEK</span></div><div class="chips">${btns}</div></section>`;
+}
+
+function render(dIn) {
+  const d = hideDone(dIn);
   const [y, m, dd] = d.date.split('-').map(Number);
   const off = d.offset || 0;
   const [lo, hi] = d.range || [-1, 6];
@@ -264,15 +286,20 @@ function render(d) {
 </header>
 <div class="dots" aria-hidden="true">${dots}</div>
 <div style="display:flex;flex-direction:column;gap:6px">
-<div class="row"><span>${off ? 'DAY' : 'TODAY'} · IN ORDER</span><span>${weekend ? 'WEEKEND' : 'WEEKDAY'} · ${d.sections.length} ITEMS</span></div>
+<div class="row"><span>${off ? 'DAY' : 'TODAY'} · IN ORDER</span><span>${weekend ? 'WEEKEND' : 'WEEKDAY'} · ${d.sections.length} ITEM${d.sections.length === 1 ? '' : 'S'}</span></div>
 ${d.banners.map((b) => `<div class="banner">${esc(b.text)}</div>`).join('')}${late}
 ${stripChart(d)}
 <div class="legend">${d.sections.map((s, i) => `<span style="color:${s.passed ? COL.faint : STRIP[s.type]}">${i + 1} ${NAMES[s.type].replace('HUME MORNING', 'Hume AM').replace('HUME EVENING', 'Hume PM').toLowerCase().replace(/^\w/, (c) => c.toUpperCase())}${s.passed ? ' (passed)' : s.type === 'surf' && !s.window ? ' (none)' : ''}</span>`).join(' · ')}${off ? '' : ' · ┃ now'}</div>
 </div>
 ${body}
+${humeLog(d, dIn.sections)}
 ${sky}
 <footer class="foot"><span>Updated ${esc(new Date(d.generatedAt).toLocaleTimeString('en-GB', { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit' }))}${lateBy('weather').length ? ' · weather late' : ''} · swipe for other days</span><button id="refresh" type="button">REFRESH</button></footer>`;
   $('#refresh').addEventListener('click', () => { cache.delete(off); load(off, 0); });
+  for (const b of document.querySelectorAll('[data-went]')) b.addEventListener('click', () => {
+    if (!toggle(d.date, b.dataset.went)) { b.textContent = 'NOT SAVED'; return; }
+    const y = scrollY; render(dIn); scrollTo(0, y);
+  });
   for (const b of document.querySelectorAll('[data-step]')) b.addEventListener('click', () => go(+b.dataset.step));
   const t = document.querySelector('[data-today]'); if (t) t.addEventListener('click', () => go(-off));
   document.title = `${d.weekday} ${dd} ${MON[m - 1]} · Morning`;

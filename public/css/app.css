@@ -92,3 +92,8 @@ main { touch-action: pan-y; }
 .planets li b { color: var(--text); font-weight: 600; }
 #pier text, #pier path, #where3d text { pointer-events: none; }
 .planets li[data-body]:hover b { color: var(--violet); }
+
+/* Hume log (R28) */
+.humelog .chips { gap: 8px; }
+.went { min-height: 40px; min-width: 96px; font-size: 12px; color: var(--muted); }
+.went.on { color: var(--green); border-color: var(--green); }

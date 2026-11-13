@@ -26,6 +26,8 @@
 
 ## Later
 
+- Hume log sync across devices (Cloudflare KV; needs a KV namespace in the Pages project). Marks are per browser now.
+
 - Pier view: bright stars and constellations (only Moon and planets now).
 - Sky notes: meteor showers and eclipses (not computed now).
 - Basketball: the court has lights? LIGHT shows "~ DARK" after sunset; remove the mark if the court is lit.
@@ -39,6 +41,10 @@
 - Second "later" surf windows: confirm the dashed-outline display with real data.
 - Moon-height histogram: mark moonrise / moonset times.
 - Lakers TV: the feed only names national TV; local games show `LOCAL`.
+
+## Done (2026-11-13 session)
+
+- Morning block hides when done (R27), Hume log with weekly count (R28). Tests: 8 fixtures + 83 checks, all pass.
 
 ## Done (2026-11-12 session)
 

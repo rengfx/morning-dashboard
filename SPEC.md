@@ -149,6 +149,8 @@ Added 2026-10-31 from two weekends of real data:
 - **R24 Pier view.** Sky page: the sky from the end of Venice Pier with real Moon (phase) and planet positions; turn 360° (drag, ◀ ▶, arrow keys); time = tonight (sunset + 1 h), any sky event (turns to face it and rings the objects), or the slider (sunset − 30 min → sunrise + 30 min).
 - **R25 Where to look.** Tap a planet or the Moon in the pier view (at that time), or a row in Planets tonight (at its best time): a zoomed-out 3D scene opens with Venice Pier (pointing WSW), you at the end, the sky dome, a ground arrow to face, the height arc, and the sight line. Text: "Face S (181°) and look 57° up, about 6 fists above the horizon at arm's length." Drag to orbit. Not to scale.
 - **R26 Sunset reference.** The where-to-look scene marks where the sun last went down (most recent sunset at or before the shown time; a morning view uses the evening before): a half sun on the horizon with time and direction. The text adds "Sunset was at 16:52 in the WSW (249°). Face that point: Saturn is 68° to your left."
+- **R27 Morning block hides when done.** Today, on a weekday: once the Hume morning window has passed, its section and its strip bar go away. Other days and weekends are unchanged.
+- **R28 Hume log.** Today and earlier days: a HUME LOG line with one toggle per Hume window (AM, PM, or DAY): tap = "✓ WENT", tap again = clear. Shows visits this week (Mon–Sun). Stored in this browser only (localStorage); blocked storage shows "NOT SAVED".
 
 ## 4. Data sources
 
