@@ -2,6 +2,7 @@
 // Orthographic camera above and behind you; drag to orbit. Pure SVG string.
 import * as A from './astro.js';
 import { partsIn, TZ } from './time.js';
+import { horizonAt } from './horizon.js';
 
 const W = 358, H = 250, CX = 179, CY = 168, S = 78; // screen centre (observer) and scale
 const D = Math.PI / 180;
@@ -45,6 +46,8 @@ export function lastSunset(ms, obs) {
 
 export function lookText(body, pos) {
   if (pos.alt < 0) return `${NAME[body]} is below the horizon at this time.`;
+  const hz = horizonAt(pos.az);
+  if (pos.alt < hz + 0.5) return `${NAME[body][0] + NAME[body].slice(1).toLowerCase()} is behind the hills from the pier end (${A.compass(pos.az)}, ${pos.alt.toFixed(1)}° up; the hills reach ${hz.toFixed(1)}° there).`;
   const az = Math.round(((pos.az % 360) + 360) % 360), alt = Math.round(pos.alt);
   const n = fists(pos.alt);
   return `Face ${A.compass(az)} (${az}°) and look ${alt}° up${n ? `, about ${n} fist${n > 1 ? 's' : ''} above the horizon at arm's length` : ', just above the horizon'}.`;
@@ -68,6 +71,11 @@ export function pier3dSvg({ body, ms, obs, camBearing = null, elev = 28 }) {
   b += path([c0, c1, far(c1), far(c0), c0], 'fill="#1A1813" stroke="none"');
   b += path([c0, c1], 'fill="none" stroke="#C9B98F" stroke-opacity="0.5" stroke-width="2"');    // sand line
   b += `<text x="${f(P(far(shore))[0])}" y="${f(P(far(shore))[1] + 4)}" fill="#5B5D62" font-size="8" text-anchor="middle">VENICE</text>`;
+  // R32 true hill line on the horizon ring (height ×2 so it reads; the scene is not to scale)
+  { const N = 240, ridge = [], base = [];
+    for (let i = 0; i <= N; i++) { const az = i / N * 360; ridge.push(dirVec(az, horizonAt(az) * 2, R)); base.push(dirVec(az, 0, R)); }
+    b += path([...ridge, ...base.reverse()], 'fill="#16181C" stroke="none"');
+    b += path(ridge, 'fill="none" stroke="#5B5D62" stroke-width="0.8"'); }
   // pier deck (two rails) + pier end platform
   const side = [along[0] * 0.035, along[1] * 0.035, 0];
   const rail = (s) => [[shore[0] + s * side[0], shore[1] + s * side[1], 0.02], [s * side[0], s * side[1], 0.02]];
@@ -88,7 +96,7 @@ export function pier3dSvg({ body, ms, obs, camBearing = null, elev = 28 }) {
     b += path([[0, 0, 0.01], dirVec(ss.az, 0, R)], `fill="none" stroke="#FF8A65" stroke-opacity="0.35" stroke-width="1" stroke-dasharray="1 3"`);
     b += `<circle cx="${f(sx)}" cy="${f(sy)}" r="16" fill="#FF8A65" fill-opacity="0.12"/><path d="M${f(sx - 8)} ${f(sy)} A8 8 0 0 1 ${f(sx + 8)} ${f(sy)} Z" fill="#FFB36B" fill-opacity="${front ? 1 : 0.75}"/><line x1="${f(sx - 13)}" y1="${f(sy)}" x2="${f(sx + 13)}" y2="${f(sy)}" stroke="#FFB36B" stroke-width="1.2"/>`;
     const day = partsIn(new Date(ss.ms), TZ), here = partsIn(new Date(ms), TZ);
-    const rt = sx >= CX; b += `<text x="${f(sx + (rt ? 14 : -14))}" y="${f(sy + 12)}" fill="#FF8A65" font-size="9" text-anchor="${rt ? 'start' : 'end'}">SUNSET ${day.date !== here.date ? day.weekday + ' ' : ''}${day.time}</text><text x="${f(sx + (rt ? 14 : -14))}" y="${f(sy + 23)}" fill="#FF8A65" font-size="9" text-anchor="${rt ? 'start' : 'end'}">${A.compass(ss.az)} ${Math.round(ss.az)}°</text>`;
+    const edge = sx < 110 || sx > W - 110, rt = sx < 110 ? true : sx > W - 110 ? false : sx >= CX; const lx0 = edge ? sx + (rt ? -10 : 10) : sx + (rt ? 14 : -14), ly0 = edge ? sy - 36 : sy + 12, ly1 = edge ? sy - 25 : sy + 23; b += `<text x="${f(lx0)}" y="${f(ly0)}" fill="#FF8A65" font-size="9" text-anchor="${rt ? 'start' : 'end'}">SUNSET ${day.date !== here.date ? day.weekday + ' ' : ''}${day.time}</text><text x="${f(lx0)}" y="${f(ly1)}" fill="#FF8A65" font-size="9" text-anchor="${rt ? 'start' : 'end'}">${A.compass(ss.az)} ${Math.round(ss.az)}°</text>`;
   }
   // observer
   const [ox, oy] = P([0, 0, 0]), [hx, hy] = P([0, 0, 0.12]);
@@ -109,6 +117,6 @@ export function pier3dSvg({ body, ms, obs, camBearing = null, elev = 28 }) {
     b += `<text x="${f(gx)}" y="${f(gy + 13)}" fill="${col}" font-size="10" text-anchor="middle">${A.compass(pos.az)} ${Math.round(((pos.az % 360) + 360) % 360)}°</text>`;
   }
   for (const l of domeLines) b += `<path d="${seg(l, true)}" fill="none" stroke="#ECEAE4" stroke-opacity="0.16"/>`;
-  b += `<text x="6" y="${H - 6}" fill="#5B5D62" font-size="8">not to scale · drag to turn the camera</text>`;
+  b += `<text x="6" y="${H - 6}" fill="#5B5D62" font-size="8">not to scale · hills ×2 · drag to turn the camera</text>`;
   return { svg: b, pos, sunset: ss };
 }

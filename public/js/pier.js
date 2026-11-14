@@ -11,9 +11,9 @@ const COLS = { mercury: '#B9B6AD', venus: '#E8D9B5', mars: '#E07B5B', jupiter: '
 const NAME = { mercury: 'MERCURY', venus: 'VENUS', mars: 'MARS', jupiter: 'JUPITER', saturn: 'SATURN' };
 
 // Rough skyline from the pier end (azimuth ranges, degrees): land runs north → east → south; ocean to the west.
-const city = (az) => 1.2 + 0.9 * Math.abs(Math.sin(az * 0.21)) + 0.6 * Math.abs(Math.sin(az * 0.83)); // low skyline, varies with azimuth
-const LAND = [[340, 360, city], [0, 150, city]]; // [from, to, height deg]
-const HILLS = [[290, 335, [0, 2.5, 4, 3, 5, 3.5, 2, 0]], [155, 200, [0, 1.5, 2.5, 2, 1, 0]]]; // Santa Monica Mtns (NW), Palos Verdes (S)
+import { horizonAt } from './horizon.js';
+// R32 skyline = true horizon from terrain data (horizon.js), true height (same scale as the Moon and planets).
+const HZ_EX = 1;
 
 const wrap = (a) => ((a % 360) + 540) % 360 - 180;
 /** x for an azimuth, or null when outside the view. */
@@ -57,8 +57,7 @@ export function pierSvg({ ms, heading, obs, tz = TZ, mark = null }) {
     if (pts.length < 2) return '';
     return `<path d="M${f(pts[0][0])} ${HOR} ${pts.map(([x, y]) => `L${f(x)} ${f(y)}`).join(' ')} L${f(pts[pts.length - 1][0])} ${HOR} Z" fill="#0B0D10"/>`;
   };
-  for (const [a0, a1, hgt] of LAND) b += shape(a0, a1, hgt);
-  for (const [a0, a1, prof] of HILLS) b += shape(a0, a1, (az) => { const u = (az - a0) / (a1 - a0) * (prof.length - 1), i = Math.min(prof.length - 2, Math.floor(u)); return prof[i] + (prof[i + 1] - prof[i]) * (u - i); });
+  b += shape(heading - FOV / 2 - 4, heading + FOV / 2 + 4, (az) => horizonAt(az) * HZ_EX);
   b += `<line x1="0" y1="${HOR}" x2="${W}" y2="${HOR}" stroke="#5B5D62"/>`;
   // compass labels on the horizon
   for (const [az, lab] of [[0, 'N'], [45, 'NE'], [90, 'E'], [135, 'SE'], [180, 'S'], [225, 'SW'], [270, 'W'], [315, 'NW']]) {
@@ -72,12 +71,12 @@ export function pierSvg({ ms, heading, obs, tz = TZ, mark = null }) {
   for (const p of PLANETS) {
     const q = A.planetAltAz(p, date, obs); if (q.alt < -1) continue;
     const x = xOf(q.az, heading); if (x == null) continue;
-    const y = yOf(q.alt), hi = mark && mark.includes(p);
-    b += `<circle cx="${f(x)}" cy="${f(y)}" r="${p === 'venus' || p === 'jupiter' ? 3.2 : 2.4}" fill="${COLS[p]}"/>${hi ? `<circle cx="${f(x)}" cy="${f(y)}" r="9" fill="none" stroke="#B59CFF" stroke-width="1.2"/>` : ''}`;
-    if (x >= 0 && x <= W) labels.push([x, y, NAME[p], COLS[p]]);
+    const y = yOf(q.alt), hi = mark && mark.includes(p), hid = q.alt < horizonAt(q.az);
+    b += `<circle cx="${f(x)}" cy="${f(y)}" r="${p === 'venus' || p === 'jupiter' ? 3.2 : 2.4}" fill="${COLS[p]}"${hid ? ' fill-opacity="0.35"' : ''}/>${hi ? `<circle cx="${f(x)}" cy="${f(y)}" r="9" fill="none" stroke="#B59CFF" stroke-width="1.2"/>` : ''}`;
+    if (x >= 0 && x <= W) labels.push([x, y, NAME[p] + (hid ? ' (behind hills)' : ''), COLS[p]]);
   }
   // moon
-  { const x = xOf(moon.az, heading); if (x != null && moon.alt > -1) { const y = yOf(moon.alt); b += moonDisc(x, y, 7, phase, wrap(sun.az - moon.az)); if (mark && mark.includes('moon')) b += `<circle cx="${f(x)}" cy="${f(y)}" r="13" fill="none" stroke="#B59CFF" stroke-width="1.2"/>`; if (x >= 0 && x <= W) labels.push([x, y, `MOON ${Math.round(A.illumination(phase) * 100)}%`, '#F4F1E8']); } }
+  { const x = xOf(moon.az, heading); if (x != null && moon.alt > -1) { const y = yOf(moon.alt), mHid = moon.alt < horizonAt(moon.az); b += `<g${mHid ? ' opacity="0.35"' : ''}>` + moonDisc(x, y, 7, phase, wrap(sun.az - moon.az)) + '</g>'; if (mark && mark.includes('moon')) b += `<circle cx="${f(x)}" cy="${f(y)}" r="13" fill="none" stroke="#B59CFF" stroke-width="1.2"/>`; if (x >= 0 && x <= W) labels.push([x, y, `MOON ${Math.round(A.illumination(phase) * 100)}%${mHid ? ' (behind hills)' : ''}`, '#F4F1E8']); } }
   // tap targets (R25): invisible circles over the Moon and planets
   for (const [bd, q] of [['moon', moon], ...PLANETS.map((p) => [p, A.planetAltAz(p, date, obs)])]) {
     if (q.alt < -1) continue; const x = xOf(q.az, heading); if (x == null || x < 0 || x > W) continue;

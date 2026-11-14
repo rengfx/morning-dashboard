@@ -38,3 +38,4 @@
 | D34 | 2026-11-13 | Weekday Hume block marked WENT is hidden; the HUME LOG toggle stays to undo. Weekend all-day block is not hidden. |
 | D35 | 2026-11-13 | Clearing a WENT mark by hand always brings the block back (overrides the passed-morning hide). RESET DAY in the HUME LOG clears that day. |
 | D36 | 2026-11-13 | Where-to-look LIVE mode: now + 30 s refresh, paused while the page is hidden. |
+| D37 | 2026-11-13 | Hill line = terrain data (Door 2), built once into a static table (no runtime calls). No panorama photo for now. Flat pier view uses true heights (same scale as the sky); 3D scene ridge ×2. |

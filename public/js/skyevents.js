@@ -2,6 +2,7 @@
 // Pure functions (browser and Node). Shown only when something qualifies; nothing on quiet days.
 import { TZ, partsIn, zonedToUtc, addDays, ymd, weekdayOf } from './time.js';
 import * as A from './astro.js';
+import { horizonAt } from './horizon.js';
 
 export const PLANETS = ['mercury', 'venus', 'mars', 'jupiter', 'saturn'];
 const NAME = { mercury: 'Mercury', venus: 'Venus', mars: 'Mars', jupiter: 'Jupiter', saturn: 'Saturn', moon: 'Moon' };
@@ -46,18 +47,18 @@ export function findSkyEvents({ fromDate, days = 4, obs, tz = TZ, clouds = null 
 
     // 1 thin crescent after sunset / before sunrise
     { const t = S.set + 25 * MIN, m = moonAt(t, obs), il = illum(t) * 100;
-      if (waxing(t) && il >= LIM.thinLo && il <= LIM.thinHi && m.alt >= 4) {
-        const set = cross(t, t + 4 * 60 * MIN, (x) => moonAt(x, obs).alt, -1);
+      if (waxing(t) && il >= LIM.thinLo && il <= LIM.thinHi && m.alt >= horizonAt(m.az) + 3) {
+        const set = cross(t, t + 4 * 60 * MIN, (x) => { const q = moonAt(x, obs); return q.alt - horizonAt(q.az); }, -1);
         out.push({ date, at: t, kind: 'moon', key: `thin-eve-${date}`, bodies: ['moon'], title: 'Thin Moon after sunset', detail: `${Math.round(il)}% crescent, low in the ${A.compass(m.az)}${set ? `. Sets ${hhmm(set, tz)}` : ''}.`, metric: il });
       } }
     { const t = S.rise - 35 * MIN, m = moonAt(t, obs), il = illum(t) * 100;
-      if (!waxing(t) && il >= LIM.thinLo && il <= LIM.thinHi && m.alt >= 4) {
+      if (!waxing(t) && il >= LIM.thinLo && il <= LIM.thinHi && m.alt >= horizonAt(m.az) + 3) {
         out.push({ date, at: t, kind: 'moon', key: `thin-morn-${date}`, bodies: ['moon'], title: 'Thin Moon before sunrise', detail: `${Math.round(il)}% crescent, low in the ${A.compass(m.az)}. Sunrise ${hhmm(S.rise, tz)}.`, metric: il });
       } }
     // 2 full Moon rising at dusk
-    { const rise = cross(S.set - 90 * MIN, S.set + 90 * MIN, (x) => moonAt(x, obs).alt, 1);
+    { const rise = cross(S.set - 90 * MIN, S.set + 120 * MIN, (x) => { const m = moonAt(x, obs); return m.alt - horizonAt(m.az); }, 1); // clears the hills
       if (rise && illum(rise) >= 0.97 && Math.abs(rise - S.set) <= 75 * MIN) {
-        out.push({ date, at: rise, kind: 'moon', key: `full-rise-${date}`, bodies: ['moon'], title: 'Full Moon rises at dusk', detail: `Rises ${hhmm(rise, tz)} in the ${A.compass(moonAt(rise + 10 * MIN, obs).az)}. Sunset ${hhmm(S.set, tz)}.`, metric: 0 });
+        out.push({ date, at: rise, kind: 'moon', key: `full-rise-${date}`, bodies: ['moon'], title: 'Full Moon rises at dusk', detail: `Clears the hills ${hhmm(rise, tz)} in the ${A.compass(moonAt(rise + 10 * MIN, obs).az)}. Sunset ${hhmm(S.set, tz)}.`, metric: 0 });
       } }
     // 3 Moon near a planet, 4 two planets close (dark sky, both above 8°)
     for (const [list, part] of [[evening, 'evening'], [morning, 'morning']]) {

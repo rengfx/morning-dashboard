@@ -154,6 +154,7 @@ Added 2026-10-31 from two weekends of real data:
 - **R29 Walk home.** Only for a Hume block that ends when Hume closes that day (weekday 21:00, weekend 19:00). Rain chance for the walk = max of the closing hour and the hour 20 min later (`walkMin`). ≥ 40 %: "Rain on the walk home at 21:00 (55%). Bring a jacket." 20–39 %: "Walk home 21:00: 22% rain, rising." Below 20 %: "Walk home 21:00: dry." only when the block itself has some rain. Chart tag "WALK n%" at the block end. Replaces "Rain after" for the same hour.
 - **R30 Went = hide.** Weekdays: a Hume block marked ✓ WENT in the HUME LOG goes away (section and strip bar), on today and earlier days. Tap again to bring it back, even after its time has passed (a mark cleared by hand overrides R27). RESET DAY clears the day's marks and returns to the normal rules. Weekends unchanged (the HUME DAY block stays).
 - **R31 LIVE where-to-look.** "● LIVE" in the where-to-look header sets the time to now and refreshes the position every 30 s (and when the page comes back to the front). Tapping another planet while LIVE keeps LIVE. Tap again or ✕ to stop.
+- **R32 True horizon.** `public/js/horizon.js`: horizon height every 3° from the pier end (Copernicus GLO-90 terrain via Open-Meteo, 1 km steps to 30 km, 3 km to 99 km, curve + refraction k = 0.13, eye 7 m). Pier view skyline at true height; 3D scene ridge ×2 (labelled). Objects under the hills are faded with "(behind hills)"; where-to-look says "behind the hills … the hills reach X° there". Thin-Moon notes need ≥ 3° above the hills; full-Moon time = when it clears the hills; Moon-set time = when it drops behind the hills. Max hill ≈ 2° (N–NE).
 
 ## 4. Data sources
 
@@ -210,6 +211,7 @@ Lakers     ─┘      holds ICS_URL
 | `public/js/skyevents.js` | R22 sky events and planets tonight (pure). |
 | `public/js/pier.js` | R24 pier view SVG. |
 | `public/js/pier3d.js` | R25 3D where-to-look scene + words. |
+| `public/js/horizon.js` | R32 true horizon table from the pier end. |
 | `lib/ics.js` | ICS reader: folding, time zones, weekly repeats, EXDATE, moved events. |
 | `lib/fetch.js` | Fetches all sources, builds the scorer input, 72 h rain, DST. |
 | `functions/api/today.js` | Cloudflare Pages Function → `/api/today`. |

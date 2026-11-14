@@ -216,6 +216,15 @@ check('R26 sunset drawn in the 3D scene', w3.svg.includes('SUNSET') && w3.sunset
   check('humelog: blocked storage → no crash, toggle returns false', HL.toggle('2026-11-12', 'am') === false && HL.weekCount('2026-11-12') === 0);
   delete globalThis.localStorage; }
 
+// R32 true horizon (Copernicus GLO-90): known landmarks from the pier end
+const HZ = await import('../public/js/horizon.js');
+check('horizon: N hills 1.45° · San Gabriels (60°) 1.36° · Palos Verdes (156°) 0.73° · open sea W = 0', HZ.horizonAt(0) === 1.45 && HZ.horizonAt(60) === 1.36 && HZ.horizonAt(156) === 0.73 && HZ.horizonAt(240) === 0);
+check('horizon: wraps and interpolates (−3° = 357°; 1.5° between rays)', HZ.horizonAt(-3) === HZ.horizonAt(357) && Math.abs(HZ.horizonAt(1.5) - (1.45 + 1.46) / 2) < 1e-9);
+check('horizon: no hill above 2.5° (old hand-drawn line reached 5°)', Math.max(...HZ.HORIZON.alt) < 2.5, String(Math.max(...HZ.HORIZON.alt)));
+check('where: object above 0° but under the hills → "behind the hills"', /behind the hills .*ENE, 0\.8° up; the hills reach 1\.\d° there/.test(P3.lookText('moon', { az: 66, alt: 0.8 })), P3.lookText('moon', { az: 66, alt: 0.8 }));
+const fullEv = SE.findSkyEvents({ fromDate: '2026-11-23', days: 2, obs: ven }).find((e) => /Full Moon/.test(e.title));
+check('sky: full Moon time = when it clears the hills', fullEv && /Clears the hills/.test(fullEv.detail), fullEv && fullEv.detail);
+
 // ---- 3. fetchers with a fake network (no real API calls) ----
 const { buildDay } = await import('../lib/fetch.js');
 const SECRET = 'https://p01-caldav.icloud.com/published/2/SECRET-TOKEN-123';
