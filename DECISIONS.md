@@ -40,3 +40,4 @@
 | D36 | 2026-11-13 | Where-to-look LIVE mode: now + 30 s refresh, paused while the page is hidden. |
 | D37 | 2026-11-13 | Hill line = terrain data (Door 2), built once into a static table (no runtime calls). No panorama photo for now. Flat pier view uses true heights (same scale as the sky); 3D scene ridge ×2. |
 | D38 | 2026-11-14 | Horizon table complete: NW sector 252–357° measured (Santa Monica Mtns up to 2.19° at 330°). No provisional values left. |
+| D39 | 2026-11-14 | First NBA tip-off line from ESPN's public scoreboard (unofficial but keyless and fast; 156 ms). Lakers ICS (D13) stays for Lakers detail. |

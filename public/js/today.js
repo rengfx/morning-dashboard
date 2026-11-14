@@ -261,6 +261,16 @@ function humeLog(d, all) {
   return `<section class="sec humelog"><div class="row"><span>HUME LOG</span><span>${n} THIS WEEK</span></div><div class="chips">${btns}${any ? '<button type="button" class="went reset" data-reset>RESET DAY</button>' : ''}</div></section>`;
 }
 
+/** R33 first NBA tip-off (fantasy lock). Amber in the last hour, faint once games have started. */
+function nbaLine(d) {
+  const g = d.nba; if (!g) return '';
+  const now = d.now ? hm(d.now) : null, t = hm(g.first.tip);
+  const live = now != null && now >= t, soon = now != null && !live && t - now <= 60;
+  const cls = live ? 'nba gone' : soon ? 'nba soon' : 'nba';
+  const tail = live ? ' · STARTED' : soon ? ` · IN ${t - now} MIN` : '';
+  return `<div class="${cls}" title="First NBA tip-off today"><span>NBA <b>${esc(g.first.tip)}</b> · ${esc(g.first.matchup)}${tail}</span><span class="n">${g.count} GAME${g.count === 1 ? '' : 'S'}</span></div>`;
+}
+
 function render(dIn) {
   const d = hideDone(dIn);
   const [y, m, dd] = d.date.split('-').map(Number);
@@ -295,6 +305,7 @@ function render(dIn) {
 <div style="display:flex;flex-direction:column;gap:6px">
 <div class="row"><span>${off ? 'DAY' : 'TODAY'} · IN ORDER</span><span>${weekend ? 'WEEKEND' : 'WEEKDAY'} · ${d.sections.length} ITEM${d.sections.length === 1 ? '' : 'S'}</span></div>
 ${d.banners.map((b) => `<div class="banner">${esc(b.text)}</div>`).join('')}${late}
+${nbaLine(d)}
 ${stripChart(d)}
 <div class="legend">${d.sections.map((s, i) => `<span style="color:${s.passed ? COL.faint : STRIP[s.type]}">${i + 1} ${NAMES[s.type].replace('HUME MORNING', 'Hume AM').replace('HUME EVENING', 'Hume PM').toLowerCase().replace(/^\w/, (c) => c.toUpperCase())}${s.passed ? ' (passed)' : s.type === 'surf' && !s.window ? ' (none)' : ''}</span>`).join(' · ')}${off ? '' : ' · ┃ now'}</div>
 </div>

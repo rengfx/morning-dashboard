@@ -110,6 +110,10 @@ export default {
     "lat": 33.8895,
     "lon": -118.4065
   },
+  "nba": {
+    "scoreboardUrl": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+    "note": "First tip-off of the day for fantasy lineup changes (R33). Public ESPN scoreboard, no key."
+  },
   "lakers": {
     "team": "Los Angeles Lakers",
     "icsUrl": "https://nbaschedules.com/los-angeles-lakers/schedule.ics",
@@ -125,7 +129,8 @@ export default {
     "lakers": 720,
     "ics": 30,
     "tides": 720,
-    "hume": 60
+    "hume": 60,
+    "nba": 30
   },
   "weather": {
     "primary": "open-meteo",

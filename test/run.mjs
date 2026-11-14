@@ -226,6 +226,14 @@ check('where: object above 0° but under the hills → "behind the hills"', /beh
 const fullEv = SE.findSkyEvents({ fromDate: '2026-11-23', days: 2, obs: ven }).find((e) => /Full Moon/.test(e.title));
 check('sky: full Moon time = when it clears the hills', fullEv && /Clears the hills/.test(fullEv.detail), fullEv && fullEv.detail);
 
+// R33 first NBA tip-off (ESPN scoreboard, recorded Sat 2026-11-14 / Sun 2026-11-15)
+{ const NB = await import('../lib/nba.js'); const ns = JSON.parse(readFileSync(join(root, 'fixtures/nba-sample.json'), 'utf8'));
+  const sa = NB.parseScoreboard(ns.sat, 'America/Los_Angeles'), su = NB.parseScoreboard(ns.sun, 'America/Los_Angeles');
+  check('nba: Sat first tip 16:00 DEN @ NO, 5 games (postponed dropped, unsorted feed sorted)', sa.first.tip === '16:00' && sa.first.matchup === 'DEN @ NO' && sa.count === 5, JSON.stringify(sa.first) + ' ' + sa.count);
+  check('nba: Sun first tip 10:00 IND @ PHI (before Lakers 13:00)', su.first.tip === '10:00' && su.first.matchup === 'IND @ PHI');
+  check('nba: no games → null; changed feed → clear error', NB.parseScoreboard({ events: [] }, 'America/Los_Angeles') === null && (() => { try { NB.parseScoreboard({}, 'UTC'); return false; } catch (e) { return /unexpected feed shape/.test(e.message); } })());
+  check('nba: URL uses the local date', NB.scoreboardUrl(cfg.nba.scoreboardUrl, '2026-11-14').endsWith('?dates=20261114')); }
+
 // ---- 3. fetchers with a fake network (no real API calls) ----
 const { buildDay } = await import('../lib/fetch.js');
 const SECRET = 'https://p01-caldav.icloud.com/published/2/SECRET-TOKEN-123';
@@ -251,6 +259,7 @@ globalThis.fetch = async (url) => {
   const u = new URL(url);
   if (url === SECRET) return new Response(readFileSync(join(root, 'fixtures/routine-sample.ics'), 'utf8'));
   if (u.hostname === 'nbaschedules.com') return new Response('BEGIN:VCALENDAR\nBEGIN:VEVENT\nSUMMARY:x'); // cut off on purpose
+  if (u.hostname === 'site.api.espn.com') return new Response(JSON.stringify(JSON.parse(readFileSync(join(root, 'fixtures/nba-sample.json'), 'utf8')).sat));
   if (u.hostname === 'widget-api-tkaeguucxq-uc.a.run.app') { humeHits.push(url); return new Response(readFileSync(join(root, 'fixtures/hume-sample.json'), 'utf8')); }
   if (fake[u.hostname]) return new Response(JSON.stringify(fake[u.hostname]));
   return new Response('nope', { status: 404 });
@@ -268,6 +277,7 @@ check('fetch: 72 h rain sum', Math.abs(day.rain72hMm - 4.8) < 0.01, String(day.r
 check('fetch: webcal ICS read, no Hume on Saturday', Array.isArray(day.calendar) && day.calendar.length === 0);
 check('fetch: cut-off Lakers feed → error, no game', day.lakers === null && errors.some((e) => e.source === 'lakers' && /cut off/.test(e.message)), JSON.stringify(errors));
 check('fetch: DST banner input', JSON.stringify(day.dst) === '{"when":"tonight","direction":"back"}');
+check('fetch: NBA first tip read, no error', day.nba && day.nba.first.tip === '16:00' && !errors.some((e) => e.source === 'nba'), JSON.stringify(day.nba && day.nba.first));
 check('fetch: HUME feed read for that day only, no error', humeHits.length === 4 && Array.isArray(day.humeClasses) && day.humeClasses.length === 0 && !errors.some((e) => e.source === 'hume classes'), `${humeHits.length} calls`);
 const blob = JSON.stringify({ day, errors, scored: scoreDay(day, cfg) });
 check('day +1: Nov 1, no "now", Sunday', dNext.date === '2026-11-01' && dNext.now === null && dNext.weekday === 'SUN' && dNext.offset === 1);

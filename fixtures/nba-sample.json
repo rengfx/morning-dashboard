@@ -1,0 +1,102 @@
+{
+ "sat": {
+  "_note": "Recorded from ESPN scoreboard 2026-11-14 (Sat), trimmed. Plus one postponed game (synthetic).",
+  "events": [
+   {
+    "date": "2026-11-15T01:00Z",
+    "shortName": "DET @ MIA",
+    "status": {
+     "type": {
+      "name": "STATUS_SCHEDULED",
+      "state": "pre"
+     }
+    }
+   },
+   {
+    "date": "2026-11-15T00:00Z",
+    "shortName": "DEN @ NO",
+    "status": {
+     "type": {
+      "name": "STATUS_SCHEDULED",
+      "state": "pre"
+     }
+    }
+   },
+   {
+    "date": "2026-11-15T00:30Z",
+    "shortName": "DAL @ CLE",
+    "status": {
+     "type": {
+      "name": "STATUS_SCHEDULED",
+      "state": "pre"
+     }
+    }
+   },
+   {
+    "date": "2026-11-15T01:00Z",
+    "shortName": "BKN @ MEM",
+    "status": {
+     "type": {
+      "name": "STATUS_SCHEDULED",
+      "state": "pre"
+     }
+    }
+   },
+   {
+    "date": "2026-11-15T01:00Z",
+    "shortName": "CHI @ MIN",
+    "status": {
+     "type": {
+      "name": "STATUS_SCHEDULED",
+      "state": "pre"
+     }
+    }
+   },
+   {
+    "date": "2026-11-14T23:00Z",
+    "shortName": "XXX @ YYY",
+    "status": {
+     "type": {
+      "name": "STATUS_POSTPONED",
+      "state": "post"
+     }
+    }
+   }
+  ]
+ },
+ "sun": {
+  "_note": "ESPN scoreboard 2026-11-15 (Sun), first games only.",
+  "events": [
+   {
+    "date": "2026-11-15T21:00Z",
+    "shortName": "LAL @ PHX",
+    "status": {
+     "type": {
+      "name": "STATUS_SCHEDULED",
+      "state": "pre"
+     }
+    }
+   },
+   {
+    "date": "2026-11-15T18:00Z",
+    "shortName": "IND @ PHI",
+    "status": {
+     "type": {
+      "name": "STATUS_SCHEDULED",
+      "state": "pre"
+     }
+    }
+   },
+   {
+    "date": "2026-11-15T21:30Z",
+    "shortName": "CHA @ LAC",
+    "status": {
+     "type": {
+      "name": "STATUS_SCHEDULED",
+      "state": "pre"
+     }
+    }
+   }
+  ]
+ }
+}

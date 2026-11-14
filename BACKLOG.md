@@ -26,6 +26,8 @@
 
 ## Later
 
+- Bug: weather fetch timed out on 2026-11-14 12:37 ("weather: timeout", 8 s) → no Sun section that day. Offered fix: longer timeout + one retry. Waiting for Darin.
+
 - Pier panorama photo as background (Door 3, not chosen).
 
 - Hume log sync across devices (Cloudflare KV; needs a KV namespace in the Pages project). Marks are per browser now.
@@ -42,6 +44,10 @@
 - Second "later" surf windows: confirm the dashed-outline display with real data.
 - Moon-height histogram: mark moonrise / moonset times.
 - Lakers TV: the feed only names national TV; local games show `LOCAL`.
+
+## Done (2026-11-14 session)
+
+- First NBA tip-off line (R33). Tests: 9 fixtures files + 103 checks, all pass.
 
 ## Done (2026-11-13 session)
 
