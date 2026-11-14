@@ -93,7 +93,7 @@ function humeChart(d, s) {
   }
   if (s.walkHome && s.walkHome.level !== 'GOOD') { // R29 walk-home tag at closing time
     const xe = sc.x(hm(s.end)), wcol = s.walkHome.level === 'BAD' ? COL.coral : COL.amber;
-    b += text(Math.min(W - 2, xe + 3), H - 4, `WALK ${s.walkHome.pct}%`, wcol, { anchor: xe > W - 60 ? 'end' : 'start', size: 10 });
+    b += text(xe > W - 60 ? xe - 3 : xe + 3, 24, `WALK ${s.walkHome.pct}%`, wcol, { anchor: xe > W - 60 ? 'end' : 'start', size: 10 });
   }
   for (const [sunT, lab] of [[hm(d.sun.rise), `↑${d.sun.rise}`], [hm(d.sun.set), `↓${d.sun.set}`]]) if ((allDay || (am ? lab[0] === '↑' : lab[0] === '↓')) && sunT > sc.t0 && sunT < sc.t1) b += text(sc.x(sunT) + 3, 40, lab, COL.muted);
   const maxPop = Math.max(0, ...pop.filter(([t]) => t >= sc.t0 && t < sc.t1).map((p) => p[1]));
