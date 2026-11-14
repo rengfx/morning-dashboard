@@ -232,6 +232,8 @@ check('sky: full Moon time = when it clears the hills', fullEv && /Clears the hi
   check('nba: Sat first tip 16:00 DEN @ NO, 5 games (postponed dropped, unsorted feed sorted)', sa.first.tip === '16:00' && sa.first.matchup === 'DEN @ NO' && sa.count === 5, JSON.stringify(sa.first) + ' ' + sa.count);
   check('nba: Sun first tip 10:00 IND @ PHI (before Lakers 13:00)', su.first.tip === '10:00' && su.first.matchup === 'IND @ PHI');
   check('nba: no games → null; changed feed → clear error', NB.parseScoreboard({ events: [] }, 'America/Los_Angeles') === null && (() => { try { NB.parseScoreboard({}, 'UTC'); return false; } catch (e) { return /unexpected feed shape/.test(e.message); } })());
+  const lv = NB.parseScoreboard(ns.live, 'America/Los_Angeles').games;
+  check('nba: games list — final "DEN 123 – NO 111 · Final", live "DAL 74 – CLE 70 · Q3 5:12", not started = no score', lv[0].score === 'DEN 123 – NO 111' && lv[0].detail === 'Final' && lv[1].score === 'DAL 74 – CLE 70' && lv[1].detail === 'Q3 5:12' && lv[2].score === null && lv[2].detail === null, JSON.stringify(lv.map((g) => [g.score, g.detail])));
   check('nba: URL uses the local date', NB.scoreboardUrl(cfg.nba.scoreboardUrl, '2026-11-14').endsWith('?dates=20261114')); }
 
 // ---- 3. fetchers with a fake network (no real API calls) ----

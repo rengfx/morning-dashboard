@@ -98,5 +98,103 @@
     }
    }
   ]
+ },
+ "live": {
+  "_note": "Synthetic: one final, one in progress, one not started (ESPN shape).",
+  "events": [
+   {
+    "date": "2026-11-15T00:00Z",
+    "shortName": "DEN @ NO",
+    "status": {
+     "type": {
+      "name": "STATUS_FINAL",
+      "state": "post",
+      "shortDetail": "Final"
+     }
+    },
+    "competitions": [
+     {
+      "competitors": [
+       {
+        "homeAway": "home",
+        "score": "111",
+        "team": {
+         "abbreviation": "NO"
+        }
+       },
+       {
+        "homeAway": "away",
+        "score": "123",
+        "team": {
+         "abbreviation": "DEN"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "date": "2026-11-15T00:30Z",
+    "shortName": "DAL @ CLE",
+    "status": {
+     "type": {
+      "name": "STATUS_IN_PROGRESS",
+      "state": "in",
+      "shortDetail": "Q3 5:12"
+     }
+    },
+    "competitions": [
+     {
+      "competitors": [
+       {
+        "homeAway": "home",
+        "score": "70",
+        "team": {
+         "abbreviation": "CLE"
+        }
+       },
+       {
+        "homeAway": "away",
+        "score": "74",
+        "team": {
+         "abbreviation": "DAL"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "date": "2026-11-15T01:00Z",
+    "shortName": "DET @ MIA",
+    "status": {
+     "type": {
+      "name": "STATUS_SCHEDULED",
+      "state": "pre",
+      "shortDetail": "5:00 PM PST"
+     }
+    },
+    "competitions": [
+     {
+      "competitors": [
+       {
+        "homeAway": "home",
+        "score": "0",
+        "team": {
+         "abbreviation": "MIA"
+        }
+       },
+       {
+        "homeAway": "away",
+        "score": "0",
+        "team": {
+         "abbreviation": "DET"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  ]
  }
 }

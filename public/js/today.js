@@ -98,7 +98,7 @@ function humeChart(d, s) {
   for (const [sunT, lab] of [[hm(d.sun.rise), `↑${d.sun.rise}`], [hm(d.sun.set), `↓${d.sun.set}`]]) if ((allDay || (am ? lab[0] === '↑' : lab[0] === '↓')) && sunT > sc.t0 && sunT < sc.t1) b += text(sc.x(sunT) + 3, 40, lab, COL.muted);
   const maxPop = Math.max(0, ...pop.filter(([t]) => t >= sc.t0 && t < sc.t1).map((p) => p[1]));
   if (maxPop >= 40) { const pk = pop.find(([t, v]) => v === maxPop && t >= sc.t0); b += text(...(([x, a]) => [x, 28, `${maxPop}%@${fm(pk[0])}`, COL.sky, { anchor: a }])(lx(sc.x(pk[0] + 30)))); }
-  else if (maxPop === 0) b += text(W - 4, 12, '0% rain', COL.faint, { anchor: 'end' });
+  else if (maxPop === 0) b += text(W / 2, H - 4, '0% rain', COL.faint, { anchor: 'middle' });
   b += rect(0, H, W, 1, COL.rule) + nowLine(sc, d.now, H) + ticks(sc, 88, sc.h1 - sc.h0 > 8 ? 2 : 1);
   return svg(92, `${NAMES[s.type]} chart, ${fm(sc.t0)} to ${fm(sc.t1)}: window ${s.start} to ${s.end}, status ${s.status}${s.suggest ? `, suggested ${s.suggest[0]} to ${s.suggest[1]}` : ''}. Peak rain chance ${maxPop} percent.`, b)
     + `<div class="legend"><span style="color:${COL.coral}">— temp °F</span>  <span style="color:${COL.sky}">▮ rain %</span>  ▮ dark${game ? `  <span style="color:${COL.gold}">▮ game</span>` : ''}</div>`;
@@ -182,11 +182,13 @@ function classList(d, s) {
   if (!s.classes) return '';
   const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const url = d.config && ((ios && d.config.humeAppUrl) || d.config.humeBookUrl);
-  const rows = s.classes.map((c) => {
+  const left = s.classes.filter((c) => !c.started); // R34 a class goes away once it has started
+  const gone = s.classes.length - left.length;
+  const rows = left.map((c) => {
     const st = c.started ? ['STARTED', 'faint'] : c.state === 'CLOSED' ? ['CLOSED', 'faint'] : c.state === 'FULL' ? [c.waitlist ? `FULL · WL ${c.waitlist}` : 'FULL', 'bad'] : [`${c.left} OPEN`, c.left <= 2 ? 'ok' : 'good'];
     return `<li class="${c.started ? 'gone' : ''}"><span class="t">${esc(c.start)}</span><span class="n">${esc(c.name)}<small>${esc([c.host, `${c.min} min`].filter(Boolean).join(' · '))}</small></span><span class="s ${st[1]}">${esc(st[0])}</span></li>`;
   }).join('');
-  return `<div class="classes"><div class="row"><span>CLASSES IN WINDOW · ${s.classes.length}</span>${url ? `<a href="${esc(url)}"${url.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${ios ? 'HUME APP ↗' : 'BOOK ↗'}</a>` : ''}</div>${rows ? `<ul>${rows}</ul>` : '<div class="note">No class fits in this window.</div>'}</div>`;
+  return `<div class="classes"><div class="row"><span>CLASSES IN WINDOW · ${left.length}${gone ? ` <small class="faint">(${gone} started)</small>` : ''}</span>${url ? `<a href="${esc(url)}"${url.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${ios ? 'HUME APP ↗' : 'BOOK ↗'}</a>` : ''}</div>${rows ? `<ul>${rows}</ul>` : `<div class="note">${gone ? 'No more classes in this window today.' : 'No class fits in this window.'}</div>`}</div>`;
 }
 
 /** R21 sea surface temperature (°F) at the window start, or 08:00. */
@@ -262,13 +264,15 @@ function humeLog(d, all) {
 }
 
 /** R33 first NBA tip-off (fantasy lock). Amber in the last hour, faint once games have started. */
+let nbaOpen = false; // R34 expand state survives re-renders and day swipes
 function nbaLine(d) {
   const g = d.nba; if (!g) return '';
   const now = d.now ? hm(d.now) : null, t = hm(g.first.tip);
   const live = now != null && now >= t, soon = now != null && !live && t - now <= 60;
   const cls = live ? 'nba gone' : soon ? 'nba soon' : 'nba';
   const tail = live ? ' · STARTED' : soon ? ` · IN ${t - now} MIN` : '';
-  return `<div class="${cls}" title="First NBA tip-off today"><span>NBA <b>${esc(g.first.tip)}</b> · ${esc(g.first.matchup)}${tail}</span><span class="n">${g.count} GAME${g.count === 1 ? '' : 'S'}</span></div>`;
+  const rows = (g.games || []).map((x) => `<li class="${x.state}"><span class="t">${esc(x.tip)}</span><span class="m">${esc(x.matchup)}</span><span class="d">${esc(x.state === 'pre' ? '' : [x.score, x.detail].filter(Boolean).join(' · '))}</span></li>`).join('');
+  return `<details class="nbabox"${nbaOpen ? ' open' : ''}><summary class="${cls}" title="Tap to show all games"><span>NBA <b>${esc(g.first.tip)}</b> · ${esc(g.first.matchup)}${tail}</span><span class="n">${g.count} GAME${g.count === 1 ? '' : 'S'} <i class="car">▾</i></span></summary>${rows ? `<ul class="nbagames">${rows}</ul>` : ''}</details>`;
 }
 
 function render(dIn) {
@@ -318,6 +322,8 @@ ${sky}
     if (!toggle(d.date, b.dataset.went)) { b.textContent = 'NOT SAVED'; return; }
     const y = scrollY; render(dIn); scrollTo(0, y);
   });
+  const nb = document.querySelector('.nbabox');
+  if (nb) nb.addEventListener('toggle', () => { nbaOpen = nb.open; });
   const rs = document.querySelector('[data-reset]');
   if (rs) rs.addEventListener('click', () => { resetDay(d.date); const y = scrollY; render(dIn); scrollTo(0, y); });
   for (const b of document.querySelectorAll('[data-step]')) b.addEventListener('click', () => go(+b.dataset.step));

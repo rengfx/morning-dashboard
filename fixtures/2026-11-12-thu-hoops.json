@@ -1,5 +1,5 @@
 {
- "_note": "R20: Basketball 19:00\u201322:00 replaces Hume PM; court weather from the park point (2 \u00b0F cooler, +1 mph, synthetic). Weather borrowed from Oct 27.",
+ "_note": "R20: Basketball 19:00–22:00 replaces Hume PM; court weather from the park point (2 °F cooler, +1 mph, synthetic). Weather borrowed from Oct 27.",
  "input": {
   "date": "2026-11-12",
   "weekday": "THU",
@@ -367,12 +367,34 @@
    }
   },
   "nba": {
-   "count": 5,
+   "count": 3,
    "first": {
     "tip": "16:00",
     "matchup": "DEN @ NO"
    },
-   "games": []
+   "games": [
+    {
+     "tip": "16:00",
+     "matchup": "DEN @ NO",
+     "state": "post",
+     "detail": "Final",
+     "score": "DEN 123 – NO 111"
+    },
+    {
+     "tip": "16:30",
+     "matchup": "DAL @ CLE",
+     "state": "in",
+     "detail": "Q3 5:12",
+     "score": "DAL 74 – CLE 70"
+    },
+    {
+     "tip": "17:00",
+     "matchup": "DET @ MIA",
+     "state": "pre",
+     "detail": null,
+     "score": null
+    }
+   ]
   }
  },
  "expected": {

@@ -108,3 +108,15 @@ main { touch-action: pan-y; }
 .nba.soon { border-color: var(--amber); color: var(--amber); }
 .nba.gone { opacity: .5; }
 .nba .n { white-space: nowrap; }
+
+/* NBA games list (R34) */
+.nbabox summary { list-style: none; cursor: pointer; }
+.nbabox summary::-webkit-details-marker { display: none; }
+.nbabox .car { font-style: normal; display: inline-block; transition: transform .15s; color: var(--faint); }
+.nbabox[open] .car { transform: rotate(180deg); }
+.nbagames { list-style: none; margin: 0; padding: 0 8px; border: 1px solid var(--rule); border-top: 0; }
+.nbagames li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 8px; padding: 5px 0; font-size: 12px; border-bottom: 1px solid var(--rule2); }
+.nbagames li:last-child { border-bottom: 0; }
+.nbagames .t { color: var(--muted); } .nbagames .d { color: var(--muted); white-space: nowrap; }
+.nbagames li.in .d { color: var(--green); } .nbagames li.post { opacity: .55; }
+.classes .row small { font-size: 10px; }
