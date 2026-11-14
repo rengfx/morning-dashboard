@@ -47,7 +47,7 @@
 
 ## Done (2026-11-14 session)
 
-- First NBA tip-off line (R33). Tests: 9 fixtures files + 103 checks, all pass.
+- First NBA tip-off line (R33). Tests: 8 fixtures + 103 checks, all pass.
 
 ## Done (2026-11-13 session)
 
