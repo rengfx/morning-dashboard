@@ -44,7 +44,8 @@
 
 ## Done (2026-11-13 session)
 
-- Morning block hides when done (R27), Hume log with weekly count (R28). Tests: 8 fixtures + 83 checks, all pass.
+- Morning block hides when done (R27), Hume log with weekly count (R28), walk home at closing (R29). Tests: 8 fixtures + 89 checks, all pass.
+- HUME app direct open: test page `/open-hume.html` (5 link guesses + Shortcut). Waiting for Darin's result.
 
 ## Done (2026-11-12 session)
 

@@ -151,6 +151,7 @@ Added 2026-10-31 from two weekends of real data:
 - **R26 Sunset reference.** The where-to-look scene marks where the sun last went down (most recent sunset at or before the shown time; a morning view uses the evening before): a half sun on the horizon with time and direction. The text adds "Sunset was at 16:52 in the WSW (249°). Face that point: Saturn is 68° to your left."
 - **R27 Morning block hides when done.** Today, on a weekday: once the Hume morning window has passed, its section and its strip bar go away. Other days and weekends are unchanged.
 - **R28 Hume log.** Today and earlier days: a HUME LOG line with one toggle per Hume window (AM, PM, or DAY): tap = "✓ WENT", tap again = clear. Shows visits this week (Mon–Sun). Stored in this browser only (localStorage); blocked storage shows "NOT SAVED".
+- **R29 Walk home.** Only for a Hume block that ends when Hume closes that day (weekday 21:00, weekend 19:00). Rain chance for the walk = max of the closing hour and the hour 20 min later (`walkMin`). ≥ 40 %: "Rain on the walk home at 21:00 (55%). Bring a jacket." 20–39 %: "Walk home 21:00: 22% rain, rising." Below 20 %: "Walk home 21:00: dry." only when the block itself has some rain. Chart tag "WALK n%" at the block end. Replaces "Rain after" for the same hour.
 
 ## 4. Data sources
 

@@ -129,6 +129,21 @@ const satHoops = scoreDay({ ...sat, calendar: [{ title: 'Basketball', start: '10
 check('R20 weekend Basketball adds a section, keeps the Hume day', satHoops.order.includes('basketball') && satHoops.order.includes('humeDay'), satHoops.order.join());
 check('R21 sun window 90 min centred on UV peak', (() => { const s = scoreDay(sat, cfg).sections.find((x) => x.type === 'sun'); return s.start === '11:15' && s.end === '12:45' && s.uvPeakAt === '12:00'; })());
 
+// R29 walk home at closing (Fri Nov 13 evening: 20% at 20:00, 22% at 21:00, 25% at 22:00)
+const evening = (pcts) => ({ ...tue, lakers: null, hourly: { ...tue.hourly, precipPct: tue.hourly.precipPct.map((v, i) => (i in pcts ? pcts[i] : 0)) } });
+const wk1 = scoreDay(evening({ 18: 14, 19: 17, 20: 20, 21: 22, 22: 25 }), cfg).sections.find((x) => x.type === 'humePM');
+check('R29 weekday PM ends 21:00 (close): "Walk home 21:00: 22% rain, rising."', /Walk home 21:00: 22% rain, rising\./.test(wk1.advice), wk1.advice);
+const wk2 = scoreDay(evening({ 21: 55 }), cfg).sections.find((x) => x.type === 'humePM');
+check('R29 ≥40% → "Rain on the walk home at 21:00 (55%)", no duplicate "Rain after"', /Rain on the walk home at 21:00 \(55%\)/.test(wk2.advice) && !/Rain after 21:00/.test(wk2.advice), wk2.advice);
+const wk3 = scoreDay(evening({}), cfg).sections.find((x) => x.type === 'humePM');
+check('R29 dry evening → just "Dry." (no repeat)', wk3.advice.startsWith('Dry.') && !/Walk home/.test(wk3.advice), wk3.advice);
+const wk6 = scoreDay(evening({ 18: 30 }), cfg).sections.find((x) => x.type === 'humePM');
+check('R29 rain early in the block, dry at 21:00 → "Walk home 21:00: dry."', /Walk home 21:00: dry\./.test(wk6.advice), wk6.advice);
+const wk4 = scoreDay({ ...evening({ 20: 60 }), calendar: [{ title: 'Hume', start: '17:30', end: '19:30' }] }, cfg).sections.find((x) => x.type === 'humePM');
+check('R29 block ending before close (19:30) → no walk-home note', !wk4.walkHome && !/Walk home|walk home/.test(wk4.advice), wk4.advice);
+const wk5 = scoreDay({ ...sat, now: '09:00', hourly: { ...sat.hourly, precipPct: sat.hourly.precipPct.map((v, i) => (i === 19 ? 45 : v)) } }, cfg).sections.find((x) => x.type === 'humeDay');
+check('R29 weekend day block ends 19:00 (close) → walk-home note', wk5.walkHome && wk5.walkHome.at === '19:00' && /walk home at 19:00 \(45%\)/.test(wk5.advice), wk5.advice);
+
 // Astronomy: reference values (Venus inferior conjunction 2026-10-24; full Moon 2026-10-26).
 const jd = (iso) => astro.julian(new Date(iso));
 const he = astro.helio('earth', jd('2026-10-24T07:00:00Z')), hv = astro.helio('venus', jd('2026-10-24T07:00:00Z'));

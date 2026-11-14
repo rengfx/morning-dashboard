@@ -23,6 +23,11 @@ export default {
       "07:00",
       "19:00"
     ],
+    "close": {
+      "weekday": "21:00",
+      "weekend": "19:00"
+    },
+    "walkMin": 20,
     "rainOkPct": 20,
     "rainNoPct": 40,
     "windNoMph": 15,

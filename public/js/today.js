@@ -91,6 +91,10 @@ function humeChart(d, s) {
     const pk = temp.reduce((m, p) => (p[1] > m[1] ? p : m));
     if (pk !== temp[0] && pk !== temp[temp.length - 1]) { const x = sc.x(pk[0]), [tx, an] = lx(x); b += peakDot(x, ty(pk[1]), COL.coral, H) + text(tx, ty(pk[1]) - 8, `${Math.round(pk[1])}°@${fm(pk[0])}`, COL.coral, { anchor: an }); }
   }
+  if (s.walkHome && s.walkHome.level !== 'GOOD') { // R29 walk-home tag at closing time
+    const xe = sc.x(hm(s.end)), wcol = s.walkHome.level === 'BAD' ? COL.coral : COL.amber;
+    b += text(Math.min(W - 2, xe + 3), H - 4, `WALK ${s.walkHome.pct}%`, wcol, { anchor: xe > W - 60 ? 'end' : 'start', size: 10 });
+  }
   for (const [sunT, lab] of [[hm(d.sun.rise), `↑${d.sun.rise}`], [hm(d.sun.set), `↓${d.sun.set}`]]) if ((allDay || (am ? lab[0] === '↑' : lab[0] === '↓')) && sunT > sc.t0 && sunT < sc.t1) b += text(sc.x(sunT) + 3, 40, lab, COL.muted);
   const maxPop = Math.max(0, ...pop.filter(([t]) => t >= sc.t0 && t < sc.t1).map((p) => p[1]));
   if (maxPop >= 40) { const pk = pop.find(([t, v]) => v === maxPop && t >= sc.t0); b += text(...(([x, a]) => [x, 28, `${maxPop}%@${fm(pk[0])}`, COL.sky, { anchor: a }])(lx(sc.x(pk[0] + 30)))); }
