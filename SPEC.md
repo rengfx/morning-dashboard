@@ -160,6 +160,7 @@ Added 2026-10-31 from two weekends of real data:
 - **R35 Two weekend visits.** On weekends the HUME LOG has VISIT 1 and VISIT 2 for the all-day block; each counts as a visit in the weekly count.
 - **R36 Low UV from.** Sun section cell: first time after the peak when UV drops below `sunscreenUv` (3), linear between hours, to 5 min. The SUNSCREEN window ends at that time. Peak under 3 → "ALL DAY". Replaces the SUNRISE cell (sunrise stays in the Hume LIGHT cell).
 - **R37 Sports line.** The NBA line is the SPORTS line. Lead stays the first NBA tip-off (or the first other game on a day without NBA). Right side: "3+1 GAMES". Expanded: every NBA game, then "OTHER LA TEAMS": Rams (NFL) and Dodgers (MLB) games that day (ESPN scoreboards, same as NBA). Lakers and Clippers home games (not started) get "TICKETS ↗" to the SeatGeek team page; the Lakers section on a home game gets "TICKETS ON SEATGEEK ↗". SeatGeek blocks automated lookups, so the link is the web team page (Safari shows SeatGeek's Open-in-app banner), not a direct app link.
+- **R38 UCLA + local tickets.** UCLA football (UCLA FB) and men's basketball (UCLA BB) from ESPN team schedules (teams/26), matched on the Pacific date, cached 6 h. Ticket link rule for every followed team: a home game, or any game at an LA venue (`localVenues`: Crypto.com Arena, Intuit Dome, SoFi Stadium, Dodger Stadium, Rose Bowl, Pauley Pavilion). Ticket keys are league-scoped for non-NBA (`NFL:LAR`, `MLB:LAD`, `UCLA FB:UCLA`, `UCLA BB:UCLA`) so NFL "LAC" (Chargers) never gets the Clippers link.
 
 ## 4. Data sources
 

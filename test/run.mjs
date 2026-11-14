@@ -251,6 +251,12 @@ check('sky: full Moon time = when it clears the hills', fullEv && /Clears the hi
   const rams = NB.teamGames(ns.nflSun, 'NFL', ['LAR'], 'America/Los_Angeles');
   check('sports: NFL filter keeps only Rams (LAR @ ARI 13:05, away)', rams.length === 1 && rams[0].tip === '13:05' && rams[0].league === 'NFL' && rams[0].isHome === false, JSON.stringify(rams.map((r) => [r.matchup, r.tip])));
   check('sports: Dodgers offseason → no MLB games, no error', NB.teamGames({ events: [] }, 'MLB', ['LAD'], 'America/Los_Angeles').length === 0);
+  const fb = NB.teamScheduleGames(ns.uclaFb, 'UCLA FB', 'UCLA', '2026-11-13', 'America/Los_Angeles');
+  check('ucla: Fri Nov 13 18:00 ILL @ UCLA (02:00Z Sat) lands on the Pacific date, home, final 31–17', fb.length === 1 && fb[0].tip === '18:00' && fb[0].isHome && fb[0].score === 'ILL 17 – UCLA 31' && fb[0].detail === 'Final', JSON.stringify(fb));
+  check('ucla: Sat Nov 14 → no football game (bye)', NB.teamScheduleGames(ns.uclaFb, 'UCLA FB', 'UCLA', '2026-11-14', 'America/Los_Angeles').length === 0);
+  const bb = NB.teamScheduleGames(ns.uclaBb, 'UCLA BB', 'UCLA', '2026-11-16', 'America/Los_Angeles');
+  check('ucla: Mon Nov 16 19:00 LBSU @ UCLA at Pauley, not started', bb.length === 1 && bb[0].tip === '19:00' && bb[0].venue === 'Pauley Pavilion' && bb[0].state === 'pre' && bb[0].score === null);
+  check('tickets: keys are league-scoped (UCLA FB vs UCLA BB; Rams at Chargers ≠ Clippers link)', cfg.nba.tickets['UCLA FB:UCLA'].includes('football') && cfg.nba.tickets['UCLA BB:UCLA'].includes('basketball') && !cfg.nba.tickets['NFL:LAC'] && cfg.nba.tickets.LAC.includes('clippers'));
   check('nba: URL uses the local date', NB.scoreboardUrl(cfg.nba.scoreboardUrl, '2026-11-14').endsWith('?dates=20261114')); }
 
 // ---- 3. fetchers with a fake network (no real API calls) ----

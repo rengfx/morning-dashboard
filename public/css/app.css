@@ -128,3 +128,4 @@ main { touch-action: pan-y; }
 .nbagames li.tix.LAL .t { color: var(--gold); } .nbagames li.tix.LAC .t { color: var(--coral); }
 .nbagames li a, .tix-link { font-size: 11px; font-weight: 400; white-space: nowrap; }
 .tix-link { align-self: flex-start; border: 1px solid var(--gold); color: var(--gold); padding: 8px 12px; }
+.nbagames li.tix.UCLA .t { color: var(--sky); } .nbagames li.tix.LAR .t, .nbagames li.tix.LAD .t { color: var(--sky); }

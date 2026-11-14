@@ -277,9 +277,11 @@ function nbaLine(d) {
   const cls = live ? 'nba gone' : soon ? 'nba soon' : 'nba';
   const tail = live ? ' · STARTED' : soon ? ` · ${t - now} MIN` : '';
   const row = (x, lg) => {
-    const tix = x.home && tk[x.home] ? tk[x.home] : null; // a home game of a team with a ticket link (Lakers, Clippers)
+    const key = (t) => (lg ? tk[`${lg}:${t}`] : tk[t]);
+    const local = x.venue && (d.config.localVenues || []).includes(x.venue);
+    const tix = (x.home && key(x.home)) || (local && x.team && key(x.team)) || null; // R38 home game, or a followed team at an LA venue // R38 a local (home) game of a team with a ticket link
     const res = x.state === 'pre' ? '' : [x.score, x.detail].filter(Boolean).join(' · ');
-    return `<li class="${x.state}${tix ? ' tix ' + x.home : ''}"><span class="t">${esc(x.tip)}</span><span class="m">${lg ? `<em>${esc(lg)}</em> ` : ''}${esc(x.matchup)}${tix && x.state === 'pre' ? ` <a href="${esc(tix)}" target="_blank" rel="noopener">TICKETS ↗</a>` : ''}</span><span class="d">${esc(res)}</span></li>`;
+    return `<li class="${x.state}${tix ? ' tix ' + String(key(x.home) ? x.home : x.team).replace(/\W/g, '') : ''}"><span class="t">${esc(x.tip)}</span><span class="m">${lg ? `<em>${esc(lg)}</em> ` : ''}${esc(x.matchup)}${tix && x.state === 'pre' ? ` <a href="${esc(tix)}" target="_blank" rel="noopener">TICKETS ↗</a>` : ''}</span><span class="d">${esc(res)}</span></li>`;
   };
   const rows = (g ? g.games.map((x) => row(x)) : []).join('') + (xs.length ? `<li class="sub"><span></span><span>OTHER LA TEAMS</span><span></span></li>${xs.map((x) => row(x, x.league)).join('')}` : '');
   const n = (g ? g.count : 0) + xs.length, right = `${g && xs.length ? `${g.count}+${xs.length}` : n} GAME${n === 1 ? '' : 'S'}`;

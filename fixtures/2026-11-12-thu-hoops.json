@@ -418,6 +418,32 @@
     "league": "NFL",
     "team": "LAR",
     "isHome": false
+   },
+   {
+    "tip": "19:00",
+    "matchup": "LBSU @ UCLA",
+    "state": "pre",
+    "detail": null,
+    "score": null,
+    "home": "UCLA",
+    "away": "LBSU",
+    "venue": "Pauley Pavilion",
+    "league": "UCLA BB",
+    "team": "UCLA",
+    "isHome": true
+   },
+   {
+    "tip": "13:25",
+    "matchup": "LAR @ LAC",
+    "state": "pre",
+    "detail": null,
+    "score": null,
+    "home": "LAC",
+    "away": "LAR",
+    "venue": "SoFi Stadium",
+    "league": "NFL",
+    "team": "LAR",
+    "isHome": false
    }
   ]
  },

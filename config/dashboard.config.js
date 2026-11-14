@@ -117,9 +117,18 @@ export default {
       { "league": "NFL", "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard", "teams": ["LAR"] },
       { "league": "MLB", "url": "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard", "teams": ["LAD"] }
     ],
+    "teamSchedules": [
+      { "league": "UCLA FB", "url": "https://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/26/schedule", "team": "UCLA" },
+      { "league": "UCLA BB", "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/26/schedule", "team": "UCLA" }
+    ],
+    "localVenues": ["Crypto.com Arena", "Intuit Dome", "SoFi Stadium", "Dodger Stadium", "Rose Bowl", "Pauley Pavilion"],
     "tickets": {
       "LAL": "https://seatgeek.com/los-angeles-lakers-tickets",
-      "LAC": "https://seatgeek.com/los-angeles-clippers-tickets"
+      "LAC": "https://seatgeek.com/los-angeles-clippers-tickets",
+      "NFL:LAR": "https://seatgeek.com/los-angeles-rams-tickets",
+      "MLB:LAD": "https://seatgeek.com/los-angeles-dodgers-tickets",
+      "UCLA FB:UCLA": "https://seatgeek.com/ucla-bruins-football-tickets",
+      "UCLA BB:UCLA": "https://seatgeek.com/ucla-bruins-basketball-tickets"
     }
   },
   "lakers": {
@@ -138,7 +147,8 @@ export default {
     "ics": 30,
     "tides": 720,
     "hume": 60,
-    "nba": 30
+    "nba": 30,
+    "teamSchedule": 360
   },
   "weather": {
     "primary": "open-meteo",

@@ -341,5 +341,263 @@
     ]
    }
   ]
+ },
+ "uclaFb": {
+  "_note": "ESPN UCLA football schedule (teams/26), recorded 2026-11-14, 4 games near.",
+  "events": [
+   {
+    "date": "2026-11-07T17:00Z",
+    "shortName": "UCLA @ MINN",
+    "competitions": [
+     {
+      "venue": {
+       "fullName": "Huntington Bank Stadium"
+      },
+      "status": {
+       "type": {
+        "state": "post",
+        "shortDetail": "Final"
+       }
+      },
+      "competitors": [
+       {
+        "homeAway": "home",
+        "team": {
+         "abbreviation": "MINN"
+        },
+        "score": {
+         "displayValue": "24"
+        }
+       },
+       {
+        "homeAway": "away",
+        "team": {
+         "abbreviation": "UCLA"
+        },
+        "score": {
+         "displayValue": "27"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "date": "2026-11-14T02:00Z",
+    "shortName": "ILL @ UCLA",
+    "competitions": [
+     {
+      "venue": {
+       "fullName": "Rose Bowl"
+      },
+      "status": {
+       "type": {
+        "state": "post",
+        "shortDetail": "Final"
+       }
+      },
+      "competitors": [
+       {
+        "homeAway": "home",
+        "team": {
+         "abbreviation": "UCLA"
+        },
+        "score": {
+         "displayValue": "31"
+        }
+       },
+       {
+        "homeAway": "away",
+        "team": {
+         "abbreviation": "ILL"
+        },
+        "score": {
+         "displayValue": "17"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "date": "2026-11-21T05:00Z",
+    "shortName": "UCLA @ MICH",
+    "competitions": [
+     {
+      "venue": {
+       "fullName": "Michigan Stadium"
+      },
+      "status": {
+       "type": {
+        "state": "pre",
+        "shortDetail": ""
+       }
+      },
+      "competitors": [
+       {
+        "homeAway": "home",
+        "team": {
+         "abbreviation": "MICH"
+        },
+        "score": null
+       },
+       {
+        "homeAway": "away",
+        "team": {
+         "abbreviation": "UCLA"
+        },
+        "score": null
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "date": "2026-11-28T05:00Z",
+    "shortName": "USC @ UCLA",
+    "competitions": [
+     {
+      "venue": {
+       "fullName": "Rose Bowl"
+      },
+      "status": {
+       "type": {
+        "state": "pre",
+        "shortDetail": ""
+       }
+      },
+      "competitors": [
+       {
+        "homeAway": "home",
+        "team": {
+         "abbreviation": "UCLA"
+        },
+        "score": null
+       },
+       {
+        "homeAway": "away",
+        "team": {
+         "abbreviation": "USC"
+        },
+        "score": null
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "uclaBb": {
+  "_note": "ESPN UCLA men's basketball schedule (teams/26), recorded 2026-11-14.",
+  "events": [
+   {
+    "date": "2026-11-12T02:00Z",
+    "shortName": "UAPB @ UCLA",
+    "competitions": [
+     {
+      "venue": {
+       "fullName": "Pauley Pavilion"
+      },
+      "status": {
+       "type": {
+        "state": "post",
+        "shortDetail": "Final"
+       }
+      },
+      "competitors": [
+       {
+        "homeAway": "home",
+        "team": {
+         "abbreviation": "UCLA"
+        },
+        "score": {
+         "displayValue": "88"
+        }
+       },
+       {
+        "homeAway": "away",
+        "team": {
+         "abbreviation": "UAPB"
+        },
+        "score": {
+         "displayValue": "60"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "date": "2026-11-17T03:00Z",
+    "shortName": "LBSU @ UCLA",
+    "competitions": [
+     {
+      "venue": {
+       "fullName": "Pauley Pavilion"
+      },
+      "status": {
+       "type": {
+        "state": "pre",
+        "shortDetail": ""
+       }
+      },
+      "competitors": [
+       {
+        "homeAway": "home",
+        "team": {
+         "abbreviation": "UCLA"
+        },
+        "score": null
+       },
+       {
+        "homeAway": "away",
+        "team": {
+         "abbreviation": "LBSU"
+        },
+        "score": null
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "nflLacLar": {
+  "_note": "Synthetic: Rams at Chargers (LAC home in NFL).",
+  "events": [
+   {
+    "date": "2026-12-06T21:25Z",
+    "shortName": "LAR @ LAC",
+    "competitions": [
+     {
+      "venue": {
+       "fullName": "SoFi Stadium"
+      },
+      "status": {
+       "type": {
+        "state": "pre",
+        "shortDetail": ""
+       }
+      },
+      "competitors": [
+       {
+        "homeAway": "home",
+        "team": {
+         "abbreviation": "LAC"
+        },
+        "score": null
+       },
+       {
+        "homeAway": "away",
+        "team": {
+         "abbreviation": "LAR"
+        },
+        "score": null
+       }
+      ]
+     }
+    ]
+   }
+  ]
  }
 }
