@@ -99,3 +99,5 @@ main { touch-action: pan-y; }
 .went.on { color: var(--green); border-color: var(--green); }
 
 .went.reset { min-width: 0; margin-left: auto; color: var(--faint); border-style: dashed; }
+#where-live.on { color: var(--coral); border-color: var(--coral); }
+#where .row { align-items: center; }

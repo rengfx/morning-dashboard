@@ -95,7 +95,7 @@ function drawWhere() {
   if (where.cam == null) where.cam = pos.az;
   $('#where3d').innerHTML = body;
   const t = partsIn(new Date(where.ms), TZ);
-  $('#where-title').textContent = `WHERE TO LOOK · ${where.body.toUpperCase()} · ${t.weekday} ${t.time}`;
+  $('#where-title').textContent = `${liveTimer ? 'LIVE' : 'WHERE TO LOOK'} · ${where.body.toUpperCase()} · ${t.weekday} ${t.time}`;
   const ss = r3.sunset, st = ss ? partsIn(new Date(ss.ms), TZ) : null;
   let ref = '';
   if (ss && pos.alt >= 0) {
@@ -105,12 +105,24 @@ function drawWhere() {
   }
   $('#where-text').textContent = lookText(where.body, pos) + ref;
 }
+// R31 LIVE: follow the current time, refresh every 30 s
+let liveTimer = null;
+function setLive(on) {
+  clearInterval(liveTimer); liveTimer = null;
+  const b = $('#where-live'); b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
+  if (!on && where) drawWhere();
+  if (on && where) { liveTimer = setInterval(() => { if (!where || document.hidden) return; where.ms = Date.now(); drawWhere(); }, 30000); where.ms = Date.now(); drawWhere(); }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden && liveTimer && where) { where.ms = Date.now(); drawWhere(); } });
+$('#where-live').addEventListener('click', () => setLive(!liveTimer));
+
 function openWhere(body, atMs) {
-  where = { body, ms: atMs, cam: null };
+  const wasLive = !!liveTimer;
+  where = { body, ms: wasLive ? Date.now() : atMs, cam: null };
   $('#where').hidden = false; drawWhere();
   $('#where').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
-$('#where-close').addEventListener('click', () => { $('#where').hidden = true; where = null; });
+$('#where-close').addEventListener('click', () => { setLive(false); $('#where').hidden = true; where = null; });
 for (const li of document.querySelectorAll('#planets li[data-body]')) li.addEventListener('click', () => openWhere(li.dataset.body, +li.dataset.best));
 { const w3 = $('#where3d'); let d3 = null;
   w3.addEventListener('pointerdown', (e) => { if (!where) return; d3 = { x: e.clientX, c: where.cam, w: w3.getBoundingClientRect().width }; w3.setPointerCapture(e.pointerId); });

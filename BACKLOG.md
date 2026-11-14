@@ -26,6 +26,8 @@
 
 ## Later
 
+- Q: true hill line from terrain data (Door 2) and/or pier panorama photo (Door 3) — asked 2026-11-13, waiting for Darin.
+
 - Hume log sync across devices (Cloudflare KV; needs a KV namespace in the Pages project). Marks are per browser now.
 
 - Pier view: bright stars and constellations (only Moon and planets now).
@@ -43,7 +45,7 @@
 
 ## Done (2026-11-13 session)
 
-- Morning block hides when done (R27), Hume log with weekly count (R28), walk home at closing (R29), went = hide on weekdays (R30), RESET DAY. Tests: 8 fixtures + 91 checks, all pass.
+- Morning block hides when done (R27), Hume log with weekly count (R28), walk home at closing (R29), went = hide on weekdays (R30), RESET DAY, LIVE where-to-look (R31). Tests: 8 fixtures + 91 checks, all pass.
 - HUME app opens directly: `humeprojects://` (confirmed on the phone).
 
 ## Done (2026-11-12 session)
