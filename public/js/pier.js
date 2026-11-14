@@ -55,7 +55,7 @@ export function pierSvg({ ms, heading, obs, tz = TZ, mark = null }) {
   const shape = (from, to, hgt) => {
     const pts = []; for (let az = from; az <= to; az += 1) { const x = xOf(az, heading); if (x != null) pts.push([x, yOf(typeof hgt === 'function' ? hgt(az) : hgt)]); }
     if (pts.length < 2) return '';
-    return `<path d="M${f(pts[0][0])} ${HOR} ${pts.map(([x, y]) => `L${f(x)} ${f(y)}`).join(' ')} L${f(pts[pts.length - 1][0])} ${HOR} Z" fill="#0B0D10"/>`;
+    return `<path d="M${f(pts[0][0])} ${HOR} ${pts.map(([x, y]) => `L${f(x)} ${f(y)}`).join(' ')} L${f(pts[pts.length - 1][0])} ${HOR} Z" fill="#0B0D10"/><path d="${pts.map(([x, y], i) => `${i ? 'L' : 'M'}${f(x)} ${f(y)}`).join(' ')}" fill="none" stroke="#6B6E75" stroke-width="0.9"/>`;
   };
   b += shape(heading - FOV / 2 - 4, heading + FOV / 2 + 4, (az) => horizonAt(az) * HZ_EX);
   b += `<line x1="0" y1="${HOR}" x2="${W}" y2="${HOR}" stroke="#5B5D62"/>`;

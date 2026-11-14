@@ -26,7 +26,6 @@
 
 ## Later
 
-- **Horizon NW sector (282–357°) is PROVISIONAL** (Open-Meteo hourly limit hit at 4,400 points). Re-run the sweep for 252–357° and replace the values in `horizon.js`.
 - Pier panorama photo as background (Door 3, not chosen).
 
 - Hume log sync across devices (Cloudflare KV; needs a KV namespace in the Pages project). Marks are per browser now.
@@ -46,7 +45,7 @@
 
 ## Done (2026-11-13 session)
 
-- Morning block hides when done (R27), Hume log with weekly count (R28), walk home at closing (R29), went = hide on weekdays (R30), RESET DAY, LIVE where-to-look (R31), true horizon from terrain (R32, NW sector provisional). Tests: 8 fixtures + 96 checks, all pass.
+- Morning block hides when done (R27), Hume log with weekly count (R28), walk home at closing (R29), went = hide on weekdays (R30), RESET DAY, LIVE where-to-look (R31), true horizon from terrain (R32, all 360° measured). Tests: 8 fixtures + 97 checks, all pass.
 - HUME app opens directly: `humeprojects://` (confirmed on the phone).
 
 ## Done (2026-11-12 session)
