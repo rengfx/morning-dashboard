@@ -33,7 +33,6 @@
 - Basketball: the court has lights? LIGHT shows "~ DARK" after sunset; remove the mark if the court is lit.
 
 - HUME classes Door 3 (not chosen 2026-11-11): `/hume.ics` as a separate iPhone calendar. Needs the key in the link and a filter (~100 classes a week).
-- HUME app direct open: the app publishes no universal link; a custom URL scheme is unknown. If found (test on the phone), replace `appUrl`.
 - HUME classes: watch the first week for feed changes (DATA LATE · hume classes).
 
 - 12-hour time option (offered 2026-11-11, not asked for yet).
@@ -45,7 +44,7 @@
 ## Done (2026-11-13 session)
 
 - Morning block hides when done (R27), Hume log with weekly count (R28), walk home at closing (R29). Tests: 8 fixtures + 89 checks, all pass.
-- HUME app direct open: test page `/open-hume.html` (5 link guesses + Shortcut). Waiting for Darin's result.
+- HUME app opens directly: `humeprojects://` (confirmed on the phone).
 
 ## Done (2026-11-12 session)
 
