@@ -242,9 +242,11 @@ const WIN = { humeAM: ['am', 'AM'], humePM: ['pm', 'PM'], humeDay: ['day', 'DAY'
 
 /** R27 today on a weekday: the Hume morning block goes away once its time has passed. */
 function hideDone(d) {
-  if ((d.offset || 0) !== 0 || d.weekday === 'SAT' || d.weekday === 'SUN') return d;
-  const sections = d.sections.filter((s) => !(s.type === 'humeAM' && s.passed));
-  return sections.length === d.sections.length ? d : { ...d, sections, hiddenAM: true };
+  const off = d.offset || 0;
+  if (off > 0 || d.weekday === 'SAT' || d.weekday === 'SUN') return d;
+  const m = marks(d.date); // R30 weekday: a Hume block marked WENT goes away (today and earlier days)
+  const sections = d.sections.filter((s) => !(off === 0 && s.type === 'humeAM' && s.passed) && !(s.type === 'humeAM' && m.am) && !(s.type === 'humePM' && m.pm));
+  return sections.length === d.sections.length ? d : { ...d, sections };
 }
 
 /** R28 Hume log line: one toggle per Hume window of the day + this week's count. Today and earlier only. */

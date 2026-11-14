@@ -152,6 +152,7 @@ Added 2026-10-31 from two weekends of real data:
 - **R27 Morning block hides when done.** Today, on a weekday: once the Hume morning window has passed, its section and its strip bar go away. Other days and weekends are unchanged.
 - **R28 Hume log.** Today and earlier days: a HUME LOG line with one toggle per Hume window (AM, PM, or DAY): tap = "✓ WENT", tap again = clear. Shows visits this week (Mon–Sun). Stored in this browser only (localStorage); blocked storage shows "NOT SAVED".
 - **R29 Walk home.** Only for a Hume block that ends when Hume closes that day (weekday 21:00, weekend 19:00). Rain chance for the walk = max of the closing hour and the hour 20 min later (`walkMin`). ≥ 40 %: "Rain on the walk home at 21:00 (55%). Bring a jacket." 20–39 %: "Walk home 21:00: 22% rain, rising." Below 20 %: "Walk home 21:00: dry." only when the block itself has some rain. Chart tag "WALK n%" at the block end. Replaces "Rain after" for the same hour.
+- **R30 Went = hide.** Weekdays: a Hume block marked ✓ WENT in the HUME LOG goes away (section and strip bar), on today and earlier days. Tap again to bring it back. Weekends unchanged (the HUME DAY block stays).
 
 ## 4. Data sources
 
