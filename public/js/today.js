@@ -218,7 +218,7 @@ ${status(big + (s.now ? ' · NOW' : ''), s.window ? COL.amber : COL.muted, small
 function sunSec(d, s, n) {
   return `<section class="sec">${head(n, 'SUN', `${hm(s.end) - hm(s.start)} MIN AROUND UV PEAK${s.endsAtTipoff ? ' · ENDS AT TIP-OFF' : ''}`)}
 ${status(`${s.start}–${s.end}${s.now ? ' · NOW' : ''}`, s.passed ? COL.muted : COL.amber, `UV ${Math.round(s.uvPeak)}@${s.uvPeakAt}${s.tempPeak != null ? ` · ${s.tempPeak}°@${s.tempPeakAt}` : ''}`)}
-${sunChart(d, s)}${cells(cell('SUNSCREEN', s.sunscreen ? `${s.sunscreen[0]}–${s.sunscreen[1]}` : 'not needed'), cell('SUNRISE', d.sun.rise), cell('SUNSET', d.sun.set))}</section>`;
+${sunChart(d, s)}${cells(cell('SUNSCREEN', s.sunscreen ? `${s.sunscreen[0]}–${s.sunscreen[1]}` : 'not needed'), cell('LOW UV FROM', s.lowUvFrom || '—', s.lowUvFrom ? [`UV < ${d.config.sunscreenUv}`, 'good'] : null), cell('SUNSET', d.sun.set))}</section>`;
 }
 
 function lakersSec(d, s, n) {
@@ -257,7 +257,9 @@ function humeLog(d, all) {
   const wins = all.filter((s) => WIN[s.type]);
   if (!wins.length) return '';
   const m = marks(d.date);
-  const btns = wins.map((s) => { const [k, lab] = WIN[s.type], on = !!m[k]; return `<button type="button" class="went${on ? ' on' : ''}" data-went="${k}" aria-pressed="${on}">${lab} ${on ? '✓ WENT' : 'WENT?'}</button>`; }).join('');
+  // R35 weekend all-day block: two visit buttons (VISIT 1, VISIT 2)
+  const keys = wins.flatMap((s) => (s.type === 'humeDay' ? [['day', 'VISIT 1'], ['day2', 'VISIT 2']] : [WIN[s.type]]));
+  const btns = keys.map(([k, lab]) => { const on = !!m[k]; return `<button type="button" class="went${on ? ' on' : ''}" data-went="${k}" aria-pressed="${on}">${lab} ${on ? '✓' : 'WENT?'}</button>`; }).join('');
   const n = weekCount(d.date);
   const any = Object.keys(m).length > 0;
   return `<section class="sec humelog"><div class="row"><span>HUME LOG</span><span>${n} THIS WEEK</span></div><div class="chips">${btns}${any ? '<button type="button" class="went reset" data-reset>RESET DAY</button>' : ''}</div></section>`;

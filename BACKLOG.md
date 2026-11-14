@@ -47,7 +47,7 @@
 
 ## Done (2026-11-14 session)
 
-- First NBA tip-off line (R33); expandable games list + started classes removed (R34). Tests: 8 fixtures + 104 checks, all pass.
+- First NBA tip-off line (R33); expandable games list + started classes removed (R34); weekend VISIT 1/2 (R35); LOW UV FROM (R36). Tests: 8 fixtures + 108 checks, all pass.
 
 ## Done (2026-11-13 session)
 

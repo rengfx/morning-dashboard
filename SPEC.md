@@ -157,6 +157,8 @@ Added 2026-10-31 from two weekends of real data:
 - **R32 True horizon.** `public/js/horizon.js`: horizon height every 3° from the pier end (Copernicus GLO-90 terrain via Open-Meteo, 1 km steps to 30 km, 3 km to 99 km, curve + refraction k = 0.13, eye 7 m). Pier view skyline at true height; 3D scene ridge ×2 (labelled). Objects under the hills are faded with "(behind hills)"; where-to-look says "behind the hills … the hills reach X° there". Thin-Moon notes need ≥ 3° above the hills; full-Moon time = when it clears the hills; Moon-set time = when it drops behind the hills. Max hill ≈ 2° (N–NE).
 - **R33 First NBA tip.** A line above the strip chart on days with NBA games: "NBA 16:00 · DEN @ NO · 5 GAMES" (first tip-off, local time). Amber with "IN n MIN" in the last 60 min before it; faint "STARTED" after. Source: ESPN public scoreboard for that date (no key), cached 30 min; postponed games dropped. For fantasy lineup changes before games lock.
 - **R34 Expand NBA, drop started classes.** Tap the NBA line to open every game of the day (tip, matchup; score and clock when live, "Final" after); tap again to close. The open state stays while you swipe days. A HUME class leaves the list once it has started; the header shows "(n started)", and "No more classes in this window today." when all have started.
+- **R35 Two weekend visits.** On weekends the HUME LOG has VISIT 1 and VISIT 2 for the all-day block; each counts as a visit in the weekly count.
+- **R36 Low UV from.** Sun section cell: first time after the peak when UV drops below `sunscreenUv` (3), linear between hours, to 5 min. The SUNSCREEN window ends at that time. Peak under 3 → "ALL DAY". Replaces the SUNRISE cell (sunrise stays in the Hume LIGHT cell).
 
 ## 4. Data sources
 

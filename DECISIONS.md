@@ -42,3 +42,5 @@
 | D38 | 2026-11-14 | Horizon table complete: NW sector 252–357° measured (Santa Monica Mtns up to 2.19° at 330°). No provisional values left. |
 | D39 | 2026-11-14 | First NBA tip-off line from ESPN's public scoreboard (unofficial but keyless and fast; 156 ms). Lakers ICS (D13) stays for Lakers detail. |
 | D40 | 2026-11-14 | NBA line is a native expand/collapse list (details/summary) with live score from the same ESPN call. Started HUME classes are removed (not dimmed). |
+| D41 | 2026-11-14 | Weekend HUME LOG: two visit toggles (day, day2). |
+| D42 | 2026-11-14 | "Low UV" = UV < 3 (WHO: low; protection usually not needed). Shown as LOW UV FROM in the Sun section; sunscreen window ends there. |

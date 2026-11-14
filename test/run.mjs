@@ -144,6 +144,15 @@ check('R29 block ending before close (19:30) → no walk-home note', !wk4.walkHo
 const wk5 = scoreDay({ ...sat, now: '09:00', hourly: { ...sat.hourly, precipPct: sat.hourly.precipPct.map((v, i) => (i === 19 ? 45 : v)) } }, cfg).sections.find((x) => x.type === 'humeDay');
 check('R29 weekend day block ends 19:00 (close) → walk-home note', wk5.walkHome && wk5.walkHome.at === '19:00' && /walk home at 19:00 \(45%\)/.test(wk5.advice), wk5.advice);
 
+// R36 low UV from (first time after the peak that UV < 3)
+{ const f25 = JSON.parse(readFileSync(join(root, 'fixtures/2026-10-25-sun-real.json'), 'utf8')).input;
+  const s25 = scoreDay(f25, cfg).sections.find((x) => x.type === 'sun');
+  check('R36 Oct 25: UV 3.1@15 → 2.2@16 → low UV from 15:05; sunscreen ends 15:05', s25.lowUvFrom === '15:05' && s25.sunscreen[1] === '15:05', JSON.stringify([s25.lowUvFrom, s25.sunscreen]));
+  const f01 = JSON.parse(readFileSync(join(root, 'fixtures/2026-11-01-sun-real.json'), 'utf8')).input;
+  check('R36 Nov 1: UV 3.7@13 → 2.6@14 → 13:40', scoreDay(f01, cfg).sections.find((x) => x.type === 'sun').lowUvFrom === '13:40');
+  const low = scoreDay({ ...f25, hourly: { ...f25.hourly, uv: f25.hourly.uv.map((v) => Math.min(v, 2.5)) } }, cfg).sections.find((x) => x.type === 'sun');
+  check('R36 peak UV under 3 → "ALL DAY", no sunscreen window', !low || (low.lowUvFrom === 'ALL DAY' && low.sunscreen === null), low && JSON.stringify([low.lowUvFrom, low.sunscreen])); }
+
 // Astronomy: reference values (Venus inferior conjunction 2026-10-24; full Moon 2026-10-26).
 const jd = (iso) => astro.julian(new Date(iso));
 const he = astro.helio('earth', jd('2026-10-24T07:00:00Z')), hv = astro.helio('venus', jd('2026-10-24T07:00:00Z'));
@@ -210,6 +219,9 @@ check('R26 sunset drawn in the 3D scene', w3.svg.includes('SUNSET') && w3.sunset
   check('humelog: second tap removes the mark', !HL.marks('2026-11-12').pm && HL.marks('2026-11-12').am === true && HL.weekCount('2026-11-12') === 3);
   HL.toggle('2026-11-13', 'am'); HL.toggle('2026-11-13', 'am');
   check('humelog: clear by hand → amKeep set, not counted as a visit', HL.marks('2026-11-13').amKeep === true && !HL.marks('2026-11-13').am && HL.weekCount('2026-11-13') === 3);
+  HL.toggle('2026-11-14', 'day'); HL.toggle('2026-11-14', 'day2');
+  check('humelog: weekend VISIT 1 + VISIT 2 count as 2 visits', HL.weekCount('2026-11-14') === 5, String(HL.weekCount('2026-11-14')));
+  HL.resetDay('2026-11-14');
   HL.resetDay('2026-11-13');
   check('humelog: RESET DAY clears marks and keep flags', Object.keys(HL.marks('2026-11-13')).length === 0);
   globalThis.localStorage = { getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); } };

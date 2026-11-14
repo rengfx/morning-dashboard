@@ -19,7 +19,7 @@ export function toggle(date, win) {
 /** Clear every mark for a date (back to the normal rules). */
 export function resetDay(date) { const all = read(); delete all[date]; return write(all); }
 
-const VISIT = new Set(['am', 'pm', 'day']);
+const VISIT = new Set(['am', 'pm', 'day', 'day2']);
 /** Visits Monday–Sunday of the week that holds `date` (one per marked window). */
 export function weekCount(date) {
   const back = { MON: 0, TUE: 1, WED: 2, THU: 3, FRI: 4, SAT: 5, SUN: 6 }[weekdayOf(date)];
