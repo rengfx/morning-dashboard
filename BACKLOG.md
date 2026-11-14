@@ -43,7 +43,7 @@
 
 ## Done (2026-11-13 session)
 
-- Morning block hides when done (R27), Hume log with weekly count (R28), walk home at closing (R29), went = hide on weekdays (R30). Tests: 8 fixtures + 89 checks, all pass.
+- Morning block hides when done (R27), Hume log with weekly count (R28), walk home at closing (R29), went = hide on weekdays (R30), RESET DAY. Tests: 8 fixtures + 91 checks, all pass.
 - HUME app opens directly: `humeprojects://` (confirmed on the phone).
 
 ## Done (2026-11-12 session)

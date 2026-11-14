@@ -36,3 +36,4 @@
 | D32 | 2026-11-13 | Walk-home rain note only on blocks ending at Hume closing (weekday 21:00, weekend 19:00); 20-min walk window; thresholds = Hume rain limits (20 % / 40 %). |
 | D33 | 2026-11-13 | HUME app link = `humeprojects://` (button 1 on the test page opened the app on Darin's iPhone). Replaces the App Store link in D23. |
 | D34 | 2026-11-13 | Weekday Hume block marked WENT is hidden; the HUME LOG toggle stays to undo. Weekend all-day block is not hidden. |
+| D35 | 2026-11-13 | Clearing a WENT mark by hand always brings the block back (overrides the passed-morning hide). RESET DAY in the HUME LOG clears that day. |

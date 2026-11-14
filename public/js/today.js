@@ -3,7 +3,7 @@ import { COL, scale, pts, valAt, tideFn, text, rect, vline, poly, lx, darkBands,
 import { moonPhase, illumination } from './astro.js';
 import { findSkyEvents } from './skyevents.js';
 import { skyNotesHtml } from './skynotes.js';
-import { marks, toggle, weekCount } from './humelog.js';
+import { marks, toggle, weekCount, resetDay } from './humelog.js';
 
 const $ = (s) => document.querySelector(s);
 const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -245,7 +245,7 @@ function hideDone(d) {
   const off = d.offset || 0;
   if (off > 0 || d.weekday === 'SAT' || d.weekday === 'SUN') return d;
   const m = marks(d.date); // R30 weekday: a Hume block marked WENT goes away (today and earlier days)
-  const sections = d.sections.filter((s) => !(off === 0 && s.type === 'humeAM' && s.passed) && !(s.type === 'humeAM' && m.am) && !(s.type === 'humePM' && m.pm));
+  const sections = d.sections.filter((s) => !(off === 0 && s.type === 'humeAM' && s.passed && !m.amKeep) && !(s.type === 'humeAM' && m.am) && !(s.type === 'humePM' && m.pm));
   return sections.length === d.sections.length ? d : { ...d, sections };
 }
 
@@ -257,7 +257,8 @@ function humeLog(d, all) {
   const m = marks(d.date);
   const btns = wins.map((s) => { const [k, lab] = WIN[s.type], on = !!m[k]; return `<button type="button" class="went${on ? ' on' : ''}" data-went="${k}" aria-pressed="${on}">${lab} ${on ? '✓ WENT' : 'WENT?'}</button>`; }).join('');
   const n = weekCount(d.date);
-  return `<section class="sec humelog"><div class="row"><span>HUME LOG</span><span>${n} THIS WEEK</span></div><div class="chips">${btns}</div></section>`;
+  const any = Object.keys(m).length > 0;
+  return `<section class="sec humelog"><div class="row"><span>HUME LOG</span><span>${n} THIS WEEK</span></div><div class="chips">${btns}${any ? '<button type="button" class="went reset" data-reset>RESET DAY</button>' : ''}</div></section>`;
 }
 
 function render(dIn) {
@@ -306,6 +307,8 @@ ${sky}
     if (!toggle(d.date, b.dataset.went)) { b.textContent = 'NOT SAVED'; return; }
     const y = scrollY; render(dIn); scrollTo(0, y);
   });
+  const rs = document.querySelector('[data-reset]');
+  if (rs) rs.addEventListener('click', () => { resetDay(d.date); const y = scrollY; render(dIn); scrollTo(0, y); });
   for (const b of document.querySelectorAll('[data-step]')) b.addEventListener('click', () => go(+b.dataset.step));
   const t = document.querySelector('[data-today]'); if (t) t.addEventListener('click', () => go(-off));
   document.title = `${d.weekday} ${dd} ${MON[m - 1]} · Morning`;

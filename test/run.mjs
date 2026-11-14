@@ -208,6 +208,10 @@ check('R26 sunset drawn in the 3D scene', w3.svg.includes('SUNSET') && w3.sunset
   check('humelog: week Mon 9 – Sun 15 counts 4 (Mon 16 is next week)', HL.weekCount('2026-11-12') === 4 && HL.weekCount('2026-11-16') === 1, `${HL.weekCount('2026-11-12')} / ${HL.weekCount('2026-11-16')}`);
   HL.toggle('2026-11-12', 'pm');
   check('humelog: second tap removes the mark', !HL.marks('2026-11-12').pm && HL.marks('2026-11-12').am === true && HL.weekCount('2026-11-12') === 3);
+  HL.toggle('2026-11-13', 'am'); HL.toggle('2026-11-13', 'am');
+  check('humelog: clear by hand → amKeep set, not counted as a visit', HL.marks('2026-11-13').amKeep === true && !HL.marks('2026-11-13').am && HL.weekCount('2026-11-13') === 3);
+  HL.resetDay('2026-11-13');
+  check('humelog: RESET DAY clears marks and keep flags', Object.keys(HL.marks('2026-11-13')).length === 0);
   globalThis.localStorage = { getItem: () => { throw new Error('blocked'); }, setItem: () => { throw new Error('blocked'); } };
   check('humelog: blocked storage → no crash, toggle returns false', HL.toggle('2026-11-12', 'am') === false && HL.weekCount('2026-11-12') === 0);
   delete globalThis.localStorage; }
