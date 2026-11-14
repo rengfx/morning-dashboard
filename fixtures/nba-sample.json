@@ -343,7 +343,7 @@
   ]
  },
  "uclaFb": {
-  "_note": "ESPN UCLA football schedule (teams/26), recorded 2026-11-14, 4 games near.",
+  "_note": "ESPN UCLA football schedule (teams/26), dates/venues recorded 2026-11-14; scores synthetic (real final ILL 14 \u2013 UCLA 22).",
   "events": [
    {
     "date": "2026-11-07T17:00Z",
@@ -488,7 +488,7 @@
   ]
  },
  "uclaBb": {
-  "_note": "ESPN UCLA men's basketball schedule (teams/26), recorded 2026-11-14.",
+  "_note": "ESPN UCLA men's basketball schedule (teams/26), dates/venues recorded 2026-11-14; scores synthetic.",
   "events": [
    {
     "date": "2026-11-12T02:00Z",
