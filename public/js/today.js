@@ -235,7 +235,7 @@ function lakersSec(d, s, n) {
   return `<section class="sec${s.passed ? ' passed' : ''}">${head(n, 'LAKERS', `${s.home ? 'VS' : '@'} ${((s.opponentFull || '').replace(s.opponentName || '', '').trim() || s.opponentName || '').toUpperCase()} ·${s.home ? 'HOME' : 'AWAY'}`)}
 ${status(s.start + (s.now ? ' · LIVE' : ''), COL.gold, `${s.home ? 'vs' : 'at'} ${s.opponentName || ''}${s.arena ? ' · ' + s.arena : ''}`)}
 ${cells(cell('TIP-OFF', s.start), cell('ENDS', `~${s.end}`), cell('WHERE', s.home ? 'HOME' : 'AWAY'), cell('TV', s.tv || '—'))}
-${rel ? `<span class="note">${esc(rel)}</span>` : ''}</section>`;
+${rel ? `<span class="note">${esc(rel)}</span>` : ''}${s.home && d.config && d.config.tickets && d.config.tickets.LAL && !s.passed ? `<a class="tix-link" href="${esc(d.config.tickets.LAL)}" target="_blank" rel="noopener">TICKETS ON SEATGEEK ↗</a>` : ''}</section>`;
 }
 
 // ---------- page ----------
@@ -267,14 +267,23 @@ function humeLog(d, all) {
 
 /** R33 first NBA tip-off (fantasy lock). Amber in the last hour, faint once games have started. */
 let nbaOpen = false; // R34 expand state survives re-renders and day swipes
+/** R33/R37 SPORTS line: lead = first NBA tip-off; expanded = every NBA game + LA teams in other leagues. */
 function nbaLine(d) {
-  const g = d.nba; if (!g) return '';
-  const now = d.now ? hm(d.now) : null, t = hm(g.first.tip);
+  const g = d.nba, xs = d.sportsExtra || [], tk = (d.config && d.config.tickets) || {};
+  if (!g && !xs.length) return '';
+  const lead = g ? { lg: 'NBA', tip: g.first.tip, m: g.first.matchup } : { lg: xs[0].league, tip: xs[0].tip, m: xs[0].matchup };
+  const now = d.now ? hm(d.now) : null, t = hm(lead.tip);
   const live = now != null && now >= t, soon = now != null && !live && t - now <= 60;
   const cls = live ? 'nba gone' : soon ? 'nba soon' : 'nba';
-  const tail = live ? ' · STARTED' : soon ? ` · IN ${t - now} MIN` : '';
-  const rows = (g.games || []).map((x) => `<li class="${x.state}"><span class="t">${esc(x.tip)}</span><span class="m">${esc(x.matchup)}</span><span class="d">${esc(x.state === 'pre' ? '' : [x.score, x.detail].filter(Boolean).join(' · '))}</span></li>`).join('');
-  return `<details class="nbabox"${nbaOpen ? ' open' : ''}><summary class="${cls}" title="Tap to show all games"><span>NBA <b>${esc(g.first.tip)}</b> · ${esc(g.first.matchup)}${tail}</span><span class="n">${g.count} GAME${g.count === 1 ? '' : 'S'} <i class="car">▾</i></span></summary>${rows ? `<ul class="nbagames">${rows}</ul>` : ''}</details>`;
+  const tail = live ? ' · STARTED' : soon ? ` · ${t - now} MIN` : '';
+  const row = (x, lg) => {
+    const tix = x.home && tk[x.home] ? tk[x.home] : null; // a home game of a team with a ticket link (Lakers, Clippers)
+    const res = x.state === 'pre' ? '' : [x.score, x.detail].filter(Boolean).join(' · ');
+    return `<li class="${x.state}${tix ? ' tix ' + x.home : ''}"><span class="t">${esc(x.tip)}</span><span class="m">${lg ? `<em>${esc(lg)}</em> ` : ''}${esc(x.matchup)}${tix && x.state === 'pre' ? ` <a href="${esc(tix)}" target="_blank" rel="noopener">TICKETS ↗</a>` : ''}</span><span class="d">${esc(res)}</span></li>`;
+  };
+  const rows = (g ? g.games.map((x) => row(x)) : []).join('') + (xs.length ? `<li class="sub"><span></span><span>OTHER LA TEAMS</span><span></span></li>${xs.map((x) => row(x, x.league)).join('')}` : '');
+  const n = (g ? g.count : 0) + xs.length, right = `${g && xs.length ? `${g.count}+${xs.length}` : n} GAME${n === 1 ? '' : 'S'}`;
+  return `<details class="nbabox"${nbaOpen ? ' open' : ''}><summary class="${cls}" title="Tap to show all games"><span>${lead.lg} <b>${esc(lead.tip)}</b> · ${esc(lead.m)}${tail}</span><span class="n">${right} <i class="car">▾</i></span></summary><ul class="nbagames">${rows}</ul></details>`;
 }
 
 function render(dIn) {

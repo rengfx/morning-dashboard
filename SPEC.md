@@ -159,6 +159,7 @@ Added 2026-10-31 from two weekends of real data:
 - **R34 Expand NBA, drop started classes.** Tap the NBA line to open every game of the day (tip, matchup; score and clock when live, "Final" after); tap again to close. The open state stays while you swipe days. A HUME class leaves the list once it has started; the header shows "(n started)", and "No more classes in this window today." when all have started.
 - **R35 Two weekend visits.** On weekends the HUME LOG has VISIT 1 and VISIT 2 for the all-day block; each counts as a visit in the weekly count.
 - **R36 Low UV from.** Sun section cell: first time after the peak when UV drops below `sunscreenUv` (3), linear between hours, to 5 min. The SUNSCREEN window ends at that time. Peak under 3 → "ALL DAY". Replaces the SUNRISE cell (sunrise stays in the Hume LIGHT cell).
+- **R37 Sports line.** The NBA line is the SPORTS line. Lead stays the first NBA tip-off (or the first other game on a day without NBA). Right side: "3+1 GAMES". Expanded: every NBA game, then "OTHER LA TEAMS": Rams (NFL) and Dodgers (MLB) games that day (ESPN scoreboards, same as NBA). Lakers and Clippers home games (not started) get "TICKETS ↗" to the SeatGeek team page; the Lakers section on a home game gets "TICKETS ON SEATGEEK ↗". SeatGeek blocks automated lookups, so the link is the web team page (Safari shows SeatGeek's Open-in-app banner), not a direct app link.
 
 ## 4. Data sources
 

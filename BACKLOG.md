@@ -26,6 +26,8 @@
 
 ## Later
 
+- SeatGeek direct app link: needs the team's performer ID (`seatgeek.com/e/performers/<id>` is a universal link). SeatGeek blocked the lookup (403). Could test on the phone like the HUME link.
+
 - Bug: weather fetch timed out on 2026-11-14 12:37 ("weather: timeout", 8 s) → no Sun section that day. Offered fix: longer timeout + one retry. Waiting for Darin.
 
 - Pier panorama photo as background (Door 3, not chosen).
@@ -47,7 +49,7 @@
 
 ## Done (2026-11-14 session)
 
-- First NBA tip-off line (R33); expandable games list + started classes removed (R34); weekend VISIT 1/2 (R35); LOW UV FROM (R36). Tests: 8 fixtures + 108 checks, all pass.
+- First NBA tip-off line (R33); expandable games list + started classes removed (R34); weekend VISIT 1/2 (R35); LOW UV FROM (R36); SPORTS line with Rams/Dodgers + SeatGeek tickets (R37). Tests: 8 fixtures + 111 checks, all pass.
 
 ## Done (2026-11-13 session)
 

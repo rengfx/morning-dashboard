@@ -246,6 +246,11 @@ check('sky: full Moon time = when it clears the hills', fullEv && /Clears the hi
   check('nba: no games → null; changed feed → clear error', NB.parseScoreboard({ events: [] }, 'America/Los_Angeles') === null && (() => { try { NB.parseScoreboard({}, 'UTC'); return false; } catch (e) { return /unexpected feed shape/.test(e.message); } })());
   const lv = NB.parseScoreboard(ns.live, 'America/Los_Angeles').games;
   check('nba: games list — final "DEN 123 – NO 111 · Final", live "DAL 74 – CLE 70 · Q3 5:12", not started = no score', lv[0].score === 'DEN 123 – NO 111' && lv[0].detail === 'Final' && lv[1].score === 'DAL 74 – CLE 70' && lv[1].detail === 'Q3 5:12' && lv[2].score === null && lv[2].detail === null, JSON.stringify(lv.map((g) => [g.score, g.detail])));
+  const sun2 = NB.parseScoreboard(ns.sun, 'America/Los_Angeles').games, lacG = sun2.find((g) => g.home === 'LAC');
+  check('sports: Sun CHA @ LAC is a Clippers home game at Intuit Dome (ticket link applies)', lacG && lacG.tip === '13:30' && lacG.venue === 'Intuit Dome' && cfg.nba.tickets.LAC.includes('seatgeek.com'));
+  const rams = NB.teamGames(ns.nflSun, 'NFL', ['LAR'], 'America/Los_Angeles');
+  check('sports: NFL filter keeps only Rams (LAR @ ARI 13:05, away)', rams.length === 1 && rams[0].tip === '13:05' && rams[0].league === 'NFL' && rams[0].isHome === false, JSON.stringify(rams.map((r) => [r.matchup, r.tip])));
+  check('sports: Dodgers offseason → no MLB games, no error', NB.teamGames({ events: [] }, 'MLB', ['LAD'], 'America/Los_Angeles').length === 0);
   check('nba: URL uses the local date', NB.scoreboardUrl(cfg.nba.scoreboardUrl, '2026-11-14').endsWith('?dates=20261114')); }
 
 // ---- 3. fetchers with a fake network (no real API calls) ----

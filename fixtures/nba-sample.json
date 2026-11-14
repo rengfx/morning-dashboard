@@ -65,7 +65,7 @@
   ]
  },
  "sun": {
-  "_note": "ESPN scoreboard 2026-11-15 (Sun), first games only.",
+  "_note": "ESPN NBA scoreboard 2026-11-15 (Sun), recorded 2026-11-14, first games.",
   "events": [
    {
     "date": "2026-11-15T21:00Z",
@@ -73,9 +73,33 @@
     "status": {
      "type": {
       "name": "STATUS_SCHEDULED",
-      "state": "pre"
+      "state": "pre",
+      "shortDetail": ""
      }
-    }
+    },
+    "competitions": [
+     {
+      "venue": {
+       "fullName": "Mortgage Matchup Center"
+      },
+      "competitors": [
+       {
+        "homeAway": "home",
+        "score": "0",
+        "team": {
+         "abbreviation": "PHX"
+        }
+       },
+       {
+        "homeAway": "away",
+        "score": "0",
+        "team": {
+         "abbreviation": "LAL"
+        }
+       }
+      ]
+     }
+    ]
    },
    {
     "date": "2026-11-15T18:00Z",
@@ -83,9 +107,33 @@
     "status": {
      "type": {
       "name": "STATUS_SCHEDULED",
-      "state": "pre"
+      "state": "pre",
+      "shortDetail": ""
      }
-    }
+    },
+    "competitions": [
+     {
+      "venue": {
+       "fullName": "Xfinity Mobile Arena"
+      },
+      "competitors": [
+       {
+        "homeAway": "home",
+        "score": "0",
+        "team": {
+         "abbreviation": "PHI"
+        }
+       },
+       {
+        "homeAway": "away",
+        "score": "0",
+        "team": {
+         "abbreviation": "IND"
+        }
+       }
+      ]
+     }
+    ]
    },
    {
     "date": "2026-11-15T21:30Z",
@@ -93,9 +141,33 @@
     "status": {
      "type": {
       "name": "STATUS_SCHEDULED",
-      "state": "pre"
+      "state": "pre",
+      "shortDetail": ""
      }
-    }
+    },
+    "competitions": [
+     {
+      "venue": {
+       "fullName": "Intuit Dome"
+      },
+      "competitors": [
+       {
+        "homeAway": "home",
+        "score": "0",
+        "team": {
+         "abbreviation": "LAC"
+        }
+       },
+       {
+        "homeAway": "away",
+        "score": "0",
+        "team": {
+         "abbreviation": "CHA"
+        }
+       }
+      ]
+     }
+    ]
    }
   ]
  },
@@ -189,6 +261,79 @@
         "score": "0",
         "team": {
          "abbreviation": "DET"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "nflSun": {
+  "_note": "ESPN NFL scoreboard 2026-11-15, recorded 2026-11-14 (2 of 12 games).",
+  "events": [
+   {
+    "date": "2026-11-15T21:05Z",
+    "shortName": "LAR @ ARI",
+    "status": {
+     "type": {
+      "name": "STATUS_SCHEDULED",
+      "state": "pre",
+      "shortDetail": ""
+     }
+    },
+    "competitions": [
+     {
+      "venue": {
+       "fullName": "State Farm Stadium"
+      },
+      "competitors": [
+       {
+        "homeAway": "home",
+        "score": "0",
+        "team": {
+         "abbreviation": "ARI"
+        }
+       },
+       {
+        "homeAway": "away",
+        "score": "0",
+        "team": {
+         "abbreviation": "LAR"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "date": "2026-11-15T18:00Z",
+    "shortName": "KC @ BUF",
+    "status": {
+     "type": {
+      "name": "STATUS_SCHEDULED",
+      "state": "pre",
+      "shortDetail": ""
+     }
+    },
+    "competitions": [
+     {
+      "venue": {
+       "fullName": "Highmark Stadium"
+      },
+      "competitors": [
+       {
+        "homeAway": "home",
+        "score": "0",
+        "team": {
+         "abbreviation": "BUF"
+        }
+       },
+       {
+        "homeAway": "away",
+        "score": "0",
+        "team": {
+         "abbreviation": "KC"
         }
        }
       ]

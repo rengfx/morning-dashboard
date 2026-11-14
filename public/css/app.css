@@ -120,3 +120,11 @@ main { touch-action: pan-y; }
 .nbagames .t { color: var(--muted); } .nbagames .d { color: var(--muted); white-space: nowrap; }
 .nbagames li.in .d { color: var(--green); } .nbagames li.post { opacity: .55; }
 .classes .row small { font-size: 10px; }
+
+/* Sports list (R37) */
+.nbagames em { font-style: normal; font-size: 10px; color: var(--sky); margin-right: 2px; }
+.nbagames li.sub { color: var(--faint); font-size: 10px; padding-top: 8px; }
+.nbagames li.tix .m { color: var(--text); font-weight: 600; }
+.nbagames li.tix.LAL .t { color: var(--gold); } .nbagames li.tix.LAC .t { color: var(--coral); }
+.nbagames li a, .tix-link { font-size: 11px; font-weight: 400; white-space: nowrap; }
+.tix-link { align-self: flex-start; border: 1px solid var(--gold); color: var(--gold); padding: 8px 12px; }

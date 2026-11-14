@@ -369,33 +369,57 @@
   "nba": {
    "count": 3,
    "first": {
-    "tip": "16:00",
-    "matchup": "DEN @ NO"
+    "tip": "10:00",
+    "matchup": "IND @ PHI"
    },
    "games": [
     {
-     "tip": "16:00",
-     "matchup": "DEN @ NO",
-     "state": "post",
-     "detail": "Final",
-     "score": "DEN 123 – NO 111"
-    },
-    {
-     "tip": "16:30",
-     "matchup": "DAL @ CLE",
-     "state": "in",
-     "detail": "Q3 5:12",
-     "score": "DAL 74 – CLE 70"
-    },
-    {
-     "tip": "17:00",
-     "matchup": "DET @ MIA",
+     "tip": "10:00",
+     "matchup": "IND @ PHI",
      "state": "pre",
      "detail": null,
-     "score": null
+     "score": null,
+     "home": "PHI",
+     "away": "IND",
+     "venue": "Xfinity Mobile Arena"
+    },
+    {
+     "tip": "13:00",
+     "matchup": "LAL @ PHX",
+     "state": "pre",
+     "detail": null,
+     "score": null,
+     "home": "PHX",
+     "away": "LAL",
+     "venue": "Mortgage Matchup Center"
+    },
+    {
+     "tip": "13:30",
+     "matchup": "CHA @ LAC",
+     "state": "pre",
+     "detail": null,
+     "score": null,
+     "home": "LAC",
+     "away": "CHA",
+     "venue": "Intuit Dome"
     }
    ]
-  }
+  },
+  "sportsExtra": [
+   {
+    "tip": "13:05",
+    "matchup": "LAR @ ARI",
+    "state": "pre",
+    "detail": null,
+    "score": null,
+    "home": "ARI",
+    "away": "LAR",
+    "venue": "State Farm Stadium",
+    "league": "NFL",
+    "team": "LAR",
+    "isHome": false
+   }
+  ]
  },
  "expected": {
   "order": [

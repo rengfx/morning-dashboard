@@ -112,7 +112,15 @@ export default {
   },
   "nba": {
     "scoreboardUrl": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
-    "note": "First tip-off of the day for fantasy lineup changes (R33). Public ESPN scoreboard, no key."
+    "note": "First tip-off of the day for fantasy lineup changes (R33). Public ESPN scoreboard, no key.",
+    "extra": [
+      { "league": "NFL", "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard", "teams": ["LAR"] },
+      { "league": "MLB", "url": "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard", "teams": ["LAD"] }
+    ],
+    "tickets": {
+      "LAL": "https://seatgeek.com/los-angeles-lakers-tickets",
+      "LAC": "https://seatgeek.com/los-angeles-clippers-tickets"
+    }
   },
   "lakers": {
     "team": "Los Angeles Lakers",
