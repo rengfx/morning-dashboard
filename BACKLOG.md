@@ -26,7 +26,7 @@
 
 ## Later
 
-- Lakers TV: check the first "✓ ALSO NBC" game (Nov 18) — if it is blacked out on Spectrum, change the rule so a national TV channel wins.
+- Lakers TV: check the first "✓ ALSO NBC" game (Tue Nov 17, vs Hornets) — if it is blacked out on Spectrum, change the rule so a national TV channel wins.
 
 - Rollerblade limits set 2026-11-14: 60 °F, 10 mph, 20:30. Weight via ?w= on the phone (R40); optional daily Shortcut from Apple Health.
 
