@@ -270,7 +270,8 @@
    "humeDay",
    "surf",
    "sun",
-   "lakers"
+   "lakers",
+   "rollerblade"
   ],
   "sections": [
    {
@@ -304,6 +305,12 @@
     "type": "lakers",
     "start": "14:00",
     "end": "16:30"
+   },
+   {
+    "type": "rollerblade",
+    "start": "19:00",
+    "end": "20:00",
+    "status": "RAIN"
    }
   ]
  }

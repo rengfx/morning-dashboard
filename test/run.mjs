@@ -29,7 +29,7 @@ function subset(exp, act, path = '') {
 
 // ---- 1. scorer fixtures ----
 const files = readdirSync(join(root, 'fixtures')).filter((f) => f.endsWith('.json')).sort();
-const types = ['humeAM', 'humeDay', 'surf', 'sun', 'lakers', 'humePM', 'basketball'];
+const types = ['humeAM', 'humeDay', 'surf', 'sun', 'lakers', 'humePM', 'basketball', 'rollerblade'];
 const table = [];
 for (const f of files) {
   const fx = JSON.parse(readFileSync(join(root, 'fixtures', f), 'utf8'));
@@ -152,6 +152,23 @@ check('R29 weekend day block ends 19:00 (close) → walk-home note', wk5.walkHom
   check('R36 Nov 1: UV 3.7@13 → 2.6@14 → 13:40', scoreDay(f01, cfg).sections.find((x) => x.type === 'sun').lowUvFrom === '13:40');
   const low = scoreDay({ ...f25, hourly: { ...f25.hourly, uv: f25.hourly.uv.map((v) => Math.min(v, 2.5)) } }, cfg).sections.find((x) => x.type === 'sun');
   check('R36 peak UV under 3 → "ALL DAY", no sunscreen window', !low || (low.lowUvFrom === 'ALL DAY' && low.sunscreen === null), low && JSON.stringify([low.lowUvFrom, low.sunscreen])); }
+
+// R39 rollerblade (evening, boardwalk)
+{ const base = { ...tue, lakers: null };
+  const rb = (over, extra = {}) => scoreDay({ ...base, ...extra, hourly: { ...base.hourly, ...over } }, cfg).sections.find((x) => x.type === 'rollerblade');
+  const ok = rb({});
+  check('R39 dry 61°F evening → GO 19:00–20:00 (first full hour after sunset)', ok.status === 'GO' && ok.start === '19:00' && ok.end === '20:00', ok.status + ' ' + ok.start);
+  check('R39 rain 20%+ at 19–20 → first good slot moves to 21:00', rb({ precipPct: base.hourly.precipPct.map((v, i) => (i === 19 || i === 20 ? 40 : 0)) }).start === '21:00');
+  const cold = rb({ tempF: base.hourly.tempF.map((v) => Math.min(v, 52)) });
+  check('R39 52°F all evening → TOO COLD, no slot', cold.status === 'TOO COLD' && !cold.window && /Too cold: 52°F/.test(cold.advice), cold.advice);
+  const wet = rb({ precipMm: base.hourly.tempF.map((v, i) => (i === 17 ? 2 : 0)) });
+  check('R39 2 mm rain at 17:00 → path wet until 21:00 slot', wet.status === 'GO' && wet.start === '21:00', wet.status + ' ' + wet.start);
+  check('R39 wind 18 mph → WINDY', rb({ windMph: base.hourly.windMph.map(() => 18) }).status === 'WINDY');
+  check('R39 Basketball evening → no rollerblade section', !scoreDay({ ...base, calendar: [{ title: 'Basketball', start: '19:00', end: '22:00' }] }, cfg).sections.some((x) => x.type === 'rollerblade'));
+  const late = scoreDay({ ...base, now: '20:40' }, cfg).sections.find((x) => x.type === 'rollerblade');
+  check('R39 at 20:40 the 19:00/20:00 slots are gone → 21:00', late.start === '21:00', late.start);
+  const kc = scoreDay(base, { ...cfg, rollerblade: { ...cfg.rollerblade, weightLb: 180 } }).sections.find((x) => x.type === 'rollerblade').kcal;
+  check('R39 calories above rest: (7.5−1) × 81.6 kg × 1 h ≈ 530 kcal', kc === 530, String(kc)); }
 
 // Astronomy: reference values (Venus inferior conjunction 2026-10-24; full Moon 2026-10-26).
 const jd = (iso) => astro.julian(new Date(iso));

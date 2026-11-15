@@ -104,6 +104,17 @@ export default {
     "hideIfMaxUvBelow": 1,
     "sunscreenUv": 3
   },
+  "rollerblade": {
+    "note": "R39 evening skate on the Venice boardwalk. MET 7.5 = in-line skating (Compendium of Physical Activities).",
+    "latest": "22:00",
+    "minutes": 60,
+    "rainPct": 20,
+    "wetMm": 0.3,
+    "minTempF": 55,
+    "maxWindMph": 15,
+    "met": 7.5,
+    "weightLb": null
+  },
   "basketball": {
     "match": "basketball",
     "place": "Live Oak Park",

@@ -434,7 +434,8 @@
  "expected": {
   "order": [
    "humeAM",
-   "humePM"
+   "humePM",
+   "rollerblade"
   ],
   "sections": [
    {
@@ -452,6 +453,12 @@
     "source": "default",
     "status": "GO",
     "goBy": null
+   },
+   {
+    "type": "rollerblade",
+    "start": "19:00",
+    "end": "20:00",
+    "status": "GO"
    }
   ]
  }

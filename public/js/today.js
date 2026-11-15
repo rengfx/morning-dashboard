@@ -10,8 +10,8 @@ const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT
 const COMPASS = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
 const dir = (d) => COMPASS[Math.round(((d % 360) + 360) % 360 / 22.5) % 16];
 const MARK = { GOOD: ['✓', 'good'], OK: ['~ OK', 'ok'], BAD: ['✗', 'bad'], COOL: ['~ COOL', 'ok'], COLD: ['~ COLD', 'ok'] };
-const NAMES = { humeAM: 'HUME MORNING', humePM: 'HUME EVENING', humeDay: 'HUME DAY', basketball: 'BASKETBALL', surf: 'SURF', sun: 'SUN', lakers: 'LAKERS' };
-const STRIP = { humeAM: COL.green, humePM: COL.green, humeDay: COL.green, basketball: COL.violet, surf: COL.sky, sun: COL.coral, lakers: COL.gold };
+const NAMES = { humeAM: 'HUME MORNING', humePM: 'HUME EVENING', humeDay: 'HUME DAY', basketball: 'BASKETBALL', rollerblade: 'ROLLERBLADE', surf: 'SURF', sun: 'SUN', lakers: 'LAKERS' };
+const STRIP = { humeAM: COL.green, humePM: COL.green, humeDay: COL.green, basketball: COL.violet, rollerblade: COL.amber, surf: COL.sky, sun: COL.coral, lakers: COL.gold };
 const STATUS_COL = { GO: COL.green, 'GO AFTER': COL.green, 'GO BY': COL.amber, WINDY: COL.amber, RAIN: COL.coral, CONFLICT: COL.coral };
 
 const cell = (l, v, m) => `<div class="cell"><span class="l">${esc(l)}</span><span class="v">${esc(v)}</span>${m ? `<span class="m ${m[1]}">${esc(m[0])}</span>` : ''}</div>`;
@@ -288,6 +288,17 @@ function nbaLine(d) {
   return `<details class="nbabox"${nbaOpen ? ' open' : ''}><summary class="${cls}" title="Tap to show all games"><span>${lead.lg} <b>${esc(lead.tip)}</b> · ${esc(lead.m)}${tail}</span><span class="n">${right} <i class="car">▾</i></span></summary><ul class="nbagames">${rows}</ul></details>`;
 }
 
+/** R39 evening rollerblade on the boardwalk. */
+function rollerSec(d, s, n) {
+  const c = s.cells, go = s.status === 'GO';
+  const right = go ? `${s.start}–${s.end}` : `checked ${s.checked[0]}–${s.checked[1]}`;
+  const more = go && s.goodHours.length > 1 ? `Other good starts: ${s.goodHours.slice(1).join(', ')}.` : '';
+  return `<section class="sec${s.passed ? ' passed' : ''}">${head(n, 'ROLLERBLADE · BOARDWALK', right)}
+${status(go ? (s.now ? 'GO · NOW' : 'GO') : s.status, go ? COL.green : s.status === 'TOO COLD' ? COL.sky : COL.coral, s.advice)}
+${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.pct >= 20 ? ['✗', 'bad'] : ['✓', 'good']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, c.temp.f != null && c.temp.f < 55 ? ['COLD', 'bad'] : ['✓', 'good']), cell('WIND', `${c.wind.mph} mph`, c.wind.mph >= 15 ? ['✗', 'bad'] : ['✓', 'good']), cell('CALORIES', s.kcal != null ? `~${s.kcal}` : '—', s.kcal != null ? [`${hm(s.end) - hm(s.start)} MIN EXTRA`, 'good'] : ['SET WEIGHT', 'faint']))}
+${more ? `<span class="note">${esc(more)}</span>` : ''}</section>`;
+}
+
 function render(dIn) {
   const d = hideDone(dIn);
   const [y, m, dd] = d.date.split('-').map(Number);
@@ -302,7 +313,7 @@ function render(dIn) {
   const lateBy = (src) => (d.errors || []).filter((e) => e.source === src);
   const late = (d.errors || []).map((e) => `<div class="late">DATA LATE · ${esc(e.source)} · ${esc(e.message.replace(/^\w+:\s*/, ''))}</div>`).join('');
   let n = 0;
-  const body = d.sections.map((s) => { n++; return s.type === 'surf' ? surfSec(d, s, n) : s.type === 'sun' ? sunSec(d, s, n) : s.type === 'lakers' ? lakersSec(d, s, n) : humeSec(d, s, n); }).join('\n');
+  const body = d.sections.map((s) => { n++; return s.type === 'surf' ? surfSec(d, s, n) : s.type === 'sun' ? sunSec(d, s, n) : s.type === 'lakers' ? lakersSec(d, s, n) : s.type === 'rollerblade' ? rollerSec(d, s, n) : humeSec(d, s, n); }).join('\n');
   let sky = '';
   try { // R22 sky notes for this day and the next 3 (nothing on quiet days)
     const ev = findSkyEvents({ fromDate: d.date, days: 4, obs: { lat: d.config.location.lat, lon: d.config.location.lon }, tz: d.config.location.tz, clouds: d.clouds });

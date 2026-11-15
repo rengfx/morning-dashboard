@@ -269,6 +269,7 @@
   "order": [
    "humeAM",
    "humePM",
+   "rollerblade",
    "lakers"
   ],
   "sections": [
@@ -296,6 +297,12 @@
     "type": "lakers",
     "start": "20:00",
     "end": "22:30"
+   },
+   {
+    "type": "rollerblade",
+    "start": "19:00",
+    "end": "20:00",
+    "status": "GO"
    }
   ]
  }

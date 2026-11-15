@@ -46,3 +46,4 @@
 | D42 | 2026-11-14 | "Low UV" = UV < 3 (WHO: low; protection usually not needed). Shown as LOW UV FROM in the Sun section; sunscreen window ends there. |
 | D43 | 2026-11-14 | SPORTS line: NBA first tip stays the lead; Rams + Dodgers from ESPN NFL/MLB scoreboards in the expanded list. SeatGeek ticket links (team pages) for Lakers and Clippers home games only. |
 | D44 | 2026-11-14 | UCLA FB + BB added via ESPN team schedules. Ticket rule = home game or followed team at an LA venue, for all followed teams (Lakers, Clippers, Rams, Dodgers, UCLA). League-scoped ticket keys. |
+| D45 | 2026-11-14 | Rollerblade section: evening slots after sunset to 22:00; dry, ≥55°F, wind <15 mph, path dry 3 h; calories above rest with MET 7.5. Hidden on Basketball evenings. Weight to be set. |
