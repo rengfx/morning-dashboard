@@ -49,3 +49,4 @@
 | D45 | 2026-11-14 | Rollerblade section: evening slots after sunset to 22:00; dry, ≥55°F, wind <15 mph, path dry 3 h; calories above rest with MET 7.5. Hidden on Basketball evenings. Weight to be set. |
 | D46 | 2026-11-14 | Rollerblade limits set by Darin: ≥ 60 °F, wind < 10 mph, latest start 20:30; starts every 30 min. Replaces the 55 °F / 15 mph / 22:00 starting values in D45. |
 | D47 | 2026-11-14 | Body weight stays on the phone (localStorage via ?w=), never in the repo or a server secret. Daily refresh = iPhone Shortcut from Apple Health (optional). |
+| D48 | 2026-11-14 | Weight check-in is weekly; older than 7 days → "UPDATE WEIGHT" note. Shortcut runs weekly. |

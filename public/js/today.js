@@ -304,13 +304,14 @@ const weight = () => { try { return JSON.parse(localStorage.getItem(WKEY) || 'nu
 
 function rollerSec(d, s, n) {
   const c = s.cells, go = s.status === 'GO', wt = weight();
+  const age = wt && wt.at ? Math.round((Date.parse(d.date) - Date.parse(wt.at)) / 864e5) : 0, stale = age > 7; // R40 weekly check-in
   const kcal = wt && s.met ? Math.round((s.met - 1) * wt.lb * 0.4536 * (s.minutes || 60) / 60 / 10) * 10 : null; // above rest
   const right = go ? `${s.start}–${s.end}` : `starts ${s.checked[0]}–${s.checked[1]}`;
   const L = s.limits || { rainPct: 20, minTempF: 60, maxWindMph: 10 };
   const more = go && s.goodStarts.length > 1 ? `Other good starts: ${s.goodStarts.slice(1).join(', ')}.` : '';
   return `<section class="sec${s.passed ? ' passed' : ''}">${head(n, 'ROLLERBLADE · BOARDWALK', right)}
 ${status(go ? (s.now ? 'GO · NOW' : 'GO') : s.status, go ? COL.green : s.status === 'TOO COLD' ? COL.sky : COL.coral, s.advice)}
-${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.pct >= L.rainPct ? ['✗', 'bad'] : ['✓', 'good']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, c.temp.f != null && c.temp.f < L.minTempF ? [`< ${L.minTempF}°`, 'bad'] : ['✓', 'good']), cell('WIND', `${c.wind.mph} mph`, c.wind.mph >= L.maxWindMph ? [`≥ ${L.maxWindMph}`, 'bad'] : ['✓', 'good']), cell('CALORIES', kcal != null ? `~${kcal}` : '—', kcal != null ? [`EXTRA · ${wt.lb} LB`, 'good'] : ['SET WEIGHT', 'faint']))}
+${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.pct >= L.rainPct ? ['✗', 'bad'] : ['✓', 'good']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, c.temp.f != null && c.temp.f < L.minTempF ? [`< ${L.minTempF}°`, 'bad'] : ['✓', 'good']), cell('WIND', `${c.wind.mph} mph`, c.wind.mph >= L.maxWindMph ? [`≥ ${L.maxWindMph}`, 'bad'] : ['✓', 'good']), cell('CALORIES', kcal != null ? `~${kcal}` : '—', kcal != null ? (stale ? [`UPDATE WEIGHT (${age} D)`, 'ok'] : [`EXTRA · ${wt.lb} LB`, 'good']) : ['SET WEIGHT', 'faint']))}
 ${more ? `<span class="note">${esc(more)}</span>` : ''}</section>`;
 }
 
