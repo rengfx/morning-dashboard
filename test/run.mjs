@@ -174,6 +174,17 @@ check('R29 weekend day block ends 19:00 (close) → walk-home note', wk5.walkHom
   const kc = scoreDay(base, { ...cfg, rollerblade: { ...cfg.rollerblade, weightLb: 180 } }).sections.find((x) => x.type === 'rollerblade').kcal;
   check('R39 calories above rest: (7.5−1) × 81.6 kg × 1 h ≈ 530 kcal', kc === 530, String(kc)); }
 
+// R42 ocean advisory banner (every day) · R44 JEFIT tag
+{ const sunR = JSON.parse(readFileSync(join(root, 'fixtures/2026-10-25-sun-real.json'), 'utf8')).input;
+  const adv = scoreDay({ ...sunR, rain72hMm: 10.1, lastRain: '2026-10-24T15:00' }, cfg).banners.find((b) => b.kind === 'ocean');
+  check('R42 10.1 mm, last rain Sat 15:00 → banner "UNTIL TUE 16:00 · 10.1 mm in 72 h"', adv && /UNTIL TUE 16:00 · 10\.1 mm in 72 h/.test(adv.text), adv && adv.text);
+  const wkAdv = scoreDay({ ...tue, rain72hMm: 4, lastRain: '2026-10-27T05:00' }, cfg).banners.find((b) => b.kind === 'ocean');
+  check('R42 weekday (no Surf section) still gets the ocean banner', wkAdv && !scoreDay(tue, cfg).sections.some((x) => x.type === 'surf'));
+  check('R42 under 2.5 mm → no banner', !scoreDay({ ...tue, rain72hMm: 1.1, lastRain: '2026-10-27T05:00' }, cfg).banners.some((b) => b.kind === 'ocean'));
+  const mon = scoreDay({ ...tue, weekday: 'MON' }, cfg).sections.find((x) => x.type === 'humeAM');
+  const sat = scoreDay(JSON.parse(readFileSync(join(root, 'fixtures/2026-10-31-sat-real.json'), 'utf8')).input, cfg).sections.find((x) => x.type === 'humeDay');
+  check('R44 Mon AM "JEFIT UPPER", Sat day block "JEFIT LEGS+ABS", Tue none, PM none', mon.workout === 'JEFIT UPPER' && sat.workout === 'JEFIT LEGS+ABS' && !scoreDay(tue, cfg).sections.find((x) => x.type === 'humeAM').workout && !scoreDay({ ...tue, weekday: 'MON' }, cfg).sections.find((x) => x.type === 'humePM').workout); }
+
 // Astronomy: reference values (Venus inferior conjunction 2026-10-24; full Moon 2026-10-26).
 const jd = (iso) => astro.julian(new Date(iso));
 const he = astro.helio('earth', jd('2026-10-24T07:00:00Z')), hv = astro.helio('venus', jd('2026-10-24T07:00:00Z'));

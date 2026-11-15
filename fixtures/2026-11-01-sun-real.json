@@ -327,6 +327,10 @@
    {
     "kind": "dst",
     "text": "STANDARD TIME NOW"
+   },
+   {
+    "kind": "ocean",
+    "text": "OCEAN \u00b7 RAIN ADVISORY \u00b7 5.1 mm in 72 h \u00b7 avoid water contact"
    }
   ]
  }

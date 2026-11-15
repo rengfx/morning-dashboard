@@ -104,6 +104,12 @@ export default {
     "hideIfMaxUvBelow": 1,
     "sunscreenUv": 3
   },
+  "workouts": {
+    "note": "R44 JEFIT lifting mornings (Darin, 2026-11-15): Sat, Mon, Wed. Day names from his JEFIT plan (upper / full body / upper legs & abs).",
+    "MON": "JEFIT UPPER",
+    "WED": "JEFIT FULL",
+    "SAT": "JEFIT LEGS+ABS"
+  },
   "rollerblade": {
     "note": "R39 evening skate on the Venice boardwalk. MET 7.5 = in-line skating (Compendium of Physical Activities).",
     "latestStart": "20:30",

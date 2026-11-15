@@ -26,6 +26,8 @@
 
 ## Later
 
+- Q: confirm JEFIT day mapping (Sat legs+abs, Mon upper, Wed full).
+
 - Lakers TV: check the first "✓ ALSO NBC" game (Tue Nov 17, vs Hornets) — if it is blacked out on Spectrum, change the rule so a national TV channel wins.
 
 - Rollerblade limits set 2026-11-14: 60 °F, 10 mph, 20:30. Weight via ?w= on the phone (R40); optional daily Shortcut from Apple Health.
@@ -53,7 +55,7 @@
 
 ## Done (2026-11-15 session)
 
-- Lakers TV on-plan / national (R41). Tests: 8 fixtures + 126 checks, all pass.
+- Lakers TV on-plan / national (R41); ocean advisory top banner (R42, bug fix); WATCH ↗ to NBA app (R43); JEFIT tags (R44). Tests: 8 fixtures + 130 checks, all pass.
 
 ## Done (2026-11-14 session)
 

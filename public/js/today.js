@@ -173,7 +173,7 @@ function humeSec(d, s, n) {
   const rainM = c.rain.level === 'GOOD' ? ['✓', 'good'] : c.rain.level === 'OK' ? ['~ LOW', 'ok'] : ['✗', 'bad'];
   const tempM = c.temp.level === 'GOOD' ? ['✓', 'good'] : MARK[c.temp.level] || ['~', 'ok'];
   return `<section class="sec${n === 1 ? ' first' : ''}">${head(n, name, right)}
-${status(big + (s.now ? ' · NOW' : ''), STATUS_COL[s.status] || COL.green, s.advice)}
+${status(big + (s.now ? ' · NOW' : ''), STATUS_COL[s.status] || COL.green, s.advice)}${s.workout ? `<div class="wk">${esc(s.workout)}</div>` : ''}
 ${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.at ? [`${rainM[0]} @${c.rain.at}`, rainM[1]] : rainM), cell('WIND', `${c.wind.mph} ${dir(c.wind.dirDeg)}`, c.wind.level === 'GOOD' ? ['✓', 'good'] : ['✗ WINDY', 'bad']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, tempM), cell('LIGHT', s.type === 'humeAM' ? `↑${c.light.rise}` : `↓${c.light.set}`, s.type === 'humeDay' ? [`↑${c.light.rise}`, 'faint'] : c.light.dark ? ['~ DARK', 'ok'] : ['✓', 'good']))}
 ${humeChart(d, s)}${classList(d, s)}</section>`;
 }
@@ -204,14 +204,13 @@ function surfSec(d, s, n) {
   const right = c ? `${c.swell.ft} ft · ${c.period.s}s ${dir(c.period.dirDeg)}` : '';
   const big = s.window ? `${s.start}–${s.end}` : 'NO GOOD WINDOW';
   const wt = water(d, s);
-  const small = (s.window ? 'first good window' : s.nearMiss ? `Best try ${s.nearMiss.start}–${s.nearMiss.end} · ${s.nearMiss.score}/${s.nearMiss.of}` : '') + (wt != null ? ` · water ${wt}°F` : '');
+  const small = (s.advisory ? 'RAIN ADVISORY (see top) · ' : '') + (s.window ? 'first good window' : s.nearMiss ? `Best try ${s.nearMiss.start}–${s.nearMiss.end} · ${s.nearMiss.score}/${s.nearMiss.of}` : '') + (wt != null ? ` · water ${wt}°F` : '');
   const cs = c ? cells(
     cell('SWELL', `${c.swell.ft} ft`, lvl(c.swell.level, c.swell.level === 'GOOD' ? 'GOOD' : c.swell.level === 'OK' ? 'OK' : 'SMALL')),
     cell('PERIOD', `${c.period.s}s ${dir(c.period.dirDeg)}`, lvl(c.period.level, c.period.level === 'GOOD' ? 'GOOD' : c.period.level === 'OK' ? 'DIR OK' : 'BAD')),
     cell(`TIDE ${c.at}`, `${c.tide.ft} ft ${c.tide.rising == null ? '' : c.tide.rising ? '↑' : '↓'}`, lvl(c.tide.level, c.tide.level === 'BAD' ? 'HIGH' : '')),
     cell('WIND', `${c.wind.mph} ${dir(c.wind.dirDeg)}`, lvl(c.wind.level))) : '';
   return `<section class="sec">${head(n, `SURF · ${(s.spot || '').toUpperCase()}`, right)}
-${s.advisory ? '<div class="banner red">RAIN ADVISORY · avoid ocean contact ~72 h after rain</div>' : ''}
 ${status(big + (s.now ? ' · NOW' : ''), s.window ? COL.amber : COL.muted, small)}${cs}${surfChart(d, s)}</section>`;
 }
 
@@ -234,7 +233,7 @@ function lakersSec(d, s, n) {
   }
   return `<section class="sec${s.passed ? ' passed' : ''}">${head(n, 'LAKERS', `${s.home ? 'VS' : '@'} ${((s.opponentFull || '').replace(s.opponentName || '', '').trim() || s.opponentName || '').toUpperCase()} ·${s.home ? 'HOME' : 'AWAY'}`)}
 ${status(s.start + (s.now ? ' · LIVE' : ''), COL.gold, `${s.home ? 'vs' : 'at'} ${s.opponentName || ''}${s.arena ? ' · ' + s.arena : ''}`)}
-${cells(cell('TIP-OFF', s.start), cell('ENDS', `~${s.end}`), cell('WHERE', s.home ? 'HOME' : 'AWAY'), tvCell(s))}
+${cells(cell('TIP-OFF', s.start), cell('ENDS', `~${s.end}`), cell('WHERE', s.home ? 'HOME' : 'AWAY'), tvCell(s, d.date))}
 ${rel ? `<span class="note">${esc(rel)}</span>` : ''}${s.home && d.config && d.config.tickets && d.config.tickets.LAL && !s.passed ? `<a class="tix-link" href="${esc(d.config.tickets.LAL)}" target="_blank" rel="noopener">TICKETS ON SEATGEEK ↗</a>` : ''}</section>`;
 }
 
@@ -303,11 +302,14 @@ const WKEY = 'weight-v1';
 const weight = () => { try { return JSON.parse(localStorage.getItem(WKEY) || 'null'); } catch { return null; } };
 
 /** R41 Lakers TV: ✓ when Spectrum SportsNet carries it (Darin's plan in the NBA app); ✗ + network when national only. */
-function tvCell(s) {
+function tvCell(s, date) {
   const SHORT = { 'Prime Video': 'PRIME', 'NBA TV': 'NBA TV', Peacock: 'PEACOCK' };
   const w = s.watch, nat = w && w.national.length ? w.national.map((x) => SHORT[x] || x.toUpperCase()).join('/') : null;
-  if (!w) return cell('TV', s.tv || '—');
-  if (w.onPlan) return cell('TV', 'SPECTRUM', [nat ? `✓ ALSO ${nat}` : '✓ YOUR PLAN', 'good']);
+  // R43 on-plan / LOCAL games: the cell is a button into the NBA app (that day's games; nba.com/games is a universal link)
+  const link = (html) => `<a class="cell cell-link" href="https://www.nba.com/games?date=${esc(date)}" target="_blank" rel="noopener" title="Open the NBA app on this day's games">${html}</a>`;
+  const inner = (l, v, m) => cell(l, v, m).replace(/^<div class="cell">/, '').replace(/<\/div>$/, '');
+  if (!w) return /LOCAL/i.test(s.tv || '') ? link(inner('TV', 'WATCH ↗', ['LOCAL ✓', 'good'])) : cell('TV', s.tv || '—');
+  if (w.onPlan) return link(inner('TV', 'WATCH ↗', [nat ? `SPECTRUM · ${nat}` : 'SPECTRUM ✓', 'good']));
   return cell('TV', nat || s.tv || '—', ['✗ NATIONAL', 'bad']);
 }
 
@@ -357,7 +359,7 @@ function render(dIn) {
 <div class="dots" aria-hidden="true">${dots}</div>
 <div style="display:flex;flex-direction:column;gap:6px">
 <div class="row"><span>${off ? 'DAY' : 'TODAY'} · IN ORDER</span><span>${weekend ? 'WEEKEND' : 'WEEKDAY'} · ${d.sections.length} ITEM${d.sections.length === 1 ? '' : 'S'}</span></div>
-${d.banners.map((b) => `<div class="banner">${esc(b.text)}</div>`).join('')}${late}
+${d.banners.map((b) => `<div class="banner${b.kind === 'ocean' ? ' red' : ''}">${esc(b.text)}</div>`).join('')}${late}
 ${nbaLine(d)}
 ${stripChart(d)}
 <div class="legend">${d.sections.map((s, i) => `<span style="color:${s.passed ? COL.faint : STRIP[s.type]}">${i + 1} ${NAMES[s.type].replace('HUME MORNING', 'Hume AM').replace('HUME EVENING', 'Hume PM').toLowerCase().replace(/^\w/, (c) => c.toUpperCase())}${s.passed ? ' (passed)' : s.type === 'surf' && !s.window ? ' (none)' : ''}</span>`).join(' · ')}${off ? '' : ' · ┃ now'}</div>
