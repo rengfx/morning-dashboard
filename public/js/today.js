@@ -289,14 +289,28 @@ function nbaLine(d) {
 }
 
 /** R39 evening rollerblade on the boardwalk. */
+// R40 body weight lives on this phone only (never in the repo): set by ?w=<lb> (or <kg>kg), e.g. from an iPhone Shortcut.
+const WKEY = 'weight-v1';
+(function takeWeight() {
+  try {
+    const q = new URLSearchParams(location.search).get('w'); if (!q) return;
+    const m = /^(\d+(?:\.\d+)?)(kg|lb)?$/i.exec(q.trim()); if (!m) return;
+    const lb = /kg/i.test(m[2] || '') ? +m[1] / 0.4536 : +m[1];
+    if (lb > 60 && lb < 500) localStorage.setItem(WKEY, JSON.stringify({ lb: Math.round(lb * 10) / 10, at: new Date().toISOString().slice(0, 10) }));
+    const u = new URL(location.href); u.searchParams.delete('w'); history.replaceState(null, '', u.pathname + u.search + u.hash);
+  } catch { /* storage blocked: calories show SET WEIGHT */ }
+})();
+const weight = () => { try { return JSON.parse(localStorage.getItem(WKEY) || 'null'); } catch { return null; } };
+
 function rollerSec(d, s, n) {
-  const c = s.cells, go = s.status === 'GO';
+  const c = s.cells, go = s.status === 'GO', wt = weight();
+  const kcal = wt && s.met ? Math.round((s.met - 1) * wt.lb * 0.4536 * (s.minutes || 60) / 60 / 10) * 10 : null; // above rest
   const right = go ? `${s.start}–${s.end}` : `starts ${s.checked[0]}–${s.checked[1]}`;
   const L = s.limits || { rainPct: 20, minTempF: 60, maxWindMph: 10 };
   const more = go && s.goodStarts.length > 1 ? `Other good starts: ${s.goodStarts.slice(1).join(', ')}.` : '';
   return `<section class="sec${s.passed ? ' passed' : ''}">${head(n, 'ROLLERBLADE · BOARDWALK', right)}
 ${status(go ? (s.now ? 'GO · NOW' : 'GO') : s.status, go ? COL.green : s.status === 'TOO COLD' ? COL.sky : COL.coral, s.advice)}
-${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.pct >= L.rainPct ? ['✗', 'bad'] : ['✓', 'good']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, c.temp.f != null && c.temp.f < L.minTempF ? [`< ${L.minTempF}°`, 'bad'] : ['✓', 'good']), cell('WIND', `${c.wind.mph} mph`, c.wind.mph >= L.maxWindMph ? [`≥ ${L.maxWindMph}`, 'bad'] : ['✓', 'good']), cell('CALORIES', s.kcal != null ? `~${s.kcal}` : '—', s.kcal != null ? [`${hm(s.end) - hm(s.start)} MIN EXTRA`, 'good'] : ['SET WEIGHT', 'faint']))}
+${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.pct >= L.rainPct ? ['✗', 'bad'] : ['✓', 'good']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, c.temp.f != null && c.temp.f < L.minTempF ? [`< ${L.minTempF}°`, 'bad'] : ['✓', 'good']), cell('WIND', `${c.wind.mph} mph`, c.wind.mph >= L.maxWindMph ? [`≥ ${L.maxWindMph}`, 'bad'] : ['✓', 'good']), cell('CALORIES', kcal != null ? `~${kcal}` : '—', kcal != null ? [`EXTRA · ${wt.lb} LB`, 'good'] : ['SET WEIGHT', 'faint']))}
 ${more ? `<span class="note">${esc(more)}</span>` : ''}</section>`;
 }
 
