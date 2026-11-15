@@ -26,6 +26,8 @@
 
 ## Later
 
+- Lakers TV: check the first "✓ ALSO NBC" game (Nov 18) — if it is blacked out on Spectrum, change the rule so a national TV channel wins.
+
 - Rollerblade limits set 2026-11-14: 60 °F, 10 mph, 20:30. Weight via ?w= on the phone (R40); optional daily Shortcut from Apple Health.
 
 - SeatGeek direct app link: needs the team's performer ID (`seatgeek.com/e/performers/<id>` is a universal link). SeatGeek blocked the lookup (403). Could test on the phone like the HUME link.
@@ -48,6 +50,10 @@
 - Second "later" surf windows: confirm the dashed-outline display with real data.
 - Moon-height histogram: mark moonrise / moonset times.
 - Lakers TV: the feed only names national TV; local games show `LOCAL`.
+
+## Done (2026-11-15 session)
+
+- Lakers TV on-plan / national (R41). Tests: 8 fixtures + 126 checks, all pass.
 
 ## Done (2026-11-14 session)
 

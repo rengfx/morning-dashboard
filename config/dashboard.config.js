@@ -142,6 +142,10 @@ export default {
       "UCLA BB:UCLA": "https://seatgeek.com/ucla-bruins-basketball-tickets"
     }
   },
+  "lakersTv": {
+    "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/13/schedule",
+    "note": "R41 Darin watches Spectrum SportsNet games through his plan in the NBA app; national-only games are not on it."
+  },
   "lakers": {
     "team": "Los Angeles Lakers",
     "icsUrl": "https://nbaschedules.com/los-angeles-lakers/schedule.ics",

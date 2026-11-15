@@ -278,6 +278,11 @@ check('sky: full Moon time = when it clears the hills', fullEv && /Clears the hi
   const bb = NB.teamScheduleGames(ns.uclaBb, 'UCLA BB', 'UCLA', '2026-11-16', 'America/Los_Angeles');
   check('ucla: Mon Nov 16 19:00 LBSU @ UCLA at Pauley, not started', bb.length === 1 && bb[0].tip === '19:00' && bb[0].venue === 'Pauley Pavilion' && bb[0].state === 'pre' && bb[0].score === null);
   check('tickets: keys are league-scoped (UCLA FB vs UCLA BB; Rams at Chargers ≠ Clippers link)', cfg.nba.tickets['UCLA FB:UCLA'].includes('football') && cfg.nba.tickets['UCLA BB:UCLA'].includes('basketball') && !cfg.nba.tickets['NFL:LAC'] && cfg.nba.tickets.LAC.includes('clippers'));
+  check('lakers tv: Spectrum game → on plan; Prime Video only → not on plan; Spectrum + NBC → on plan, also NBC; no game → null',
+    NB.lakersTv(ns.lakersTv, '2026-11-15', 'America/Los_Angeles').onPlan === true
+    && JSON.stringify(NB.lakersTv(ns.lakersTv, '2026-11-28', 'America/Los_Angeles')) === '{"onPlan":false,"national":["Prime Video"]}'
+    && JSON.stringify(NB.lakersTv(ns.lakersTv, '2026-11-18', 'America/Los_Angeles')) === '{"onPlan":true,"national":["NBC"]}'
+    && NB.lakersTv(ns.lakersTv, '2026-11-20', 'America/Los_Angeles') === null);
   check('nba: URL uses the local date', NB.scoreboardUrl(cfg.nba.scoreboardUrl, '2026-11-14').endsWith('?dates=20261114')); }
 
 // ---- 3. fetchers with a fake network (no real API calls) ----

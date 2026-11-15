@@ -343,7 +343,7 @@
   ]
  },
  "uclaFb": {
-  "_note": "ESPN UCLA football schedule (teams/26), dates/venues recorded 2026-11-14; scores synthetic (real final ILL 14 \u2013 UCLA 22).",
+  "_note": "ESPN UCLA football schedule (teams/26), dates/venues recorded 2026-11-14; scores synthetic (real final ILL 14 – UCLA 22).",
   "events": [
    {
     "date": "2026-11-07T17:00Z",
@@ -593,6 +593,78 @@
          "abbreviation": "LAR"
         },
         "score": null
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "lakersTv": {
+  "_note": "ESPN Lakers schedule (teams/13) broadcasts, recorded 2026-11-15, 3 games.",
+  "events": [
+   {
+    "date": "2026-11-15T21:00Z",
+    "competitions": [
+     {
+      "broadcasts": [
+       {
+        "media": {
+         "shortName": "Spectrum Sports Net"
+        },
+        "market": {
+         "type": "Away"
+        }
+       },
+       {
+        "media": {
+         "shortName": "Suns Live"
+        },
+        "market": {
+         "type": "Home"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "date": "2026-11-28T22:30Z",
+    "competitions": [
+     {
+      "broadcasts": [
+       {
+        "media": {
+         "shortName": "Prime Video"
+        },
+        "market": {
+         "type": "National"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "date": "2026-11-19T03:30Z",
+    "competitions": [
+     {
+      "broadcasts": [
+       {
+        "media": {
+         "shortName": "Spectrum Sports Net"
+        },
+        "market": {
+         "type": "Home"
+        }
+       },
+       {
+        "media": {
+         "shortName": "NBC"
+        },
+        "market": {
+         "type": "National"
+        }
        }
       ]
      }

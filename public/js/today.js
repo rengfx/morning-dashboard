@@ -234,7 +234,7 @@ function lakersSec(d, s, n) {
   }
   return `<section class="sec${s.passed ? ' passed' : ''}">${head(n, 'LAKERS', `${s.home ? 'VS' : '@'} ${((s.opponentFull || '').replace(s.opponentName || '', '').trim() || s.opponentName || '').toUpperCase()} ·${s.home ? 'HOME' : 'AWAY'}`)}
 ${status(s.start + (s.now ? ' · LIVE' : ''), COL.gold, `${s.home ? 'vs' : 'at'} ${s.opponentName || ''}${s.arena ? ' · ' + s.arena : ''}`)}
-${cells(cell('TIP-OFF', s.start), cell('ENDS', `~${s.end}`), cell('WHERE', s.home ? 'HOME' : 'AWAY'), cell('TV', s.tv || '—'))}
+${cells(cell('TIP-OFF', s.start), cell('ENDS', `~${s.end}`), cell('WHERE', s.home ? 'HOME' : 'AWAY'), tvCell(s))}
 ${rel ? `<span class="note">${esc(rel)}</span>` : ''}${s.home && d.config && d.config.tickets && d.config.tickets.LAL && !s.passed ? `<a class="tix-link" href="${esc(d.config.tickets.LAL)}" target="_blank" rel="noopener">TICKETS ON SEATGEEK ↗</a>` : ''}</section>`;
 }
 
@@ -301,6 +301,15 @@ const WKEY = 'weight-v1';
   } catch { /* storage blocked: calories show SET WEIGHT */ }
 })();
 const weight = () => { try { return JSON.parse(localStorage.getItem(WKEY) || 'null'); } catch { return null; } };
+
+/** R41 Lakers TV: ✓ when Spectrum SportsNet carries it (Darin's plan in the NBA app); ✗ + network when national only. */
+function tvCell(s) {
+  const SHORT = { 'Prime Video': 'PRIME', 'NBA TV': 'NBA TV', Peacock: 'PEACOCK' };
+  const w = s.watch, nat = w && w.national.length ? w.national.map((x) => SHORT[x] || x.toUpperCase()).join('/') : null;
+  if (!w) return cell('TV', s.tv || '—');
+  if (w.onPlan) return cell('TV', 'SPECTRUM', [nat ? `✓ ALSO ${nat}` : '✓ YOUR PLAN', 'good']);
+  return cell('TV', nat || s.tv || '—', ['✗ NATIONAL', 'bad']);
+}
 
 function rollerSec(d, s, n) {
   const c = s.cells, go = s.status === 'GO', wt = weight();
