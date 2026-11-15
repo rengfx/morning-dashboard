@@ -26,7 +26,7 @@
 
 ## Later
 
-- Rollerblade: set `rollerblade.weightLb` (asked 2026-11-14) to show calories. Tune 55 °F / 15 mph after a few skates.
+- Rollerblade: set `rollerblade.weightLb` (asked 2026-11-14) to show calories. Limits set 2026-11-14: 60 °F, 10 mph, 20:30.
 
 - SeatGeek direct app link: needs the team's performer ID (`seatgeek.com/e/performers/<id>` is a universal link). SeatGeek blocked the lookup (403). Could test on the phone like the HUME link.
 
@@ -51,7 +51,7 @@
 
 ## Done (2026-11-14 session)
 
-- First NBA tip-off line (R33); expandable games list + started classes removed (R34); weekend VISIT 1/2 (R35); LOW UV FROM (R36); SPORTS line with Rams/Dodgers + SeatGeek tickets (R37); UCLA FB/BB + local-venue ticket rule (R38); rollerblade evening section (R39). Tests: 8 fixtures + 123 checks, all pass.
+- First NBA tip-off line (R33); expandable games list + started classes removed (R34); weekend VISIT 1/2 (R35); LOW UV FROM (R36); SPORTS line with Rams/Dodgers + SeatGeek tickets (R37); UCLA FB/BB + local-venue ticket rule (R38); rollerblade evening section (R39; limits 60 °F / 10 mph / 20:30). Tests: 8 fixtures + 125 checks, all pass.
 
 ## Done (2026-11-13 session)
 

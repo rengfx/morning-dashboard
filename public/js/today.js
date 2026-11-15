@@ -291,11 +291,12 @@ function nbaLine(d) {
 /** R39 evening rollerblade on the boardwalk. */
 function rollerSec(d, s, n) {
   const c = s.cells, go = s.status === 'GO';
-  const right = go ? `${s.start}–${s.end}` : `checked ${s.checked[0]}–${s.checked[1]}`;
-  const more = go && s.goodHours.length > 1 ? `Other good starts: ${s.goodHours.slice(1).join(', ')}.` : '';
+  const right = go ? `${s.start}–${s.end}` : `starts ${s.checked[0]}–${s.checked[1]}`;
+  const L = s.limits || { rainPct: 20, minTempF: 60, maxWindMph: 10 };
+  const more = go && s.goodStarts.length > 1 ? `Other good starts: ${s.goodStarts.slice(1).join(', ')}.` : '';
   return `<section class="sec${s.passed ? ' passed' : ''}">${head(n, 'ROLLERBLADE · BOARDWALK', right)}
 ${status(go ? (s.now ? 'GO · NOW' : 'GO') : s.status, go ? COL.green : s.status === 'TOO COLD' ? COL.sky : COL.coral, s.advice)}
-${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.pct >= 20 ? ['✗', 'bad'] : ['✓', 'good']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, c.temp.f != null && c.temp.f < 55 ? ['COLD', 'bad'] : ['✓', 'good']), cell('WIND', `${c.wind.mph} mph`, c.wind.mph >= 15 ? ['✗', 'bad'] : ['✓', 'good']), cell('CALORIES', s.kcal != null ? `~${s.kcal}` : '—', s.kcal != null ? [`${hm(s.end) - hm(s.start)} MIN EXTRA`, 'good'] : ['SET WEIGHT', 'faint']))}
+${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.pct >= L.rainPct ? ['✗', 'bad'] : ['✓', 'good']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, c.temp.f != null && c.temp.f < L.minTempF ? [`< ${L.minTempF}°`, 'bad'] : ['✓', 'good']), cell('WIND', `${c.wind.mph} mph`, c.wind.mph >= L.maxWindMph ? [`≥ ${L.maxWindMph}`, 'bad'] : ['✓', 'good']), cell('CALORIES', s.kcal != null ? `~${s.kcal}` : '—', s.kcal != null ? [`${hm(s.end) - hm(s.start)} MIN EXTRA`, 'good'] : ['SET WEIGHT', 'faint']))}
 ${more ? `<span class="note">${esc(more)}</span>` : ''}</section>`;
 }
 

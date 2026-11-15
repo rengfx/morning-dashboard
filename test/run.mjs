@@ -153,20 +153,24 @@ check('R29 weekend day block ends 19:00 (close) → walk-home note', wk5.walkHom
   const low = scoreDay({ ...f25, hourly: { ...f25.hourly, uv: f25.hourly.uv.map((v) => Math.min(v, 2.5)) } }, cfg).sections.find((x) => x.type === 'sun');
   check('R36 peak UV under 3 → "ALL DAY", no sunscreen window', !low || (low.lowUvFrom === 'ALL DAY' && low.sunscreen === null), low && JSON.stringify([low.lowUvFrom, low.sunscreen])); }
 
-// R39 rollerblade (evening, boardwalk)
+// R39 rollerblade (evening, boardwalk): ≥60°F, wind <10 mph, rain <20 %, path dry 3 h, starts every 30 min to 20:30
 { const base = { ...tue, lakers: null };
   const rb = (over, extra = {}) => scoreDay({ ...base, ...extra, hourly: { ...base.hourly, ...over } }, cfg).sections.find((x) => x.type === 'rollerblade');
   const ok = rb({});
-  check('R39 dry 61°F evening → GO 19:00–20:00 (first full hour after sunset)', ok.status === 'GO' && ok.start === '19:00' && ok.end === '20:00', ok.status + ' ' + ok.start);
-  check('R39 rain 20%+ at 19–20 → first good slot moves to 21:00', rb({ precipPct: base.hourly.precipPct.map((v, i) => (i === 19 || i === 20 ? 40 : 0)) }).start === '21:00');
-  const cold = rb({ tempF: base.hourly.tempF.map((v) => Math.min(v, 52)) });
-  check('R39 52°F all evening → TOO COLD, no slot', cold.status === 'TOO COLD' && !cold.window && /Too cold: 52°F/.test(cold.advice), cold.advice);
-  const wet = rb({ precipMm: base.hourly.tempF.map((v, i) => (i === 17 ? 2 : 0)) });
-  check('R39 2 mm rain at 17:00 → path wet until 21:00 slot', wet.status === 'GO' && wet.start === '21:00', wet.status + ' ' + wet.start);
-  check('R39 wind 18 mph → WINDY', rb({ windMph: base.hourly.windMph.map(() => 18) }).status === 'WINDY');
+  check('R39 sunset 18:10 → first start 18:30 (next half hour); 62°F, 7 mph → GO 18:30–19:30', ok.status === 'GO' && ok.start === '18:30' && ok.end === '19:30', ok.status + ' ' + ok.start);
+  check('R39 starts every 30 min, none after 20:30', ok.goodStarts.every((t) => t <= '20:30') && ok.goodStarts.includes('19:30'), ok.goodStarts.join(' '));
+  check('R39 rain 40 % at 18–19 h → first good start 20:00 (a 19:30 start runs into the 19 h rain)', rb({ precipPct: base.hourly.precipPct.map((v, i) => (i === 18 || i === 19 ? 40 : 0)) }).start === '20:00', rb({ precipPct: base.hourly.precipPct.map((v, i) => (i === 18 || i === 19 ? 40 : 0)) }).start);
+  const cold = rb({ tempF: base.hourly.tempF.map((v) => Math.min(v, 59)) });
+  check('R39 59°F all evening → TOO COLD (need 60°F)', cold.status === 'TOO COLD' && /need 60°F/.test(cold.advice), cold.advice);
+  const windy = rb({ windMph: base.hourly.windMph.map(() => 11) });
+  check('R39 wind 11 mph → WINDY "need under 10"', windy.status === 'WINDY' && /need under 10/.test(windy.advice), windy.advice);
+  const wet = rb({ precipMm: base.hourly.tempF.map((v, i) => (i === 16 ? 2 : 0)) });
+  check('R39 2 mm rain at 16:00 → path wet; first start 20:00 (3 dry hours before)', wet.status === 'GO' && wet.start === '20:00', wet.status + ' ' + wet.start);
   check('R39 Basketball evening → no rollerblade section', !scoreDay({ ...base, calendar: [{ title: 'Basketball', start: '19:00', end: '22:00' }] }, cfg).sections.some((x) => x.type === 'rollerblade'));
-  const late = scoreDay({ ...base, now: '20:40' }, cfg).sections.find((x) => x.type === 'rollerblade');
-  check('R39 at 20:40 the 19:00/20:00 slots are gone → 21:00', late.start === '21:00', late.start);
+  const late = scoreDay({ ...base, now: '19:20' }, cfg).sections.find((x) => x.type === 'rollerblade');
+  check('R39 at 19:20 → 19:30 next start (earlier ones gone)', late.start === '19:30', late.start);
+  const after = scoreDay({ ...base, now: '20:50' }, cfg).sections.find((x) => x.type === 'rollerblade');
+  check('R39 after 20:45 → no start left, status shows the last checked slot, no GO', after.status !== 'GO', after.status);
   const kc = scoreDay(base, { ...cfg, rollerblade: { ...cfg.rollerblade, weightLb: 180 } }).sections.find((x) => x.type === 'rollerblade').kcal;
   check('R39 calories above rest: (7.5−1) × 81.6 kg × 1 h ≈ 530 kcal', kc === 530, String(kc)); }
 

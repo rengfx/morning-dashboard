@@ -282,8 +282,8 @@
    "humeDay",
    "surf",
    "sun",
-   "rollerblade",
-   "lakers"
+   "lakers",
+   "rollerblade"
   ],
   "sections": [
    {
@@ -318,8 +318,8 @@
    },
    {
     "type": "rollerblade",
-    "start": "17:00",
-    "end": "18:00",
+    "start": "19:00",
+    "end": "20:00",
     "status": "GO"
    }
   ],

@@ -106,12 +106,12 @@ export default {
   },
   "rollerblade": {
     "note": "R39 evening skate on the Venice boardwalk. MET 7.5 = in-line skating (Compendium of Physical Activities).",
-    "latest": "22:00",
+    "latestStart": "20:30",
     "minutes": 60,
     "rainPct": 20,
     "wetMm": 0.3,
-    "minTempF": 55,
-    "maxWindMph": 15,
+    "minTempF": 60,
+    "maxWindMph": 10,
     "met": 7.5,
     "weightLb": null
   },
