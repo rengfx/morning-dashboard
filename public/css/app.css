@@ -130,4 +130,6 @@ main { touch-action: pan-y; }
 .tix-link { align-self: flex-start; border: 1px solid var(--gold); color: var(--gold); padding: 8px 12px; }
 .nbagames li.tix.UCLA .t { color: var(--sky); } .nbagames li.tix.LAR .t, .nbagames li.tix.LAD .t { color: var(--sky); }
 .cell-link { text-decoration: none; color: inherit; } .cell-link .v { color: var(--amber); } .cell-link:active { background: var(--panel); }
-.wk { align-self: flex-start; font-size: 11px; color: var(--amber); border: 1px solid var(--amber); padding: 3px 8px; letter-spacing: .03em; }
+.wkrow { display: flex; align-items: center; gap: 10px; }
+.wkm { font-size: 10px; line-height: 1.35; color: var(--faint); letter-spacing: .02em; }
+.wk { align-self: flex-start; flex: none; font-size: 11px; color: var(--amber); border: 1px solid var(--amber); padding: 3px 8px; letter-spacing: .03em; }

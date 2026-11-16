@@ -167,6 +167,7 @@ Added 2026-10-31 from two weekends of real data:
 - **R42 Ocean advisory at the top.** On any day with ≥ 2.5 mm rain in the last 72 h: red banner under the header "OCEAN · RAIN ADVISORY UNTIL TUE 16:00 · 10.1 mm in 72 h · avoid water contact" (end = 72 h after the last hour with ≥ 0.2 mm). Weekdays too (no Surf section needed). Surf keeps a short "RAIN ADVISORY (see top)" note.
 - **R43 Watch button.** On-plan (Spectrum) or LOCAL Lakers games: the TV cell is a button "WATCH ↗" to `nba.com/games?date=<day>` (a universal link: opens the NBA app on that day's games). Team pages and single games without the NBA game ID are not universal links / not available.
 - **R44 JEFIT tag.** Lifting mornings (Mon, Wed, Sat): a small tag on the morning block (Sat: the all-day block): "JEFIT A" (Sat, Day 1), "JEFIT B" (Mon, Day 2), "JEFIT C" (Wed, Day 3) of the 3-day full-body program. Names in `workouts` config.
+- **R45 JEFIT moves.** To the right of the JEFIT tag: the day's exercises, abbreviated, small faint text (wraps to 2 lines on a phone). From `workoutMoves` config, copied from the JEFIT plan.
 
 ## 4. Data sources
 

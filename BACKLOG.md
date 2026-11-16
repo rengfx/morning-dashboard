@@ -54,7 +54,7 @@
 
 ## Done (2026-11-15 session)
 
-- Lakers TV on-plan / national (R41); ocean advisory top banner (R42, bug fix); WATCH ↗ to NBA app (R43); JEFIT tags (R44; D53 3-day full body A/B/C). Tests: 8 fixtures + 130 checks, all pass.
+- Lakers TV on-plan / national (R41); ocean advisory top banner (R42, bug fix); WATCH ↗ to NBA app (R43); JEFIT tags (R44; D53 3-day full body A/B/C); exercise list next to the tag (R45). Tests: 8 fixtures + 130 checks, all pass.
 
 ## Done (2026-11-14 session)
 

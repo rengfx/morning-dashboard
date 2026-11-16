@@ -173,7 +173,7 @@ function humeSec(d, s, n) {
   const rainM = c.rain.level === 'GOOD' ? ['✓', 'good'] : c.rain.level === 'OK' ? ['~ LOW', 'ok'] : ['✗', 'bad'];
   const tempM = c.temp.level === 'GOOD' ? ['✓', 'good'] : MARK[c.temp.level] || ['~', 'ok'];
   return `<section class="sec${n === 1 ? ' first' : ''}">${head(n, name, right)}
-${status(big + (s.now ? ' · NOW' : ''), STATUS_COL[s.status] || COL.green, s.advice)}${s.workout ? `<div class="wk">${esc(s.workout)}</div>` : ''}
+${status(big + (s.now ? ' · NOW' : ''), STATUS_COL[s.status] || COL.green, s.advice)}${s.workout ? `<div class="wkrow"><div class="wk">${esc(s.workout)}</div>${s.workoutMoves ? `<div class="wkm">${esc(s.workoutMoves)}</div>` : ''}</div>` : ''}
 ${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.at ? [`${rainM[0]} @${c.rain.at}`, rainM[1]] : rainM), cell('WIND', `${c.wind.mph} ${dir(c.wind.dirDeg)}`, c.wind.level === 'GOOD' ? ['✓', 'good'] : ['✗ WINDY', 'bad']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, tempM), cell('LIGHT', s.type === 'humeAM' ? `↑${c.light.rise}` : `↓${c.light.set}`, s.type === 'humeDay' ? [`↑${c.light.rise}`, 'faint'] : c.light.dark ? ['~ DARK', 'ok'] : ['✓', 'good']))}
 ${humeChart(d, s)}${classList(d, s)}</section>`;
 }

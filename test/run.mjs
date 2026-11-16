@@ -183,7 +183,7 @@ check('R29 weekend day block ends 19:00 (close) → walk-home note', wk5.walkHom
   check('R42 under 2.5 mm → no banner', !scoreDay({ ...tue, rain72hMm: 1.1, lastRain: '2026-10-27T05:00' }, cfg).banners.some((b) => b.kind === 'ocean'));
   const mon = scoreDay({ ...tue, weekday: 'MON' }, cfg).sections.find((x) => x.type === 'humeAM');
   const sat = scoreDay(JSON.parse(readFileSync(join(root, 'fixtures/2026-10-31-sat-real.json'), 'utf8')).input, cfg).sections.find((x) => x.type === 'humeDay');
-  check('R44 Sat day block "JEFIT A", Mon AM "JEFIT B", Tue none, PM none', mon.workout === 'JEFIT B' && sat.workout === 'JEFIT A' && !scoreDay(tue, cfg).sections.find((x) => x.type === 'humeAM').workout && !scoreDay({ ...tue, weekday: 'MON' }, cfg).sections.find((x) => x.type === 'humePM').workout); }
+  check('R44 Sat day block "JEFIT A", Mon AM "JEFIT B", Tue none, PM none', mon.workout === 'JEFIT B' && sat.workout === 'JEFIT A' && /^TBDL/.test(sat.workoutMoves) && /^HIP THRUST/.test(mon.workoutMoves) && !scoreDay(tue, cfg).sections.find((x) => x.type === 'humeAM').workout && !scoreDay({ ...tue, weekday: 'MON' }, cfg).sections.find((x) => x.type === 'humePM').workout); }
 
 // Astronomy: reference values (Venus inferior conjunction 2026-10-24; full Moon 2026-10-26).
 const jd = (iso) => astro.julian(new Date(iso));
