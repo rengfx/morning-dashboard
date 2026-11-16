@@ -111,10 +111,10 @@ export default {
     "WED": "JEFIT C"
   },
   "workoutMoves": {
-    "note": "R45 exercise list next to the JEFIT tag. From his JEFIT plan '3 Day Full Body' (read 2026-11-15). Update here when the plan changes.",
+    "note": "R45 exercise list next to the JEFIT tag. From his JEFIT plan '3 Day Full Body' (read 2026-11-15; dead bug → plank on B and C, suitcase carry timed 45 s). Update here when the plan changes.",
     "SAT": "TBDL · BENCH · GHR · PULLDN · LEG CURL · PLANK · FARMER",
-    "MON": "HIP THRUST · CBL ROW · DB OHP · LEG EXT · CBL CURL · DEAD BUG",
-    "WED": "CS ROW · INCL DB PRESS · STEP-UP · FACE PULL · PUSHDN · DEAD BUG · SUITCASE"
+    "MON": "HIP THRUST · CBL ROW · DB OHP · LEG EXT · CBL CURL · PLANK",
+    "WED": "CS ROW · INCL DB PRESS · STEP-UP · FACE PULL · PUSHDN · SUITCASE · PLANK"
   },
   "rollerblade": {
     "note": "R39 evening skate on the Venice boardwalk. MET 7.5 = in-line skating (Compendium of Physical Activities).",
