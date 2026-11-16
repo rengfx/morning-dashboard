@@ -26,7 +26,6 @@
 
 ## Later
 
-- Q: confirm JEFIT day mapping (Sat legs+abs, Mon upper, Wed full).
 
 - Lakers TV: check the first "✓ ALSO NBC" game (Tue Nov 17, vs Hornets) — if it is blacked out on Spectrum, change the rule so a national TV channel wins.
 
@@ -55,7 +54,7 @@
 
 ## Done (2026-11-15 session)
 
-- Lakers TV on-plan / national (R41); ocean advisory top banner (R42, bug fix); WATCH ↗ to NBA app (R43); JEFIT tags (R44). Tests: 8 fixtures + 130 checks, all pass.
+- Lakers TV on-plan / national (R41); ocean advisory top banner (R42, bug fix); WATCH ↗ to NBA app (R43); JEFIT tags (R44; D53 3-day full body A/B/C). Tests: 8 fixtures + 130 checks, all pass.
 
 ## Done (2026-11-14 session)
 

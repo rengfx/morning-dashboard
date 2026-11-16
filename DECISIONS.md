@@ -54,3 +54,4 @@
 | D50 | 2026-11-15 | Bug fix: the ocean rain advisory was only inside the weekend Surf section (low on the page, no end time). Now a top banner on every day with the end time. |
 | D51 | 2026-11-15 | NBA app link = nba.com/games?date= (universal link). A single-game link needs the NBA game ID (only in the full-season file, too heavy for the server); team pages are not universal links. |
 | D52 | 2026-11-15 | JEFIT days Sat/Mon/Wed. Mapping assumed from the earlier JEFIT chat: Mon upper, Wed full body, Sat legs+abs (was Fri). Confirm with Darin. |
+| D53 | 2026-11-15 | JEFIT program is the 3-day full body (Darin): Day 1/A Sat, Day 2/B Mon, Day 3/C Wed. Replaces the D52 mapping (upper / full / legs+abs was the old program). |
