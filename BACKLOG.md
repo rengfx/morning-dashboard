@@ -52,6 +52,10 @@
 - Moon-height histogram: mark moonrise / moonset times.
 - Lakers TV: the feed only names national TV; local games show `LOCAL`.
 
+## Done (2026-11-16 session)
+
+- WENT block shrinks to one line, every day, tap to open (R46, replaces R30).
+
 ## Done (2026-11-15 session)
 
 - Lakers TV on-plan / national (R41); ocean advisory top banner (R42, bug fix); WATCH ↗ to NBA app (R43); JEFIT tags (R44; D53 3-day full body A/B/C); exercise list next to the tag (R45). Tests: 8 fixtures + 130 checks, all pass.

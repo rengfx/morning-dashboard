@@ -167,6 +167,7 @@ function sunChart(d, s) {
 function humeSec(d, s, n) {
   const right = `${s.start}–${s.end}${s.source === 'default' ? ' (usual)' : s.source === 'hours' ? ' (open)' : ''}`;
   const name = s.type === 'basketball' && s.place ? `BASKETBALL · ${s.place.toUpperCase()}` : NAMES[s.type];
+  if (s.went && !wentOpen.has(s.type)) return `<button type="button" class="sec wentmin${n === 1 ? ' first' : ''}" data-wentopen="${s.type}">${head(n, `${name} · ✓ WENT`, `${right} ▾`)}</button>`; // R46
   if (s.passed) return `<section class="sec passed${n === 1 ? ' first' : ''}">${head(n, name, right)}<span style="font-size:15px">PASSED · ${esc(s.advice)}</span></section>`;
   const c = s.cells;
   const big = s.status === 'GO BY' ? `GO BY ${s.goBy}` : s.status === 'GO AFTER' ? `GO AFTER ${s.goAfter}` : s.status;
@@ -244,11 +245,15 @@ const WIN = { humeAM: ['am', 'AM'], humePM: ['pm', 'PM'], humeDay: ['day', 'DAY'
 /** R27 today on a weekday: the Hume morning block goes away once its time has passed. */
 function hideDone(d) {
   const off = d.offset || 0;
-  if (off > 0 || d.weekday === 'SAT' || d.weekday === 'SUN') return d;
-  const m = marks(d.date); // R30 weekday: a Hume block marked WENT goes away (today and earlier days)
-  const sections = d.sections.filter((s) => !(off === 0 && s.type === 'humeAM' && s.passed && !m.amKeep) && !(s.type === 'humeAM' && m.am) && !(s.type === 'humePM' && m.pm));
-  return sections.length === d.sections.length ? d : { ...d, sections };
+  if (off > 0) return d;
+  const m = marks(d.date);
+  // R46 (replaces R30): a Hume block marked WENT shrinks to one line (weekdays AM/PM, weekend all-day on VISIT 1)
+  const wentKey = { humeAM: 'am', humePM: 'pm', humeDay: 'day' };
+  let sections = d.sections.map((s) => (wentKey[s.type] && m[wentKey[s.type]] ? { ...s, went: true } : s));
+  if (d.weekday !== 'SAT' && d.weekday !== 'SUN') sections = sections.filter((s) => !(off === 0 && s.type === 'humeAM' && s.passed && !s.went && !m.amKeep)); // R27
+  return { ...d, sections };
 }
+const wentOpen = new Set(); // R46 blocks the user tapped open again (this page view only)
 
 /** R28 Hume log line: one toggle per Hume window of the day + this week's count. Today and earlier only. */
 function humeLog(d, all) {
@@ -375,6 +380,7 @@ ${sky}
   });
   const nb = document.querySelector('.nbabox');
   if (nb) nb.addEventListener('toggle', () => { nbaOpen = nb.open; });
+  for (const b of document.querySelectorAll('[data-wentopen]')) b.addEventListener('click', () => { wentOpen.add(b.dataset.wentopen); const y = scrollY; render(dIn); scrollTo(0, y); });
   const rs = document.querySelector('[data-reset]');
   if (rs) rs.addEventListener('click', () => { resetDay(d.date); const y = scrollY; render(dIn); scrollTo(0, y); });
   for (const b of document.querySelectorAll('[data-step]')) b.addEventListener('click', () => go(+b.dataset.step));

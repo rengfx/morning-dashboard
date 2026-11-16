@@ -133,3 +133,7 @@ main { touch-action: pan-y; }
 .wkrow { display: flex; align-items: center; gap: 10px; }
 .wkm { font-size: 10px; line-height: 1.35; color: var(--faint); letter-spacing: .02em; }
 .wk { align-self: flex-start; flex: none; font-size: 11px; color: var(--amber); border: 1px solid var(--amber); padding: 3px 8px; letter-spacing: .03em; }
+/* R46 a Hume block marked WENT, shrunk to one line */
+.wentmin { width: 100%; background: none; border: 0; border-top: 1px solid var(--rule); padding: 14px 0 0; font: inherit; color: var(--faint); text-align: left; cursor: pointer; }
+.wentmin.first { border-top: 0; padding-top: 0; }
+.wentmin .row { color: var(--faint); }
