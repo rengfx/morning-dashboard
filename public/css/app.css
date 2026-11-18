@@ -144,3 +144,11 @@ main { touch-action: pan-y; }
 .press.watch, .press.watch b { color: var(--amber); }
 .press.flag, .press.flag b { color: var(--coral); }
 .banner.amber { border-color: var(--amber); color: var(--amber); }
+/* R49 pressure box: tap to open the whole-day pressure chart */
+.pressbox summary { list-style: none; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
+.pressbox summary::-webkit-details-marker { display: none; }
+.pressbox[open] .car { display: inline-block; transform: rotate(180deg); }
+.pressbox svg { margin-top: 6px; }
+/* R50 hide button on Surf / Rollerblade */
+.xbtn { background: none; border: 1px solid var(--rule); color: var(--muted); font: inherit; font-size: 11px; line-height: 1; padding: 6px 9px; margin-left: 8px; cursor: pointer; }
+.xbtn:active { background: var(--panel); }

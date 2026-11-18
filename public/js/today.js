@@ -16,40 +16,65 @@ const STATUS_COL = { GO: COL.green, 'GO AFTER': COL.green, 'GO BY': COL.amber, W
 
 const cell = (l, v, m) => `<div class="cell"><span class="l">${esc(l)}</span><span class="v">${esc(v)}</span>${m ? `<span class="m ${m[1]}">${esc(m[0])}</span>` : ''}</div>`;
 const cells = (...c) => `<div class="cells" style="--n:${c.length}">${c.join('')}</div>`;
-const head = (n, name, right) => `<div class="row"><span>${n} · ${esc(name)}</span><span>${esc(right || '')}</span></div>`;
+const head = (n, name, right, hide) => `<div class="row"><span>${n} · ${esc(name)}</span><span>${esc(right || '')}${hide ? ` <button type="button" class="xbtn" data-hide="${hide}" aria-label="Hide for today">✕</button>` : ''}</span></div>`;
 const status = (big, col, small) => `<div class="status"><b style="color:${col}">${esc(big)}</b>${small ? `<span>${esc(small)}</span>` : ''}</div>`;
 const lvl = (l, word) => (l === 'GOOD' ? ['✓' + (word ? ' ' + word : ''), 'good'] : l === 'OK' ? ['~ ' + (word || 'OK'), 'ok'] : ['✗' + (word ? ' ' + word : ''), 'bad']);
 
 // ---------- charts ----------
 
-function stripChart(d) {
-  const sc = scale(5, 22), H = 34;
-  let b = rect(0, 0, W, H, COL.panel) + darkBands(sc, d.sun.rise, d.sun.set, H) + grid(sc, H, 1);
-  b += rainBars(sc, pts(d.hourly.precipPct, d.hourly.time), H, 8, 40);
-  const dayBlock = d.sections.some((s) => s.type === 'humeDay');
-  d.sections.forEach((s, i) => {
-    if (s.type === 'humeDay') { // all-day block: a low band under the other windows
-      const x0 = sc.x(hm(s.start)), x1 = sc.x(hm(s.end));
-      b += rect(x0, 23, x1 - x0, 9, STRIP[s.type], `rx="2" fill-opacity="${s.passed ? 0.3 : 0.75}"`) + text(x0 + 3, 31, `${i + 1}`, COL.night, { bold: true, size: 9 });
-      return;
-    }
-    let a = s.start, e = s.end;
+/** R49 whole day (waking hours) as a Gantt chart: one row per item, label column on the left. */
+const GLAB = { humeAM: 'HUME AM', humePM: 'HUME PM', humeDay: 'HUME DAY', basketball: 'HOOPS', rollerblade: 'BLADE', surf: 'SURF', sun: 'SUN', lakers: 'LAKERS', work: 'WORK' };
+function ganttChart(d) {
+  const H0 = 5, H1 = 23, LW = 66, PW = W - LW, RH = 17, TOP = 4;
+  const x = (min) => LW + Math.max(0, Math.min(PW, (min - H0 * 60) / ((H1 - H0) * 60) * PW));
+  const wk = d.config.work && d.config.work.days.includes(d.weekday) ? d.config.work : null;
+  const rows = [...(wk ? [{ type: 'work', start: wk.start, end: wk.end, n: '' }] : []), ...d.sections.map((s, i) => ({ ...s, n: i + 1 }))].sort((a, b) => (a.start ? hm(a.start) : 9999) - (b.start ? hm(b.start) : 9999));
+  const Hc = TOP + rows.length * RH + 2, H = Hc + 14;
+  let b = rect(LW, 0, PW, Hc, COL.panel);
+  const r = hm(d.sun.rise), st = hm(d.sun.set);
+  if (r > H0 * 60) b += rect(LW, 0, x(r) - LW, Hc, COL.night);
+  if (st < H1 * 60) b += rect(x(st), 0, W - x(st), Hc, COL.night);
+  for (let h = H0 + 1; h < H1; h++) b += vline(x(h * 60), 0, Hc, '#ECEAE4', `stroke-opacity="${h % 3 ? 0.05 : 0.12}" stroke-width="0.6" stroke-dasharray="1 2"`);
+  rows.forEach((s, i) => {
+    const y = TOP + i * RH, col = s.type === 'work' ? COL.muted : STRIP[s.type] || COL.green, dim = s.passed || s.went || s.hidden;
+    b += text(2, y + 11, `${s.n ? s.n + ' ' : ''}${GLAB[s.type] || s.type.toUpperCase()}`, dim ? COL.faint : col, { size: 9, bold: !dim });
     if (s.type === 'surf' && !s.window) {
-      if (s.nearMiss) b += rect(sc.x(hm(s.nearMiss.start)), 20, sc.x(hm(s.nearMiss.end)) - sc.x(hm(s.nearMiss.start)), 11, 'none', `rx="2" stroke="${COL.sky}" stroke-opacity="0.6" stroke-dasharray="2 2"`);
+      if (s.nearMiss) b += rect(x(hm(s.nearMiss.start)), y + 3, x(hm(s.nearMiss.end)) - x(hm(s.nearMiss.start)), RH - 6, 'none', `rx="2" stroke="${COL.sky}" stroke-opacity="0.6" stroke-dasharray="2 2"`);
+      else b += text(LW + 4, y + 11, 'no window', COL.faint, { size: 9 });
       return;
     }
-    if (!a || !e) return;
-    const half = s.type === 'lakers' && d.sections.some((o) => o !== s && o.start && hm(o.start) < hm(e) && hm(o.end) > hm(a));
-    const x0 = sc.x(hm(a)), x1 = sc.x(hm(e)), y = 3, h = dayBlock ? (half ? 9 : 18) : half ? 14 : 28;
-    b += rect(x0, y, x1 - x0, h, STRIP[s.type], `rx="3" fill-opacity="${s.passed ? 0.35 : 1}"`);
-    if (s.status === 'CONFLICT') b += rect(x0, 2, x1 - x0, 30, 'none', `rx="3" stroke="${COL.coral}" stroke-width="1.5" stroke-dasharray="3 2"`);
-    b += text((x0 + x1) / 2, y + h - (half ? 4 : 10), `${i + 1}${s.type === 'lakers' ? ' LAL' : ''}`, COL.night, { anchor: 'middle', bold: true });
+    if (!s.start || !s.end) return;
+    const x0 = x(hm(s.start)), x1 = x(hm(s.end)), w = x1 - x0;
+    b += rect(x0, y + 3, w, RH - 6, col, `rx="2" fill-opacity="${dim ? 0.3 : s.type === 'work' ? 0.45 : 0.9}"`);
+    if (s.status === 'CONFLICT') b += rect(x0, y + 2, w, RH - 4, 'none', `rx="2" stroke="${COL.coral}" stroke-width="1.2" stroke-dasharray="3 2"`);
+    const lab = s.went ? '✓' : `${s.start}–${s.end}`;
+    if (w >= 62) b += text(x0 + 3, y + 11.5, lab, COL.night, { size: 8.5, bold: true });
+    else b += x1 + 64 < W ? text(x1 + 3, y + 11.5, lab, dim ? COL.faint : col, { size: 8.5 }) : text(x0 - 3, y + 11.5, lab, dim ? COL.faint : col, { size: 8.5, anchor: 'end' });
   });
-  b += nowLine(sc, d.now, 38);
-  b += ticks(sc, 50, 3);
-  const said = d.sections.map((s, i) => `${i + 1} ${NAMES[s.type]} ${s.start ? s.start + ' to ' + s.end : 'no window'}${s.passed ? ', passed' : ''}`).join('; ');
-  return svg(54, `Today in order, 5 AM to 10 PM: ${said}.`, b);
+  if (d.now) { const t = hm(d.now); if (t >= H0 * 60 && t <= H1 * 60) b += vline(x(t), 0, Hc, COL.text, 'stroke-width="1.5"'); }
+  for (let h = H0; h <= H1; h += 3) b += text(x(h * 60), H - 2, String(h).padStart(2, '0'), COL.muted, { anchor: h === H0 ? 'start' : h === H1 ? 'end' : 'middle', size: 9 });
+  const said = rows.map((s) => `${GLAB[s.type] || s.type} ${s.start ? s.start + ' to ' + s.end : 'no window'}${s.passed ? ', passed' : ''}`).join('; ');
+  return svg(H, `Whole day, 5 AM to 11 PM: ${said}.`, b);
 }
+
+/** R49 pressure over the whole day: home (Venice) and work (Torrance) lines, work hours shaded. */
+function pressChart(d) {
+  const pd = d.pressureDay; if (!pd || !pd.home) return '';
+  const H = 74, sc = scale(0, 24), wk = d.config.work && d.config.work.days.includes(d.weekday) ? d.config.work : null;
+  const all = [...pd.home, ...(pd.work || [])].filter((v) => v != null);
+  let lo = Math.min(...all), hi = Math.max(...all); if (hi - lo < 6) { const m = (hi + lo) / 2; lo = m - 3; hi = m + 3; }
+  const y = (v) => 60 - (v - lo) / (hi - lo) * 50;
+  let b = rect(0, 0, W, H, COL.panel) + darkBands(sc, d.sun.rise, d.sun.set, H - 12) + grid(sc, H - 12, 2);
+  if (wk) b += rect(sc.x(hm(wk.start)), 0, sc.x(hm(wk.end)) - sc.x(hm(wk.start)), H - 12, COL.violet, 'fill-opacity="0.10"') + text(sc.x(hm(wk.start)) + 3, 10, `WORK ${wk.place.toUpperCase()}`, COL.violet, { size: 8.5 });
+  const line = (arr) => arr.map((v, h) => (v == null ? null : [sc.x(h * 60), y(v)])).filter(Boolean);
+  b += poly(line(pd.home), COL.text, 'stroke-width="1.8"');
+  if (pd.work) b += poly(line(pd.work), COL.violet, 'stroke-width="1.6" stroke-dasharray="4 2"');
+  b += text(W - 2, 10, `${Math.round(hi)}`, COL.faint, { anchor: 'end', size: 8.5 }) + text(W - 2, 60, `${Math.round(lo)}`, COL.faint, { anchor: 'end', size: 8.5 });
+  b += nowLine(sc, d.now, H - 12) + ticks(sc, H - 1, 6);
+  return svg(H, `Pressure today, hPa: ${Math.round(lo)} to ${Math.round(hi)}.`, b)
+    + `<div class="legend">— Venice hPa${pd.work ? `  <span style="color:${COL.violet}">╌ ${esc((wk && wk.place) || 'work')}</span>` : ''}  ▮ dark</div>`;
+}
+
 
 function humeChart(d, s) {
   const am = s.type === 'humeAM', allDay = s.type === 'humeDay';
@@ -211,7 +236,7 @@ function surfSec(d, s, n) {
     cell('PERIOD', `${c.period.s}s ${dir(c.period.dirDeg)}`, lvl(c.period.level, c.period.level === 'GOOD' ? 'GOOD' : c.period.level === 'OK' ? 'DIR OK' : 'BAD')),
     cell(`TIDE ${c.at}`, `${c.tide.ft} ft ${c.tide.rising == null ? '' : c.tide.rising ? '↑' : '↓'}`, lvl(c.tide.level, c.tide.level === 'BAD' ? 'HIGH' : '')),
     cell('WIND', `${c.wind.mph} ${dir(c.wind.dirDeg)}`, lvl(c.wind.level))) : '';
-  return `<section class="sec">${head(n, `SURF · ${(s.spot || '').toUpperCase()}`, right)}
+  return `<section class="sec">${head(n, `SURF · ${(s.spot || '').toUpperCase()}`, right, 'surf')}
 ${status(big + (s.now ? ' · NOW' : ''), s.window ? COL.amber : COL.muted, small)}${cs}${surfChart(d, s)}</section>`;
 }
 
@@ -245,13 +270,20 @@ const WIN = { humeAM: ['am', 'AM'], humePM: ['pm', 'PM'], humeDay: ['day', 'DAY'
 /** R27 today on a weekday: the Hume morning block goes away once its time has passed. */
 function hideDone(d) {
   const off = d.offset || 0;
-  if (off > 0) return d;
+  if (off > 0) { const hid = new Set(hiddenRead()[d.date] || []); return hid.size ? { ...d, sections: d.sections.map((s) => (hid.has(s.type) ? { ...s, hidden: true } : s)) } : d; }
   const m = marks(d.date);
   // R46 (replaces R30): a Hume block marked WENT shrinks to one line (weekdays AM/PM, weekend all-day on VISIT 1)
   const wentKey = { humeAM: 'am', humePM: 'pm', humeDay: 'day' };
-  let sections = d.sections.map((s) => (wentKey[s.type] && m[wentKey[s.type]] ? { ...s, went: true } : s));
+  const hid = new Set(hiddenRead()[d.date] || []);
+  let sections = d.sections.map((s) => (wentKey[s.type] && m[wentKey[s.type]] ? { ...s, went: true } : hid.has(s.type) ? { ...s, hidden: true } : s));
   if (d.weekday !== 'SAT' && d.weekday !== 'SUN') sections = sections.filter((s) => !(off === 0 && s.type === 'humeAM' && s.passed && !s.went && !m.amKeep)); // R27
   return { ...d, sections };
+}
+// R50 Surf / Rollerblade hidden for a day (✕). Per browser; wrapped because storage can be blocked.
+const HKEY = 'hidden-v1';
+const hiddenRead = () => { try { return JSON.parse(localStorage.getItem(HKEY) || '{}') || {}; } catch { return {}; } };
+function hiddenSet(date, type, on) {
+  try { const all = hiddenRead(), l = new Set(all[date] || []); on ? l.add(type) : l.delete(type); if (l.size) all[date] = [...l]; else delete all[date]; localStorage.setItem(HKEY, JSON.stringify(all)); return true; } catch { return false; }
 }
 const wentOpen = new Set(); // R46 blocks the user tapped open again (this page view only)
 
@@ -297,9 +329,12 @@ function pressLine(d) {
   const p = d.pressure;
   if (!p) return '';
   const sg = (v) => (v == null ? '—' : `${v > 0 ? '↑' : v < 0 ? '↓' : ''}${Math.abs(v).toFixed(1)}`);
-  const nx = p.next ? `NEXT 24H ${sg(p.next.d24)}` : '';
-  return `<div class="press ${p.level.toLowerCase()}" title="${p.level}"><span>PRESSURE <b>${p.hPa}</b> hPa · 24H ${sg(p.d24)}</span><span>${nx}</span></div>`;
+  const home = p.hPa != null ? `<div class="press ${p.level.toLowerCase()}"><span>PRESSURE <b>${p.hPa}</b> hPa · 24H ${sg(p.d24)}</span><span>${p.next ? `NEXT 24H ${sg(p.next.d24)}` : ''} <i class="car">▾</i></span></div>` : '';
+  const w = p.work;
+  const work = w ? `<div class="press ${w.level.toLowerCase()}"><span>${esc(w.place.toUpperCase())} ${esc(w.start)}–${esc(w.end)} <b>${w.hPa}</b></span><span>${w.worst ? `MAX 24H ${sg(w.worst.d24)} @${esc(w.worst.at.slice(11, 16))}` : ''}</span></div>` : '';
+  return `<details class="pressbox"${pressOpen ? ' open' : ''}><summary>${home}${work}</summary>${pressChart(d)}</details>`;
 }
+let pressOpen = false;
 
 /** R39 evening rollerblade on the boardwalk. */
 // R40 body weight lives on this phone only (never in the repo): set by ?w=<lb> (or <kg>kg), e.g. from an iPhone Shortcut.
@@ -334,7 +369,7 @@ function rollerSec(d, s, n) {
   const right = go ? `${s.start}–${s.end}` : `starts ${s.checked[0]}–${s.checked[1]}`;
   const L = s.limits || { rainPct: 20, minTempF: 60, maxWindMph: 10 };
   const more = go && s.goodStarts.length > 1 ? `Other good starts: ${s.goodStarts.slice(1).join(', ')}.` : '';
-  return `<section class="sec${s.passed ? ' passed' : ''}">${head(n, 'ROLLERBLADE · BOARDWALK', right)}
+  return `<section class="sec${s.passed ? ' passed' : ''}">${head(n, 'ROLLERBLADE · BOARDWALK', right, 'rollerblade')}
 ${status(go ? (s.now ? 'GO · NOW' : 'GO') : s.status, go ? COL.green : s.status === 'TOO COLD' ? COL.sky : COL.coral, s.advice)}
 ${cells(cell('RAIN', `${c.rain.pct}%`, c.rain.pct >= L.rainPct ? ['✗', 'bad'] : ['✓', 'good']), cell('TEMP', c.temp.f == null ? '—' : `${c.temp.f}°`, c.temp.f != null && c.temp.f < L.minTempF ? [`< ${L.minTempF}°`, 'bad'] : ['✓', 'good']), cell('WIND', `${c.wind.mph} mph`, c.wind.mph >= L.maxWindMph ? [`≥ ${L.maxWindMph}`, 'bad'] : ['✓', 'good']), cell('CALORIES', kcal != null ? `~${kcal}` : '—', kcal != null ? (stale ? [`UPDATE WEIGHT (${age} D)`, 'ok'] : [`EXTRA · ${wt.lb} LB`, 'good']) : ['SET WEIGHT', 'faint']))}
 ${more ? `<span class="note">${esc(more)}</span>` : ''}</section>`;
@@ -354,7 +389,7 @@ function render(dIn) {
   const lateBy = (src) => (d.errors || []).filter((e) => e.source === src);
   const late = (d.errors || []).map((e) => `<div class="late">DATA LATE · ${esc(e.source)} · ${esc(e.message.replace(/^\w+:\s*/, ''))}</div>`).join('');
   let n = 0;
-  const body = d.sections.map((s) => { n++; return s.type === 'surf' ? surfSec(d, s, n) : s.type === 'sun' ? sunSec(d, s, n) : s.type === 'lakers' ? lakersSec(d, s, n) : s.type === 'rollerblade' ? rollerSec(d, s, n) : humeSec(d, s, n); }).join('\n');
+  const body = d.sections.map((s) => { n++; if (s.hidden) return `<button type="button" class="sec wentmin${n === 1 ? ' first' : ''}" data-unhide="${s.type}">${head(n, `${NAMES[s.type]} · HIDDEN`, 'SHOW ▾')}</button>`; return s.type === 'surf' ? surfSec(d, s, n) : s.type === 'sun' ? sunSec(d, s, n) : s.type === 'lakers' ? lakersSec(d, s, n) : s.type === 'rollerblade' ? rollerSec(d, s, n) : humeSec(d, s, n); }).join('\n');
   let sky = '';
   try { // R22 sky notes for this day and the next 3 (nothing on quiet days)
     const ev = findSkyEvents({ fromDate: d.date, days: 4, obs: { lat: d.config.location.lat, lon: d.config.location.lon }, tz: d.config.location.tz, clouds: d.clouds });
@@ -376,8 +411,7 @@ function render(dIn) {
 ${d.banners.map((b) => `<div class="banner${b.kind === 'ocean' ? ' red' : b.kind === 'pressure' ? ' amber' : ''}">${esc(b.text)}</div>`).join('')}${late}
 ${pressLine(d)}
 ${nbaLine(d)}
-${stripChart(d)}
-<div class="legend">${d.sections.map((s, i) => `<span style="color:${s.passed ? COL.faint : STRIP[s.type]}">${i + 1} ${NAMES[s.type].replace('HUME MORNING', 'Hume AM').replace('HUME EVENING', 'Hume PM').toLowerCase().replace(/^\w/, (c) => c.toUpperCase())}${s.passed ? ' (passed)' : s.type === 'surf' && !s.window ? ' (none)' : ''}</span>`).join(' · ')}${off ? '' : ' · ┃ now'}</div>
+${ganttChart(d)}
 </div>
 ${body}
 ${humeLog(d, dIn.sections)}
@@ -388,6 +422,10 @@ ${sky}
     if (!toggle(d.date, b.dataset.went)) { b.textContent = 'NOT SAVED'; return; }
     const y = scrollY; render(dIn); scrollTo(0, y);
   });
+  for (const b of document.querySelectorAll('[data-hide]')) b.addEventListener('click', (e) => { e.stopPropagation(); hiddenSet(d.date, b.dataset.hide, true); const y = scrollY; render(dIn); scrollTo(0, y); });
+  for (const b of document.querySelectorAll('[data-unhide]')) b.addEventListener('click', () => { hiddenSet(d.date, b.dataset.unhide, false); const y = scrollY; render(dIn); scrollTo(0, y); });
+  const pb = document.querySelector('.pressbox');
+  if (pb) pb.addEventListener('toggle', () => { pressOpen = pb.open; });
   const nb = document.querySelector('.nbabox');
   if (nb) nb.addEventListener('toggle', () => { nbaOpen = nb.open; });
   for (const b of document.querySelectorAll('[data-wentopen]')) b.addEventListener('click', () => { wentOpen.add(b.dataset.wentopen); const y = scrollY; render(dIn); scrollTo(0, y); });

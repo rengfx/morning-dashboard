@@ -5,6 +5,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { scoreDay } from '../lib/score.js';
+import { pressureAt, daySeries, workPressure } from '../lib/pressure.js';
 import { parseICS, eventsOn, parseGame } from '../lib/ics.js';
 import { dstInfo } from '../public/js/time.js';
 import * as astro from '../public/js/astro.js';
@@ -194,6 +195,19 @@ check('R29 weekend day block ends 19:00 (close) → walk-home note', wk5.walkHom
   const n = ps({ hPa: 1015, d24: -1.0, next: { d24: -5.3, at: '2026-10-28T06:00' } });
   check('R47 swing coming (−5.3 by WED 06:00) → FLAG, banner names the time', n.pressure.level === 'FLAG' && n.banners.some((b) => /coming · −5\.3 hPa by WED 06:00/.test(b.text)), JSON.stringify(n.banners));
   check('R47 calm day → CALM; no data → no pressure block', ps({ hPa: 1017, d24: 0.6, next: null }).pressure.level === 'CALM' && scoreDay(tue, cfg).pressure === null); }
+
+// R48 no rollerblade on lifting days · R49 work-hours pressure (Torrance)
+{ const rbOn = (wd) => scoreDay({ ...tue, weekday: wd }, cfg).sections.some((x) => x.type === 'rollerblade');
+  check('R48 rollerblade: Tue yes, Mon/Wed (lifting) no', rbOn('TUE') && !rbOn('MON') && !rbOn('WED'));
+  const T = Array.from({ length: 72 }, (_, h) => `2026-10-${String(26 + Math.floor(h / 24))}T${String(h % 24).padStart(2, '0')}:00`);
+  const P = T.map((_, h) => (h < 24 ? 1018 : 1018 - (h - 24) * 0.3));
+  const w = workPressure(T, P, '2026-10-27', '08:30', '17:00');
+  check('R49 workPressure: hours 08–17, worst 24-h change −5.1 at 17:00, range 2.7', w && w.worst.d24 === -5.1 && w.worst.at.endsWith('17:00') && w.range === 2.7, JSON.stringify(w));
+  check('R49 daySeries: 24 values for the day', daySeries(T, P, '2026-10-27').length === 24 && daySeries(T, P, '2026-10-27')[0] === 1018);
+  const pa = pressureAt(T, P, 30);
+  check('R47 pressureAt: −1.8 in last 24 h, next 24 h swing −7.2', pa.d24 === -1.8 && pa.next.d24 === -7.2, JSON.stringify(pa));
+  const o = scoreDay({ ...tue, pressure: { hPa: 1017, d24: 1, next: null }, workPressure: { place: 'Torrance', start: '08:30', end: '17:00', hPa: 1016, worst: { d24: -5.1, at: '2026-10-27T17:00' }, range: 2.7 } }, cfg);
+  check('R49 Torrance −5.1 → work FLAG + banner "TORRANCE 08:30–17:00 · −5.1 hPa / 24 h at 17:00"', o.pressure.work.level === 'FLAG' && o.banners.some((b) => /TORRANCE 08:30–17:00 · −5\.1 hPa \/ 24 h at 17:00/.test(b.text)), JSON.stringify(o.banners)); }
 
 // Astronomy: reference values (Venus inferior conjunction 2026-10-24; full Moon 2026-10-26).
 const jd = (iso) => astro.julian(new Date(iso));

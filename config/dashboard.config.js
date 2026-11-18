@@ -110,6 +110,15 @@ export default {
     "MON": "JEFIT B",
     "WED": "JEFIT C"
   },
+  "work": {
+    "note": "R49 work-hours pressure (Darin, 2026-11-18): Torrance, 5-day week 08:30-17:00. City-centre point.",
+    "place": "Torrance",
+    "lat": 33.8358,
+    "lon": -118.3406,
+    "days": ["MON", "TUE", "WED", "THU", "FRI"],
+    "start": "08:30",
+    "end": "17:00"
+  },
   "pressure": {
     "note": "R47 pressure swing flag (Darin, MCAS). Start values; tune with his notes. hPa change in 24 h.",
     "flagHpa": 5,

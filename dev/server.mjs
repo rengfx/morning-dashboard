@@ -35,8 +35,8 @@ createServer(async (req, res) => {
         day = { ...day, offset: d };
         if (u.searchParams.get('now')) day = { ...day, now: u.searchParams.get('now') };
       } else ({ day, errors } = await buildDay(process.env, cfg, new Date(), u.searchParams.get('d') || 0));
-      const out = { ...scoreDay(day, cfg), offset: day.offset || 0, range: DAY_RANGE, hourly: day.hourly, nba: day.nba || null, sportsExtra: day.sportsExtra || [], park: day.park || null, clouds: day.clouds || null, marine: day.marine, tide: day.tide, rain72hMm: day.rain72hMm,
-        config: { tickets: (cfg.nba && cfg.nba.tickets) || {}, localVenues: (cfg.nba && cfg.nba.localVenues) || [], humeBookUrl: cfg.hume.classes && cfg.hume.classes.bookUrl, humeAppUrl: cfg.hume.classes && cfg.hume.classes.appUrl, tideOkMaxFt: cfg.surf.tideFtMLLW.ok[1], sunscreenUv: cfg.sun.sunscreenUv, location: cfg.location },
+      const out = { ...scoreDay(day, cfg), offset: day.offset || 0, range: DAY_RANGE, hourly: day.hourly, nba: day.nba || null, sportsExtra: day.sportsExtra || [], park: day.park || null, clouds: day.clouds || null, pressureDay: day.pressureDay || null, marine: day.marine, tide: day.tide, rain72hMm: day.rain72hMm,
+        config: { tickets: (cfg.nba && cfg.nba.tickets) || {}, localVenues: (cfg.nba && cfg.nba.localVenues) || [], humeBookUrl: cfg.hume.classes && cfg.hume.classes.bookUrl, humeAppUrl: cfg.hume.classes && cfg.hume.classes.appUrl, tideOkMaxFt: cfg.surf.tideFtMLLW.ok[1], sunscreenUv: cfg.sun.sunscreenUv, location: cfg.location, work: cfg.work || null },
         errors, generatedAt: new Date().toISOString(), buildMs: Date.now() - t, source: fx ? `fixture:${fx}` : 'live' };
       res.writeHead(200, { 'content-type': 'application/json' }); res.end(JSON.stringify(out)); return;
     }

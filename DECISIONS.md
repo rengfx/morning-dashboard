@@ -58,3 +58,7 @@
 | D54 | 2026-11-15 | JEFIT exercise list is copied into config by hand (read from jefit.com, plan '3 Day Full Body'). No live JEFIT link: no public API, and the plan changes rarely. |
 | D55 | 2026-11-16 | A Hume block marked WENT shrinks to one line on every day (Darin, voice + 'Go'). Replaces D-R30 hide-on-weekdays; weekend all-day block shrinks on VISIT 1, so VISIT 2 stays one tap away in the HUME LOG. |
 | D56 | 2026-11-18 | Pressure flag uses the 24-h change, not the level: FLAG ≥ 5 hPa, WATCH ≥ 3 hPa. Start values; real Venice week 11–18 Nov had swings of −5.2, +7.5, −3.7, +6.1 hPa while Darin felt 'buzzy'. Tune from his notes. No health detail in the repo beyond 'MCAS watch' text he asked for. |
+| D57 | 2026-11-18 | Rollerblade only on non-workout days (Darin): not on JEFIT days or Basketball evenings. |
+| D58 | 2026-11-18 | Work pressure point = Torrance city centre, Mon–Fri 08:30–17:00 as Darin said (Thursday's later hours not used). Same 3/5 hPa levels. |
+| D59 | 2026-11-18 | Whole day as a Gantt (Darin's pick): one row per item in a 05–23 window; replaces the one-lane strip and its legend. |
+| D60 | 2026-11-18 | Hide (✕) applies to Surf and Rollerblade only, per date, in localStorage; shrinks to one line like WENT, never deletes. |
