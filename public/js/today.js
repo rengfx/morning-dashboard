@@ -218,7 +218,7 @@ function classList(d, s) {
     const inner = `<span class="t">${esc(c.start)}</span><span class="n">${esc(c.name)}<small>${esc([c.host, `${c.min} min`].filter(Boolean).join(' · '))}</small></span><span class="s ${st[1]}">${esc(st[0])}${href ? ' ↗' : ''}</span>`;
     return `<li class="${c.started ? 'gone' : ''}">${href ? `<a class="cls" href="${esc(href)}"${href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${inner}</a>` : inner}</li>`;
   }).join('');
-  return `<div class="classes"><div class="row"><span>CLASSES IN WINDOW · ${left.length}${gone ? ` <small class="faint">(${gone} started)</small>` : ''}</span>${url ? `<a href="${esc(url)}"${url.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${ios ? 'HUME APP ↗' : 'BOOK ↗'}</a>` : ''}</div>${rows ? `<ul>${rows}</ul>` : `<div class="note">${gone ? 'No more classes in this window today.' : 'No class fits in this window.'}</div>`}</div>`;
+  return `<div class="classes"><div class="row"><span>CLASSES IN WINDOW · ${left.length}${gone ? ` <small class="faint">(${gone} started)</small>` : ''}</span><span>${url ? `<a href="${esc(url)}"${url.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${ios ? 'HUME APP ↗' : 'BOOK ↗'}</a>` : ''}${d.config && !d.config.humeClassAppUrl ? ' <a href="open-class.html" style="color:var(--muted);margin-left:10px">TEST ↗</a>' : ''}</span></div>${rows ? `<ul>${rows}</ul>` : `<div class="note">${gone ? 'No more classes in this window today.' : 'No class fits in this window.'}</div>`}</div>`;
 }
 
 /** R21 sea surface temperature (°F) at the window start, or 08:00. */
