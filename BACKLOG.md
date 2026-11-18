@@ -56,7 +56,7 @@
 ## Done (2026-11-18 session)
 
 - Pressure line + swing banner (R47; FLAG 5 hPa / WATCH 3 hPa in 24 h).
-- No rollerblade on lifting/basketball days (R48); Torrance work-hours pressure, pressure chart, whole-day Gantt (R49); ✕ hide for Surf/Rollerblade (R50). Tests: 8 fixtures + 139 checks, all pass.
+- No rollerblade on lifting/basketball days (R48); Torrance work-hours pressure, pressure chart, whole-day Gantt (R49); ✕ hide for Surf/Rollerblade (R50). Bug fixed: Torrance request timed out (6-connection limit) → merged into the forecast request (D61). Tests: 8 fixtures + 140 checks, all pass.
 
 ## Done (2026-11-16 session)
 

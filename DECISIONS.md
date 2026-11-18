@@ -62,3 +62,4 @@
 | D58 | 2026-11-18 | Work pressure point = Torrance city centre, Mon–Fri 08:30–17:00 as Darin said (Thursday's later hours not used). Same 3/5 hPa levels. |
 | D59 | 2026-11-18 | Whole day as a Gantt (Darin's pick): one row per item in a 05–23 window; replaces the one-lane strip and its legend. |
 | D60 | 2026-11-18 | Hide (✕) applies to Surf and Rollerblade only, per date, in localStorage; shrinks to one line like WENT, never deletes. |
+| D61 | 2026-11-18 | Torrance pressure is a 2nd location in the Venice forecast request, not its own request. Reason: a Pages Function allows 6 open outgoing connections; the 14th request waited in the queue and its 8 s timer ran out (bug found live). |

@@ -333,6 +333,7 @@ const fake = {
       temperature_2m: days.flatMap(() => fxR.hourly.tempF), precipitation_probability: days.flatMap(() => fxR.hourly.precipPct),
       precipitation: days.flatMap((d) => Array(24).fill(d === '2026-10-30' ? 0.2 : 0)), uv_index: days.flatMap(() => fxR.hourly.uv),
       wind_speed_10m: days.flatMap(() => fxR.hourly.windMph), wind_direction_10m: days.flatMap(() => fxR.hourly.windDir),
+      pressure_msl: days.flatMap((d, i) => Array.from({ length: 24 }, (_, h) => 1015 + i + h * 0.1)),
     },
     daily: { time: days, sunrise: days.map((d) => `${d}T07:11`), sunset: days.map((d) => `${d}T18:01`) },
   },
@@ -340,13 +341,14 @@ const fake = {
   'api.tidesandcurrents.noaa.gov': { predictions: [{ t: '2026-10-30 20:12', v: '-0.323', type: 'L' }, { t: '2026-10-31 06:51', v: '3.168', type: 'L' }, { t: '2026-10-31 13:26', v: '5.492', type: 'H' }, { t: '2026-11-01 04:03', v: '3.813', type: 'H' }] },
 };
 const realFetch = globalThis.fetch;
-const humeHits = [];
+const humeHits = [], omMulti = [];
 globalThis.fetch = async (url) => {
   const u = new URL(url);
   if (url === SECRET) return new Response(readFileSync(join(root, 'fixtures/routine-sample.ics'), 'utf8'));
   if (u.hostname === 'nbaschedules.com') return new Response('BEGIN:VCALENDAR\nBEGIN:VEVENT\nSUMMARY:x'); // cut off on purpose
   if (u.hostname === 'site.api.espn.com') return new Response(JSON.stringify(JSON.parse(readFileSync(join(root, 'fixtures/nba-sample.json'), 'utf8')).sat));
   if (u.hostname === 'widget-api-tkaeguucxq-uc.a.run.app') { humeHits.push(url); return new Response(readFileSync(join(root, 'fixtures/hume-sample.json'), 'utf8')); }
+  if (u.hostname === 'api.open-meteo.com' && (u.searchParams.get('latitude') || '').includes(',')) { omMulti.push(url); const a = fake[u.hostname]; return new Response(JSON.stringify([a, { ...a, hourly: { ...a.hourly, pressure_msl: a.hourly.pressure_msl.map((v) => v - 1) } }])); } // 2 locations → array (real API)
   if (fake[u.hostname]) return new Response(JSON.stringify(fake[u.hostname]));
   return new Response('nope', { status: 404 });
 };
@@ -370,6 +372,7 @@ check('day +1: Nov 1, no "now", Sunday', dNext.date === '2026-11-01' && dNext.no
 check('day +1: weekly Hume events from the calendar', dNext.calendar.map((e) => e.start).join(',') === '07:00,16:00', JSON.stringify(dNext.calendar));
 check('day +1: 24 hourly rows of that day; DST banner "today"', dNext.hourly.time.length === 24 && JSON.stringify(dNext.dst) === '{"when":"today","direction":"back"}');
 check('day −1: Oct 30, tides shifted to that day', dPrev.date === '2026-10-30' && dPrev.tide.hilo.some((x) => x.dayOffset === 0 && x.t === '20:12'));
+check('R49 fetch: Torrance rides in the forecast request (2 locations), Fri gets work pressure, Sat none, no extra error', omMulti.length >= 4 && dPrev.workPressure && dPrev.workPressure.place === 'Torrance' && dPrev.pressureDay.work.length === 24 && dPrev.pressureDay.home[0] === 1017 && dPrev.pressureDay.work[0] === 1016 && !day.workPressure && day.pressure && !errors.some((e) => /pressure/.test(e.source)), JSON.stringify([omMulti.length, dPrev.workPressure, day.pressure]));
 check('day offset is clamped to +6', dFar.offset === 6 && dFar.date === '2026-11-06');
 const sNext = scoreDay(dNext, cfg);
 check('day +1 scored: no NOW / PASSED flags', sNext.sections.every((x) => !x.now && !x.passed));
