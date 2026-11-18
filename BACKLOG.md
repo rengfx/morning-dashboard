@@ -34,7 +34,7 @@
 
 - SeatGeek direct app link: needs the team's performer ID (`seatgeek.com/e/performers/<id>` is a universal link). SeatGeek blocked the lookup (403). Could test on the phone like the HUME link.
 
-- Bug: weather fetch timed out on 2026-11-14 12:37 ("weather: timeout", 8 s) → no Sun section that day. Offered fix: longer timeout + one retry. Waiting for Darin.
+- [x] Bug: weather fetch timed out (8 s) on 2026-11-14 and 2026-11-18. Fixed 2026-11-18: forecast timeout 25 s (D62).
 
 - Pier panorama photo as background (Door 3, not chosen).
 
