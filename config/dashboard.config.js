@@ -110,6 +110,11 @@ export default {
     "MON": "JEFIT B",
     "WED": "JEFIT C"
   },
+  "pressure": {
+    "note": "R47 pressure swing flag (Darin, MCAS). Start values; tune with his notes. hPa change in 24 h.",
+    "flagHpa": 5,
+    "watchHpa": 3
+  },
   "workoutMoves": {
     "note": "R45 exercise list next to the JEFIT tag. From his JEFIT plan '3 Day Full Body' (read 2026-11-15; dead bug → plank on B and C, suitcase carry timed 45 s). Update here when the plan changes.",
     "SAT": "TBDL · BENCH · GHR · PULLDN · LEG CURL · PLANK · FARMER",

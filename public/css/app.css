@@ -137,3 +137,10 @@ main { touch-action: pan-y; }
 .wentmin { width: 100%; background: none; border: 0; border-top: 1px solid var(--rule); padding: 14px 0 0; font: inherit; color: var(--faint); text-align: left; cursor: pointer; }
 .wentmin.first { border-top: 0; padding-top: 0; }
 .wentmin .row { color: var(--faint); }
+/* R47 pressure line */
+.press span { white-space: nowrap; }
+.press { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--faint); letter-spacing: .02em; }
+.press b { color: var(--muted); font-weight: 600; }
+.press.watch, .press.watch b { color: var(--amber); }
+.press.flag, .press.flag b { color: var(--coral); }
+.banner.amber { border-color: var(--amber); color: var(--amber); }

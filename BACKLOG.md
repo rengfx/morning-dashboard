@@ -15,6 +15,7 @@
 - **B2 Hume default windows** — 06:30–08:30 / 17:30–19:30 are used only on days with no Routine event.
 - **B3 Rain limits** — 20 % "note", 40 % "no". Confirm after a week.
 - [x] **B4 DNS** — IONOS (DNS, web, and email). Dashboard uses a CNAME at IONOS + key gate (D19).
+- **B6 Pressure levels** — FLAG 5 hPa / WATCH 3 hPa in 24 h are start values. Tune after a few weeks of how you feel vs the line.
 - **B5 Planet motion on Sky** — true motion now (Earth moves ~1° a day). Faster planet clock or a year mode later?
 - **B6 Lakers record / last result** — not in the ICS feed. Would need a scores API.
 
@@ -51,6 +52,10 @@
 - Second "later" surf windows: confirm the dashed-outline display with real data.
 - Moon-height histogram: mark moonrise / moonset times.
 - Lakers TV: the feed only names national TV; local games show `LOCAL`.
+
+## Done (2026-11-18 session)
+
+- Pressure line + swing banner (R47; FLAG 5 hPa / WATCH 3 hPa in 24 h). Tests: 8 fixtures + 134 checks, all pass.
 
 ## Done (2026-11-16 session)
 

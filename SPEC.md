@@ -169,6 +169,7 @@ Added 2026-10-31 from two weekends of real data:
 - **R44 JEFIT tag.** Lifting mornings (Mon, Wed, Sat): a small tag on the morning block (Sat: the all-day block): "JEFIT A" (Sat, Day 1), "JEFIT B" (Mon, Day 2), "JEFIT C" (Wed, Day 3) of the 3-day full-body program. Names in `workouts` config.
 - **R45 JEFIT moves.** To the right of the JEFIT tag: the day's exercises, abbreviated, small faint text (wraps to 2 lines on a phone). From `workoutMoves` config, copied from the JEFIT plan.
 - **R46 Went = one line.** Every day: a Hume block marked ✓ WENT (weekday AM or PM; weekend all-day block on VISIT 1) shrinks to one line "n · HUME … · ✓ WENT  start–end ▾". Tap the line to open the full block again (until the page reloads). Clearing the mark brings the full block back. On a weekday, a marked morning block stays as one line after its time passes (R27 hides only an unmarked block).
+- **R47 Pressure swing (MCAS).** A line under the banners: sea-level pressure now (hPa), change in the last 24 h, and the largest 24-h change in the next 24 h. Colour: faint below 3 hPa, amber at 3 (WATCH), coral at 5 (FLAG). At FLAG an amber banner: "PRESSURE SWING · +7.5 hPa in last 24 h · MCAS watch", or "coming · −5.3 hPa by WED 06:00" for a swing in the forecast. Levels in `pressure` config. Source: Open-Meteo `pressure_msl`, same request as the weather.
 
 ## 4. Data sources
 

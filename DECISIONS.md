@@ -57,3 +57,4 @@
 | D53 | 2026-11-15 | JEFIT program is the 3-day full body (Darin): Day 1/A Sat, Day 2/B Mon, Day 3/C Wed. Replaces the D52 mapping (upper / full / legs+abs was the old program). |
 | D54 | 2026-11-15 | JEFIT exercise list is copied into config by hand (read from jefit.com, plan '3 Day Full Body'). No live JEFIT link: no public API, and the plan changes rarely. |
 | D55 | 2026-11-16 | A Hume block marked WENT shrinks to one line on every day (Darin, voice + 'Go'). Replaces D-R30 hide-on-weekdays; weekend all-day block shrinks on VISIT 1, so VISIT 2 stays one tap away in the HUME LOG. |
+| D56 | 2026-11-18 | Pressure flag uses the 24-h change, not the level: FLAG ≥ 5 hPa, WATCH ≥ 3 hPa. Start values; real Venice week 11–18 Nov had swings of −5.2, +7.5, −3.7, +6.1 hPa while Darin felt 'buzzy'. Tune from his notes. No health detail in the repo beyond 'MCAS watch' text he asked for. |

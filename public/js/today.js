@@ -292,6 +292,15 @@ function nbaLine(d) {
   return `<details class="nbabox"${nbaOpen ? ' open' : ''}><summary class="${cls}" title="Tap to show all games"><span>${lead.lg} <b>${esc(lead.tip)}</b> · ${esc(lead.m)}${tail}</span><span class="n">${right} <i class="car">▾</i></span></summary><ul class="nbagames">${rows}</ul></details>`;
 }
 
+/** R47 pressure line: hPa now, change in the last 24 h, largest 24-h swing in the next 24 h. Amber at WATCH, coral at FLAG. */
+function pressLine(d) {
+  const p = d.pressure;
+  if (!p) return '';
+  const sg = (v) => (v == null ? '—' : `${v > 0 ? '↑' : v < 0 ? '↓' : ''}${Math.abs(v).toFixed(1)}`);
+  const nx = p.next ? `NEXT 24H ${sg(p.next.d24)}` : '';
+  return `<div class="press ${p.level.toLowerCase()}" title="${p.level}"><span>PRESSURE <b>${p.hPa}</b> hPa · 24H ${sg(p.d24)}</span><span>${nx}</span></div>`;
+}
+
 /** R39 evening rollerblade on the boardwalk. */
 // R40 body weight lives on this phone only (never in the repo): set by ?w=<lb> (or <kg>kg), e.g. from an iPhone Shortcut.
 const WKEY = 'weight-v1';
@@ -364,7 +373,8 @@ function render(dIn) {
 <div class="dots" aria-hidden="true">${dots}</div>
 <div style="display:flex;flex-direction:column;gap:6px">
 <div class="row"><span>${off ? 'DAY' : 'TODAY'} · IN ORDER</span><span>${weekend ? 'WEEKEND' : 'WEEKDAY'} · ${d.sections.length} ITEM${d.sections.length === 1 ? '' : 'S'}</span></div>
-${d.banners.map((b) => `<div class="banner${b.kind === 'ocean' ? ' red' : ''}">${esc(b.text)}</div>`).join('')}${late}
+${d.banners.map((b) => `<div class="banner${b.kind === 'ocean' ? ' red' : b.kind === 'pressure' ? ' amber' : ''}">${esc(b.text)}</div>`).join('')}${late}
+${pressLine(d)}
 ${nbaLine(d)}
 ${stripChart(d)}
 <div class="legend">${d.sections.map((s, i) => `<span style="color:${s.passed ? COL.faint : STRIP[s.type]}">${i + 1} ${NAMES[s.type].replace('HUME MORNING', 'Hume AM').replace('HUME EVENING', 'Hume PM').toLowerCase().replace(/^\w/, (c) => c.toUpperCase())}${s.passed ? ' (passed)' : s.type === 'surf' && !s.window ? ' (none)' : ''}</span>`).join(' · ')}${off ? '' : ' · ┃ now'}</div>

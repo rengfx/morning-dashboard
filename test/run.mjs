@@ -185,6 +185,16 @@ check('R29 weekend day block ends 19:00 (close) → walk-home note', wk5.walkHom
   const sat = scoreDay(JSON.parse(readFileSync(join(root, 'fixtures/2026-10-31-sat-real.json'), 'utf8')).input, cfg).sections.find((x) => x.type === 'humeDay');
   check('R44 Sat day block "JEFIT A", Mon AM "JEFIT B", Tue none, PM none', mon.workout === 'JEFIT B' && sat.workout === 'JEFIT A' && /^TBDL/.test(sat.workoutMoves) && /^HIP THRUST/.test(mon.workoutMoves) && !scoreDay(tue, cfg).sections.find((x) => x.type === 'humeAM').workout && !scoreDay({ ...tue, weekday: 'MON' }, cfg).sections.find((x) => x.type === 'humePM').workout); }
 
+// R47 pressure swing (real Venice values, 2026-11-15 02:00 and 2026-11-18 07:00)
+{ const ps = (pr) => scoreDay({ ...tue, pressure: pr }, cfg);
+  const f = ps({ hPa: 1016, d24: 7.5, next: { d24: 1.0, at: '2026-10-28T02:00' } });
+  check('R47 +7.5 hPa in 24 h → FLAG + banner "+7.5 hPa in last 24 h"', f.pressure.level === 'FLAG' && f.banners.some((b) => b.kind === 'pressure' && /\+7\.5 hPa in last 24 h/.test(b.text)), JSON.stringify(f.banners));
+  const c = ps({ hPa: 1019, d24: 4.1, next: { d24: -4.1, at: '2026-10-28T06:00' } });
+  check('R47 ±4.1 → WATCH, no banner', c.pressure.level === 'WATCH' && !c.banners.some((b) => b.kind === 'pressure'));
+  const n = ps({ hPa: 1015, d24: -1.0, next: { d24: -5.3, at: '2026-10-28T06:00' } });
+  check('R47 swing coming (−5.3 by WED 06:00) → FLAG, banner names the time', n.pressure.level === 'FLAG' && n.banners.some((b) => /coming · −5\.3 hPa by WED 06:00/.test(b.text)), JSON.stringify(n.banners));
+  check('R47 calm day → CALM; no data → no pressure block', ps({ hPa: 1017, d24: 0.6, next: null }).pressure.level === 'CALM' && scoreDay(tue, cfg).pressure === null); }
+
 // Astronomy: reference values (Venus inferior conjunction 2026-10-24; full Moon 2026-10-26).
 const jd = (iso) => astro.julian(new Date(iso));
 const he = astro.helio('earth', jd('2026-10-24T07:00:00Z')), hv = astro.helio('venus', jd('2026-10-24T07:00:00Z'));
