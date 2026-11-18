@@ -15,6 +15,7 @@
 - **B2 Hume default windows** — 06:30–08:30 / 17:30–19:30 are used only on days with no Routine event.
 - **B3 Rain limits** — 20 % "note", 40 % "no". Confirm after a week.
 - [x] **B4 DNS** — IONOS (DNS, web, and email). Dashboard uses a CNAME at IONOS + key gate (D19).
+- **B7 Class app link** — tap 1–8 on `/open-class.html` on your iPhone; tell Claude which numbers opened that class in the HUME app.
 - **B6 Pressure levels** — FLAG 5 hPa / WATCH 3 hPa in 24 h are start values. Tune after a few weeks of how you feel vs the line.
 - **B5 Planet motion on Sky** — true motion now (Earth moves ~1° a day). Faster planet clock or a year mode later?
 - **B6 Lakers record / last result** — not in the ICS feed. Would need a scores API.
@@ -54,6 +55,8 @@
 - Lakers TV: the feed only names national TV; local games show `LOCAL`.
 
 ## Done (2026-11-18 session)
+
+- Each class links to its own Sign Up page (R51). App-link test page `/open-class.html` (8 guesses).
 
 - Pressure line + swing banner (R47; FLAG 5 hPa / WATCH 3 hPa in 24 h).
 - No rollerblade on lifting/basketball days (R48); Torrance work-hours pressure, pressure chart, whole-day Gantt (R49); ✕ hide for Surf/Rollerblade (R50). Bug fixed: Open-Meteo requests from Cloudflare with no cached copy took > 8 s → forecast timeout 25 s, Torrance merged into the same request (D61, D62); this also fixes the old 'weather: timeout'. Tests: 8 fixtures + 140 checks, all pass.

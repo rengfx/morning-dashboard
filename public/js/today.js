@@ -210,9 +210,13 @@ function classList(d, s) {
   const url = d.config && ((ios && d.config.humeAppUrl) || d.config.humeBookUrl);
   const left = s.classes.filter((c) => !c.started); // R34 a class goes away once it has started
   const gone = s.classes.length - left.length;
+  // R51 each class opens its own booking page (app link when one is known, else the web Sign Up page)
+  const tpl = d.config && ((ios && d.config.humeClassAppUrl) || d.config.humeClassUrl);
   const rows = left.map((c) => {
     const st = c.started ? ['STARTED', 'faint'] : c.state === 'CLOSED' ? ['CLOSED', 'faint'] : c.state === 'FULL' ? [c.waitlist ? `FULL · WL ${c.waitlist}` : 'FULL', 'bad'] : [`${c.left} OPEN`, c.left <= 2 ? 'ok' : 'good'];
-    return `<li class="${c.started ? 'gone' : ''}"><span class="t">${esc(c.start)}</span><span class="n">${esc(c.name)}<small>${esc([c.host, `${c.min} min`].filter(Boolean).join(' · '))}</small></span><span class="s ${st[1]}">${esc(st[0])}</span></li>`;
+    const href = tpl && c.id && c.state !== 'CLOSED' ? tpl.replace('{id}', encodeURIComponent(c.id)) : null;
+    const inner = `<span class="t">${esc(c.start)}</span><span class="n">${esc(c.name)}<small>${esc([c.host, `${c.min} min`].filter(Boolean).join(' · '))}</small></span><span class="s ${st[1]}">${esc(st[0])}${href ? ' ↗' : ''}</span>`;
+    return `<li class="${c.started ? 'gone' : ''}">${href ? `<a class="cls" href="${esc(href)}"${href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${inner}</a>` : inner}</li>`;
   }).join('');
   return `<div class="classes"><div class="row"><span>CLASSES IN WINDOW · ${left.length}${gone ? ` <small class="faint">(${gone} started)</small>` : ''}</span>${url ? `<a href="${esc(url)}"${url.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${ios ? 'HUME APP ↗' : 'BOOK ↗'}</a>` : ''}</div>${rows ? `<ul>${rows}</ul>` : `<div class="note">${gone ? 'No more classes in this window today.' : 'No class fits in this window.'}</div>`}</div>`;
 }

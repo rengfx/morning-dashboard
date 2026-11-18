@@ -98,6 +98,9 @@ const in630 = classesIn(hl, '06:30', '08:30');
 check('hume: window 06:30–08:30 → 3 classes that end by 08:30 (07:45 ends 08:35, 08:00 ends 08:50: hidden)', in630.length === 3 && in630.every((c) => c.end <= '08:30'), in630.map((c) => c.start + '-' + c.end).join(','));
 check('hume: class ending exactly at window end is kept', classesIn(hl, '06:30', '07:50').map((c) => c.start).join(',') === '06:30,07:00,07:00');
 check('hume: window 17:30–19:30 → 0 classes (17:00 starts before)', classesIn(hl, '17:30', '19:30').length === 0);
+{ const one = parseClasses({ data: { classes: [{ id: 'AO4fuYFcg3E6SVbEqFvm', name: 'Vinyasa', start_time: Date.parse('2026-11-13T15:30:00Z') / 1000, duration: 60, max_capacity: 20, total_booked: 5 }, { id: 'x"><script>', name: 'Bad', start_time: Date.parse('2026-11-13T16:30:00Z') / 1000, duration: 60 }] } }, '2026-11-13', 'America/Los_Angeles');
+  check('R51 class id kept (real 20-char id); unsafe id dropped', one[0].id === 'AO4fuYFcg3E6SVbEqFvm' && one[1].id === null, JSON.stringify(one.map((c) => c.id)));
+  check('R51 config: web Sign Up link per class, no app link until tested', cfg.hume.classes.classUrl.endsWith('/schedule/checkout/{id}') && cfg.hume.classes.classAppUrl === null); }
 let bad = null; try { parseClasses({ data: {} }, '2026-11-13', 'America/Los_Angeles'); } catch (e) { bad = e.message; }
 check('hume: changed feed shape → clear error', /unexpected feed shape/.test(bad || ''), bad);
 const su = new URL(scheduleUrl(cfg.hume.classes, '2026-11-13', 'America/Los_Angeles'));

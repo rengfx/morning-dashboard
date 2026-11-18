@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Open class test · Morning</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/css/app.css">
+<style>.t{display:flex;flex-direction:column;gap:10px}.t a{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:52px;padding:6px 14px;border:1px solid var(--rule);color:var(--text);font-size:12px;overflow-wrap:anywhere}.t a b{color:var(--amber);font-size:18px;flex:none}.cls{font-size:14px;color:var(--text);border:1px solid var(--amber);padding:10px 12px}</style></head>
+<body><main>
+<header class="head"><h1>OPEN CLASS</h1><a class="meta" href="/" style="color:var(--amber)">← TODAY</a></header>
+<p class="note" style="font-size:13px;color:var(--text)">Test on your iPhone. Each button tries to open the HUME app on this one class. Tap 1, see what opens, come back, tap the next. Tell Claude every number that opened <b>this class</b> in the app (not just the app's home screen).</p>
+<div id="cls" class="cls">Finding a class…</div>
+<div id="t" class="t"></div>
+<p class="note" style="font-size:12px;margin-top:14px">0 = the web Sign Up page (control: always works, opens Safari).</p>
+<script type="module">
+// R51 test: guessed app links for one real class. Results decide `hume.classes.classAppUrl` in config.
+const GUESS = [
+  'humeprojects://schedule/checkout/{id}', 'humeprojects://checkout/{id}', 'humeprojects://class/{id}',
+  'humeprojects://classes/{id}', 'humeprojects://schedule/{id}', 'humeprojects://iframe/humeprojects/schedule/checkout/{id}',
+  'humeprojects://booking/{id}', 'humeprojects://event/{id}',
+];
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let pick = null;
+for (const d of [0, 1, 2]) {
+  try {
+    const j = await fetch(`/api/today?d=${d}`).then((r) => r.json());
+    for (const s of j.sections || []) for (const c of s.classes || []) if (!pick && c.id && !c.started && c.state === 'OPEN') pick = { ...c, date: j.date, weekday: j.weekday, web: j.config.humeClassUrl };
+  } catch { /* try the next day */ }
+  if (pick) break;
+}
+const box = document.getElementById('cls'), t = document.getElementById('t');
+if (!pick) box.textContent = 'No open class found in the next 3 days. Try again later.';
+else {
+  box.innerHTML = `<b>${esc(pick.weekday)} ${esc(pick.date.slice(5))} ${esc(pick.start)}</b> · ${esc(pick.name)}${pick.host ? ` · ${esc(pick.host)}` : ''}<br><small style="color:var(--muted)">id ${esc(pick.id)}</small>`;
+  const link = (u, n) => `<a href="${esc(u)}"${u.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}><span>${esc(u)}</span><b>${n}</b></a>`;
+  t.innerHTML = GUESS.map((g, i) => link(g.replace('{id}', pick.id), i + 1)).join('') + link(pick.web.replace('{id}', pick.id), 0);
+}
+</script>
+</main></body></html>

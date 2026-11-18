@@ -39,6 +39,8 @@ export default {
       "partnerId": "zuSbilfTYsWoXXM58oHytAaKldC3",
       "bookUrl": "https://app.arketa.co/iframe/humeprojects/schedule",
       "appUrl": "humeprojects://",
+      "classUrl": "https://app.arketa.co/iframe/humeprojects/schedule/checkout/{id}",
+      "classAppUrl": null,
       "note": "Public HUME schedule (Arketa). All classes. Read at most once an hour per day shown."
     }
   },
