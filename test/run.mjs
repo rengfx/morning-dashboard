@@ -5,7 +5,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { scoreDay } from '../lib/score.js';
-import { pressureAt, daySeries, workPressure } from '../lib/pressure.js';
+import { pressureAt, daySeries, workPressure, pressureWindow, swingSpans } from '../public/js/pressure.js';
 import { parseICS, eventsOn, parseGame } from '../lib/ics.js';
 import { dstInfo } from '../public/js/time.js';
 import * as astro from '../public/js/astro.js';
@@ -211,6 +211,15 @@ check('R29 weekend day block ends 19:00 (close) → walk-home note', wk5.walkHom
   check('R47 pressureAt: −1.8 in last 24 h, next 24 h swing −7.2', pa.d24 === -1.8 && pa.next.d24 === -7.2, JSON.stringify(pa));
   const o = scoreDay({ ...tue, pressure: { hPa: 1017, d24: 1, next: null }, workPressure: { place: 'Torrance', start: '08:30', end: '17:00', hPa: 1016, worst: { d24: -5.1, at: '2026-10-27T17:00' }, range: 2.7 } }, cfg);
   check('R49 Torrance −5.1 → work FLAG + banner "TORRANCE 08:30–17:00 · −5.1 hPa / 24 h at 17:00"', o.pressure.work.level === 'FLAG' && o.banners.some((b) => /TORRANCE 08:30–17:00 · −5\.1 hPa \/ 24 h at 17:00/.test(b.text)), JSON.stringify(o.banners)); }
+
+// R52 pressure detail window + swing spans
+{ const T = Array.from({ length: 96 }, (_, h) => new Date(Date.UTC(2026, 10, 18, h)).toISOString().slice(0, 13) + ':00');
+  const P = T.map((_, h) => (h < 40 ? 1020 : h < 52 ? 1020 - (h - 40) * 0.6 : 1012.8));
+  const win = pressureWindow(T, P, 36);
+  check('R52 window: 24 h back + 48 h ahead = 73 values, now at 24, starts 2026-11-18T12:00', win.v.length === 73 && win.nowAt === 24 && win.start === '2026-11-18T12:00', JSON.stringify([win.v.length, win.nowAt, win.start]));
+  const sp = swingSpans(win, 5);
+  check('R52 spans: one FLAG span, from 2026-11-20T01:00, peak −7.2 hPa', sp.length === 1 && sp[0].from === '2026-11-20T01:00' && sp[0].peak === -7.2, JSON.stringify(sp));
+  check('R52 spans: none at a 9 hPa limit; empty for no window', swingSpans(win, 9).length === 0 && swingSpans(null, 5).length === 0); }
 
 // Astronomy: reference values (Venus inferior conjunction 2026-10-24; full Moon 2026-10-26).
 const jd = (iso) => astro.julian(new Date(iso));

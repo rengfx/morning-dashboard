@@ -12,7 +12,7 @@ export async function onRequestGet({ env, request }) {
     const { day, errors } = await buildDay(env, cfg, new Date(), d);
     const out = {
       ...scoreDay(day, cfg), offset: day.offset, range: DAY_RANGE,
-      hourly: day.hourly, nba: day.nba || null, sportsExtra: day.sportsExtra || [], park: day.park || null, clouds: day.clouds || null, pressureDay: day.pressureDay || null, marine: day.marine, tide: day.tide, rain72hMm: day.rain72hMm,
+      hourly: day.hourly, nba: day.nba || null, sportsExtra: day.sportsExtra || [], park: day.park || null, clouds: day.clouds || null, pressureDay: day.pressureDay || null, pressureWin: day.pressureWin || null, marine: day.marine, tide: day.tide, rain72hMm: day.rain72hMm,
       config: { tickets: (cfg.nba && cfg.nba.tickets) || {}, localVenues: (cfg.nba && cfg.nba.localVenues) || [], humeBookUrl: cfg.hume.classes && cfg.hume.classes.bookUrl, humeAppUrl: cfg.hume.classes && cfg.hume.classes.appUrl, humeClassUrl: cfg.hume.classes && cfg.hume.classes.classUrl, humeClassAppUrl: cfg.hume.classes && cfg.hume.classes.classAppUrl, tideOkMaxFt: cfg.surf.tideFtMLLW.ok[1], sunscreenUv: cfg.sun.sunscreenUv, location: cfg.location, work: cfg.work || null },
       errors, generatedAt: new Date().toISOString(), buildMs: Date.now() - started, weatherMs: day.weatherMs ?? null,
     };

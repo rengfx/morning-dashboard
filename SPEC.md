@@ -174,6 +174,7 @@ Added 2026-10-31 from two weekends of real data:
 - **R49 Work pressure + whole-day views.** On work days (`work`: Mon–Fri 08:30–17:00, Torrance): a second pressure line with hPa at the start and the largest 24-h change inside the hours (same WATCH/FLAG levels; FLAG adds a banner "TORRANCE 08:30–17:00 · −5.1 hPa / 24 h at 14:00 · MCAS watch"). Tap the pressure lines to open a whole-day pressure chart (Venice solid, Torrance dashed, work hours shaded). The top strip is replaced by a Gantt chart of waking hours (05–23): one row per item, plus a WORK row on work days, label column on the left, times on or next to each bar.
 - **R50 Hide Surf / Rollerblade for a day.** A ✕ on the Surf and Rollerblade blocks shrinks the block to one line "n · SURF · HIDDEN  SHOW ▾" for that date (kept in this browser). Tap the line to show it again.
 - **R51 Book one class.** Each class row (not CLOSED) links to that class's own Sign Up page: `classUrl` with the feed's class id (`/schedule/checkout/{id}`). On iPhone, `classAppUrl` is used instead when set (null: tested 2026-11-18, no app path opens one class).
+- **R52 Pressure detail.** The pressure banners are one block; tap it (or the pressure lines) to open a detail panel: 72 h graph (24 h back, 48 h ahead; Venice solid, Torrance dashed, work hours and night shaded, NOW line), 24-h change bars with ±WATCH/±FLAG guides, and facts: now (both places), last 24 h, FLAG (or WATCH) spans in the next 48 h with peak and time, work-hours max and range, the level key. Tap again to close.
 
 ## 4. Data sources
 

@@ -4,6 +4,7 @@ import { moonPhase, illumination } from './astro.js';
 import { findSkyEvents } from './skyevents.js';
 import { skyNotesHtml } from './skynotes.js';
 import { marks, toggle, weekCount, resetDay } from './humelog.js';
+import { swingSpans } from './pressure.js';
 
 const $ = (s) => document.querySelector(s);
 const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -58,6 +59,56 @@ function ganttChart(d) {
 }
 
 /** R49 pressure over the whole day: home (Venice) and work (Torrance) lines, work hours shaded. */
+/** R52 pressure detail: 72 h graph (24 h back, 48 h ahead) + 24-h change bars + swing times + work hours. */
+const WD = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+function pressDetail(d) {
+  const pw = d.pressureWin, PR = d.config.pressure || { watchHpa: 3, flagHpa: 5 };
+  if (!pw || !pw.home) return pressChart(d);
+  const h = pw.home, w = pw.work, n = h.v.length, H = 162, TOPH = 82, BAR0 = 126, BARH = 36;
+  const t0 = Date.parse(h.start + ':00Z'), tAt = (i) => new Date(t0 + i * 3600e3), x = (i) => (i / (n - 1)) * W;
+  const lab = (i) => { const t = tAt(i); return `${WD[t.getUTCDay()]} ${String(t.getUTCHours()).padStart(2, '0')}:00`; };
+  const vals = [...h.v, ...((w && w.v) || [])].filter((v) => v != null);
+  let lo = Math.min(...vals), hi = Math.max(...vals); if (hi - lo < 6) { const m = (hi + lo) / 2; lo = m - 3; hi = m + 3; }
+  const y = (v) => 6 + (1 - (v - lo) / (hi - lo)) * (TOPH - 12);
+  let b = rect(0, 0, W, H, COL.panel);
+  // work hours on work days, night shading by hour (dark before rise / after set, from today's times)
+  const rise = hm(d.sun.rise) / 60, set = hm(d.sun.set) / 60, wk = d.config.work;
+  for (let i = 0; i < n; i++) {
+    const t = tAt(i), hr = t.getUTCHours();
+    if (hr < Math.floor(rise) || hr >= Math.ceil(set)) b += rect(x(i) - W / (n - 1) / 2, 0, W / (n - 1) + 0.5, BAR0 + BARH / 2 + 2, COL.night, 'fill-opacity="0.55"');
+    if (wk && wk.days.includes(WD[t.getUTCDay()]) && hr >= hm(wk.start) / 60 - 0.5 && hr < hm(wk.end) / 60) b += rect(x(i) - W / (n - 1) / 2, 0, W / (n - 1) + 0.5, TOPH, COL.violet, 'fill-opacity="0.10"');
+  }
+  // midnight lines + day labels
+  for (let i = 0; i < n; i++) if (tAt(i).getUTCHours() === 0) b += vline(x(i), 0, H - 12, '#ECEAE4', 'stroke-opacity="0.25" stroke-dasharray="2 2"') + text(x(i) + 3, H - 2, WD[tAt(i).getUTCDay()], COL.muted, { size: 9 });
+  const line = (arr) => arr.map((v, i) => (v == null ? null : [x(i), y(v)])).filter(Boolean);
+  b += poly(line(h.v), COL.text, 'stroke-width="1.8"');
+  if (w) b += poly(line(w.v), COL.violet, 'stroke-width="1.5" stroke-dasharray="4 2"');
+  b += text(W - 2, 12, `${Math.round(hi)} hPa`, COL.faint, { anchor: 'end', size: 8.5 }) + text(W - 2, TOPH - 4, `${Math.round(lo)}`, COL.faint, { anchor: 'end', size: 8.5 });
+  // 24-h change bars around a zero line, with ±WATCH / ±FLAG guides
+  const bs = (BARH / 2) / Math.max(PR.flagHpa + 1, ...h.d24.filter((v) => v != null).map(Math.abs)), mid = BAR0;
+  for (const [lim, c] of [[PR.watchHpa, COL.amber], [PR.flagHpa, COL.coral]]) for (const sg of [1, -1]) b += `<line x1="0" x2="${W}" y1="${(mid - sg * lim * bs).toFixed(1)}" y2="${(mid - sg * lim * bs).toFixed(1)}" stroke="${c}" stroke-opacity="0.45" stroke-dasharray="2 2"/>`;
+  b += `<line x1="0" x2="${W}" y1="${mid}" y2="${mid}" stroke="#ECEAE4" stroke-opacity="0.3"/>`;
+  h.d24.forEach((v, i) => { if (v == null) return; const a = Math.abs(v), c = a >= PR.flagHpa ? COL.coral : a >= PR.watchHpa ? COL.amber : COL.faint; b += rect(x(i) - 1.6, v > 0 ? mid - a * bs : mid, 3.2, Math.max(0.8, a * bs), c); });
+  b += text(2, BAR0 - BARH / 2 - 3, '24-H CHANGE', COL.faint, { size: 8 });
+  b += vline(x(h.nowAt), 0, H - 12, COL.text, 'stroke-width="1.5"') + text(Math.min(W - 26, x(h.nowAt) + 3), 10, 'NOW', COL.text, { size: 8.5, bold: true });
+  const graph = svg(H, `Pressure, 24 hours back to 48 hours ahead: ${Math.round(lo)} to ${Math.round(hi)} hPa.`, b);
+  // facts
+  const sg = (v) => (v == null ? '—' : `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)}`);
+  const ahead = { ...h, start: tAt(h.nowAt).toISOString().slice(0, 16), v: h.v.slice(h.nowAt), d24: h.d24.slice(h.nowAt) };
+  const flags = swingSpans(ahead, PR.flagHpa), watch = flags.length ? [] : swingSpans(ahead, PR.watchHpa);
+  const t2 = (s) => { const t = new Date(Date.parse(s + ':00Z')); return `${WD[t.getUTCDay()]} ${s.slice(11, 16)}`; };
+  const spanTxt = (s, tag) => `<li><b class="${tag === 'FLAG' ? 'bad' : 'ok'}">${tag}</b> ${t2(s.from)}${s.to !== s.from ? `–${t2(s.to).slice(4)}` : ''} · peak ${sg(s.peak)} hPa @ ${t2(s.peakAt)}</li>`;
+  const p = d.pressure || {}, wp = p.work;
+  const rows = [
+    `<li><b>NOW</b> Venice ${h.v[h.nowAt] != null ? Math.round(h.v[h.nowAt]) : '—'} hPa${w && w.v[w.nowAt] != null ? ` · ${esc((wk && wk.place) || 'work')} ${Math.round(w.v[w.nowAt])}` : ''}</li>`,
+    `<li><b>LAST 24 H</b> ${sg(h.d24[h.nowAt])} hPa</li>`,
+    ...(flags.length ? flags.map((s) => spanTxt(s, 'FLAG')) : watch.length ? watch.map((s) => spanTxt(s, 'WATCH')) : ['<li><b>NEXT 48 H</b> no swing of 3 hPa or more</li>']),
+    ...(wp ? [`<li><b>WORK</b> ${esc(wp.place)} ${esc(wp.start)}–${esc(wp.end)} · max 24-h ${sg(wp.worst && wp.worst.d24)} @ ${esc(wp.worst ? wp.worst.at.slice(11, 16) : '—')} · range ${wp.range} hPa</li>`] : []),
+    `<li class="faint">WATCH ≥ ${PR.watchHpa} hPa in 24 h · FLAG ≥ ${PR.flagHpa}. Speed of change matters more than the level. Start values (B6).</li>`,
+  ];
+  return `<div class="pdet">${graph}<div class="legend">— Venice${w ? `  <span style="color:${COL.violet}">╌ ${esc((wk && wk.place) || 'work')}</span>  <span style="color:${COL.violet}">▮ work</span>` : ''}  ▮ night</div><ul class="pfacts">${rows.join('')}</ul></div>`;
+}
+
 function pressChart(d) {
   const pd = d.pressureDay; if (!pd || !pd.home) return '';
   const H = 74, sc = scale(0, 24), wk = d.config.work && d.config.work.days.includes(d.weekday) ? d.config.work : null;
@@ -336,7 +387,7 @@ function pressLine(d) {
   const home = p.hPa != null ? `<div class="press ${p.level.toLowerCase()}"><span>PRESSURE <b>${p.hPa}</b> hPa · 24H ${sg(p.d24)}</span><span>${p.next ? `NEXT 24H ${sg(p.next.d24)}` : ''} <i class="car">▾</i></span></div>` : '';
   const w = p.work;
   const work = w ? `<div class="press ${w.level.toLowerCase()}"><span>${esc(w.place.toUpperCase())} ${esc(w.start)}–${esc(w.end)} <b>${w.hPa}</b></span><span>${w.worst ? `MAX 24H ${sg(w.worst.d24)} @${esc(w.worst.at.slice(11, 16))}` : ''}</span></div>` : '';
-  return `<details class="pressbox"${pressOpen ? ' open' : ''}><summary>${home}${work}</summary>${pressChart(d)}</details>`;
+  return `<details class="pressbox"${pressOpen ? ' open' : ''}><summary>${home}${work}</summary>${pressDetail(d)}</details>`;
 }
 let pressOpen = false;
 
@@ -412,7 +463,7 @@ function render(dIn) {
 <div class="dots" aria-hidden="true">${dots}</div>
 <div style="display:flex;flex-direction:column;gap:6px">
 <div class="row"><span>${off ? 'DAY' : 'TODAY'} · IN ORDER</span><span>${weekend ? 'WEEKEND' : 'WEEKDAY'} · ${d.sections.length} ITEM${d.sections.length === 1 ? '' : 'S'}</span></div>
-${d.banners.map((b) => `<div class="banner${b.kind === 'ocean' ? ' red' : b.kind === 'pressure' ? ' amber' : ''}">${esc(b.text)}</div>`).join('')}${late}
+${d.banners.filter((b) => b.kind !== 'pressure').map((b) => `<div class="banner${b.kind === 'ocean' ? ' red' : ''}">${esc(b.text)}</div>`).join('')}${(() => { const pb = d.banners.filter((b) => b.kind === 'pressure'); return pb.length ? `<details class="banner amber pban"${pressOpen ? ' open' : ''}><summary>${pb.map((b, i) => `<span class="pl">${esc(b.text)}${i === pb.length - 1 ? ' <i class="car">▾</i>' : ''}</span>`).join('')}</summary>${pressDetail(d)}</details>` : ''; })()}${late}
 ${pressLine(d)}
 ${nbaLine(d)}
 ${ganttChart(d)}
@@ -430,6 +481,7 @@ ${sky}
   for (const b of document.querySelectorAll('[data-unhide]')) b.addEventListener('click', () => { hiddenSet(d.date, b.dataset.unhide, false); const y = scrollY; render(dIn); scrollTo(0, y); });
   const pb = document.querySelector('.pressbox');
   if (pb) pb.addEventListener('toggle', () => { pressOpen = pb.open; });
+  for (const pbn of document.querySelectorAll('.pban')) pbn.addEventListener('toggle', () => { pressOpen = pbn.open; });
   const nb = document.querySelector('.nbabox');
   if (nb) nb.addEventListener('toggle', () => { nbaOpen = nb.open; });
   for (const b of document.querySelectorAll('[data-wentopen]')) b.addEventListener('click', () => { wentOpen.add(b.dataset.wentopen); const y = scrollY; render(dIn); scrollTo(0, y); });

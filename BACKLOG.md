@@ -53,6 +53,10 @@
 - Moon-height histogram: mark moonrise / moonset times.
 - Lakers TV: the feed only names national TV; local games show `LOCAL`.
 
+## Done (2026-11-19 session)
+
+- Tap the pressure banner to open a detail panel: 72 h graph, 24-h change bars, swing times, work hours (R52). Tests: 8 fixtures + 146 checks, all pass.
+
 ## Done (2026-11-18 session)
 
 - Each class links to its own Sign Up page (R51). App-link test page `/open-class.html` (8 guesses), opened from a TEST ↗ link inside the dashboard. Result (Darin, 07:56): all 8 open only the app home → test link and page removed; web Sign Up links stay (D64). Bug fixed: the test page opened from chat showed 'Private page.' (other browser, no key cookie).

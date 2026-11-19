@@ -155,3 +155,13 @@ main { touch-action: pan-y; }
 /* R51 a class row is a link to its own booking page */
 .classes li a.cls { display: contents; color: inherit; }
 .classes li:has(a.cls):active { background: var(--panel); }
+/* R52 pressure banner opens a detail panel */
+.pban summary { list-style: none; cursor: pointer; }
+.pban summary::-webkit-details-marker { display: none; }
+.pban[open] .car { display: inline-block; transform: rotate(180deg); }
+.pban .pdet { margin: 8px -2px 0; color: var(--text); }
+.pdet .pfacts { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12px; line-height: 1.45; color: var(--text); letter-spacing: 0; }
+.pdet .pfacts li { padding: 3px 0; border-top: 1px solid var(--rule2); }
+.pdet .pfacts b { color: var(--muted); font-weight: 600; margin-right: 4px; }
+.pdet .pfacts b.bad { color: var(--coral); } .pdet .pfacts b.ok { color: var(--amber); }
+.pban .pl { display: block; } .pban .pl + .pl { margin-top: 4px; }

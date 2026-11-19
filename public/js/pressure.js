@@ -36,3 +36,26 @@ export function workPressure(time, P, date, start, end) {
   if (lo === Infinity) return null;
   return { hPa: Math.round(P[i0 + h0] ?? lo), worst, range: r1(hi - lo) };
 }
+
+/** R52 detail window: `back` h before to `ahead` h after index `idx`. Values plus each hour's 24-h change. */
+export function pressureWindow(time, P, idx, back = 24, ahead = 48) {
+  if (!Array.isArray(P) || idx < 0) return null;
+  const a = Math.max(0, idx - back), b = Math.min(P.length - 1, idx + ahead), v = [], d24 = [];
+  for (let k = a; k <= b; k++) { v.push(P[k] == null ? null : r1(P[k])); d24.push(k >= 24 && P[k] != null && P[k - 24] != null ? r1(P[k] - P[k - 24]) : null); }
+  return { start: time[a], nowAt: idx - a, v, d24 };
+}
+
+/** R52 spans where |24-h change| ≥ lim, from a window: [{from, to, peak, peakAt}] (times as 'YYYY-MM-DDTHH:00'). */
+export function swingSpans(win, lim) {
+  if (!win) return [];
+  const t0 = Date.parse(win.start + ':00Z'), at = (i) => new Date(t0 + i * 3600e3).toISOString().slice(0, 16);
+  const out = []; let cur = null;
+  win.d24.forEach((x, i) => {
+    if (x != null && Math.abs(x) >= lim) {
+      if (!cur) cur = { from: at(i), to: at(i), peak: x, peakAt: at(i) };
+      cur.to = at(i); if (Math.abs(x) > Math.abs(cur.peak)) { cur.peak = x; cur.peakAt = at(i); }
+    } else if (cur) { out.push(cur); cur = null; }
+  });
+  if (cur) out.push(cur);
+  return out;
+}
