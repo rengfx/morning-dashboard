@@ -67,3 +67,4 @@
 | D63 | 2026-11-18 | Door 3 for class booking links (Darin): per-class web Sign Up links now; app link only if a guessed `humeprojects://` path opens the class on his phone. Arketa's apple-app-site-association has no applinks, so web links never open the app. |
 | D64 | 2026-11-18 | Tested on Darin's iPhone: no `humeprojects://` path opens one class (8 tried; all open the app home only). Class rows keep the web Sign Up link on all devices; `classAppUrl` stays null. Not to be reopened unless Arketa adds app links. |
 | D65 | 2026-11-19 | Pressure detail opens from the banner (Darin): one shared panel for both pressure banners and the pressure lines, 72 h window (24 back / 48 ahead) so a swing can be seen coming and going. Helpers moved to public/js/pressure.js (server and page share them). |
+| D66 | 2026-11-21 | JEFIT link = a jefit.com universal link (AASA paths /*), not a custom scheme: no 'Open in app?' dialog and a web fallback. |

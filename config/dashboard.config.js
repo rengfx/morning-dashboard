@@ -106,6 +106,7 @@ export default {
     "hideIfMaxUvBelow": 1,
     "sunscreenUv": 3
   },
+  "jefitUrl": "https://www.jefit.com/my-jefit/workouts",
   "workouts": {
     "note": "R44 JEFIT 3-day full-body program (Darin, 2026-11-15): Day 1/A Sat, Day 2/B Mon, Day 3/C Wed.",
     "SAT": "JEFIT A",

@@ -165,3 +165,6 @@ main { touch-action: pan-y; }
 .pdet .pfacts b { color: var(--muted); font-weight: 600; margin-right: 4px; }
 .pdet .pfacts b.bad { color: var(--coral); } .pdet .pfacts b.ok { color: var(--amber); }
 .pban .pl { display: block; } .pban .pl + .pl { margin-top: 4px; }
+/* R53 JEFIT tag + list open the JEFIT app (jefit.com universal link) */
+a.wkrow { text-decoration: none; color: inherit; min-height: 44px; }
+a.wkrow:active { opacity: .7; }

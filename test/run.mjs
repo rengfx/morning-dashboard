@@ -221,6 +221,8 @@ check('R29 weekend day block ends 19:00 (close) → walk-home note', wk5.walkHom
   check('R52 spans: one FLAG span, from 2026-11-20T01:00, peak −7.2 hPa', sp.length === 1 && sp[0].from === '2026-11-20T01:00' && sp[0].peak === -7.2, JSON.stringify(sp));
   check('R52 spans: none at a 9 hPa limit; empty for no window', swingSpans(win, 9).length === 0 && swingSpans(null, 5).length === 0); }
 
+check('R53 JEFIT link is a jefit.com page (universal link opens the app)', /^https:\/\/www\.jefit\.com\//.test(cfg.jefitUrl));
+
 // Astronomy: reference values (Venus inferior conjunction 2026-10-24; full Moon 2026-10-26).
 const jd = (iso) => astro.julian(new Date(iso));
 const he = astro.helio('earth', jd('2026-10-24T07:00:00Z')), hv = astro.helio('venus', jd('2026-10-24T07:00:00Z'));

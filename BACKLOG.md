@@ -53,6 +53,10 @@
 - Moon-height histogram: mark moonrise / moonset times.
 - Lakers TV: the feed only names national TV; local games show `LOCAL`.
 
+## Done (2026-11-21 session)
+
+- Tap the JEFIT tag to open the JEFIT app (R53).
+
 ## Done (2026-11-19 session)
 
 - Tap the pressure banner to open a detail panel: 72 h graph, 24-h change bars, swing times, work hours (R52). Tests: 8 fixtures + 146 checks, all pass.
